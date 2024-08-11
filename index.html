@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Enlaces</title>
+  	
+    <link rel="icon" type="image/png" href="https://www.imagensempng.com.br/wp-content/uploads/2020/12/Seta-Baixo-Png-1024x1024.png">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+             background-image: url('FDN.JPG');
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        /* Styles for the List */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            max-width: 900px;
+            margin: 30px auto;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        li {
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        a {
+            display: block;
+            padding: 15px 20px;
+            color: #3176E0;
+            font-weight: bold; 
+            font-size: 18px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        a:hover {
+            background-color: #f4f6f8;
+            color: #000000;
+        }
+      
+      
+       
+
+    </style>
+
+
+</head>
+<body>
+    <h1>
+    <img src="https://cdn.shopify.com/s/files/1/0687/4942/6943/files/favicon.png?v=1713878396" > 
+    <img src="https://cdn.shopify.com/s/files/1/0687/4942/6943/files/favicon.png?v=1713878396" >
+</h1>
+   <style>
+        .link-container {
+           
+        }
+        button {
+            margin-left: 10px;
+            color:#3176E0;
+            background-color: #fff;
+            border:15px;
+        }
+        button:hover {
+            margin-left: 10px;
+            color:#fff;
+            background-color: #3176E0;
+            border:15px;
+        }
+        img {
+            display: none;
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+        img.visible {
+            display: block;
+        }
+
+    
+    </style>
+    <script>
+        function showImage(imageId) {
+            var img = document.getElementById(imageId);
+            img.style.display = img.style.display === 'none' || img.style.display === '' ? 'block' : 'none';
+        }
+    </script>
+
+
+   <ul style="
+    padding: 52px;
+">
+
+   <!-- <li>
+        <img style="display:block !important" src="C:/Users/IVORRA/Desktop/3DIDS/buenos/IMAGENES-PROYECT/1cv.JPG" alt="Currículum Vitae">
+        <img id="secondImage" class="hidden" src="C:/Users/IVORRA/Desktop/3DIDS/buenos/IMAGENES-PROYECT/2cv.JPG" alt="Currículum Vitae">
+        <button id="toggleButton">Ver más</button>
+    </li> -->
+
+<style>
+.hidden {
+            display: none;
+        }
+
+
+
+.vs {
+            display:block !important;
+        }
+</style>
+    <script>
+        document.getElementById('toggleButton').addEventListener('click', function() {
+            var secondImage = document.getElementById('secondImage');
+            if (secondImage.classList.contains('hidden')) {
+                secondImage.classList.remove('hidden');
+                secondImage.classList.add('vs');
+                this.textContent = "Ver menos";
+            } else {
+                secondImage.classList.add('hidden');
+                secondImage.classList.remove('vs');
+                this.textContent = "Ver más";
+            }
+        });
+    </script>
+
+ <style>
+        .header h1 {
+            color: #007BFF;
+        }
+        .section-title {
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 5px;
+            cursor: pointer;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .section ul li {
+            margin-bottom: 10px;
+        }
+        .languages-skills {
+            display: flex;
+            justify-content: space-between;
+        }
+        .languages-skills div {
+            width: 48%;
+        }
+        .languages-skills ul li {
+            background-color: #f4f4f4;
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+        .content {
+            display: none;
+        }
+    </style>
+     <div STYLE="MARGIN-LEFT: 12PX;" class="container">
+        <header class="header">
+          <h1>Developer:<br> <name style="color:black">Sergio Ivorra</name></h1>
+          <h1 class="align-left"><a href="tel:606192518">Phone: +35 606192518</a></h1>
+         
+          <h1 class="align-left" ><a href="#">informaticaivorra@gmail.com</a></h1>
+          
+          <style>
+            .align-left {
+                  text-align: left;
+                  margin-left: 0;
+              }
+            
+          </style>
+          <br><br>
+          <style>
+             p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+          </style>
+            <p><strong></strong></p>
+          
+          	
+       </header>
+       
+       <div class="section">
+            <h2 style="color: #3176E0;" class="section-title">Presentation</h2>
+            <div class="content">
+               <p>Trabajo extensamente en plataformas como Shopify y WordPress, optimizando tiendas en línea para mejorar las tasas de conversión y la experiencia del cliente. Mi dominio de tecnologías de desarrollo me permite personalizar y asegurar la funcionalidad de cada proyecto. Con capacidad de aprender e integrar nuevas estructuras y lenguajes según sea necesario.</p>
+               <p>Gestiono repositorios en GitHub, asegurando un control de versiones eficiente y facilitando una colaboración efectiva en equipo. Utilizando Visual Studio, escribo, depuro y optimizo código para crear productos y servicios web.</p>
+           
+            </div>
+        </div>
+       
+        <div class="section">
+            <h2 style="color: #3176E0;" class="section-title">Experience</h2>
+            <div class="content">
+                <ul>
+                    <li><strong>Dependiente de tienda</strong><br>PCBOX, Alicante, España<br>2022 - 2023</li>
+                    <li><strong>Developer</strong><br>3DIDS, Alicante, España<br>2024 - 2024</li>
+                </ul>
+            </div>
+        </div>
+        <div class="section">
+            <h2 style="color: #3176E0;" class="section-title">Education</h2>
+            <div class="content">
+                <ul>
+                    <li><strong>Web Application Development (DAW)</strong><br>IGFORMACION, Alicante, España<br>2022 - 2024</li>
+                    <li><strong>Microcomputer Systems and Networks (SMR)</strong><br>Academia COTS, Alicante, España<br>2022 - 2024</li>
+                    <li><strong>Digital Risks</strong><br>Virtaula, Zaragoza</li>
+                    <li><strong>Digital Competencies</strong><br>Virtaula, Zaragoza</li>
+                    <li><strong>Digital Transformation in Organizations</strong><br>Virtaula, Zaragoza</li>
+                    <li><strong>Autocad 2D y 3D 2024</strong><br>Labora, Alicante, España</li>
+                </ul>
+            </div>
+        </div>
+       
+            
+          
+          
+          <div>
+                <h2 style="color: #3176E0;" class="section-title">Languages</h2>
+                <div class="content">
+                    <ul>
+                        <li>Inglés - Medio</li>
+                       
+                        <li>Castellano - Nativo</li>
+                        <li>Valenciano - Nativo</li>
+                    </ul>
+                </div>
+            </div>
+          
+          
+          
+            <div>
+                <h2 style="color: #3176E0;" class="section-title">Skills</h2>
+                <div class="content">
+                    <div style="display: flex;">
+                      
+                      <style>
+                        
+                          ul.ewfw li {
+                            width: 100%;
+                            background: #f0f0f0;
+                            margin: 5px 0;
+                            padding: 10px;
+                            box-sizing: border-box;
+                            
+                        }
+                        
+                      </style>
+                        <ul style="margin: 0px;" class="ewfw" >
+                            <li>Shopify (Liquid)</li>
+                            <li>PHP</li>
+                            <li>Figma</li>
+                            <li>JavaScript (JS)</li>
+                            <li>JSON</li>
+                            <li>HTML/CSS</li>
+                            <li>SQL</li>
+                            <li>Python</li>
+                            <li>Ruby</li>
+                            <li>React</li>
+                      
+                            <li>MySQL</li>
+                            <li>CRUD</li>
+                            <li>Node.js</li>
+                            <li>MongoDB</li>
+                            <li>API</li>
+                            <li>AJAX</li>
+                            <li>Control de versiones (GitHub)</li>
+                            <li>Google Analytics</li>
+                        
+                            <li>App Shopify</li>
+                            <li>Diseño adaptable (responsive)</li>
+                            <li>Desarrollo web front-end</li>
+                            <li>Desarrollo web back-end</li>
+                        </ul>
+                    </div>
+                 </div>
+            </div>
+          <br><br>
+          
+       
+       
+       
+       
+       
+    </div>
+    <script>
+        document.querySelectorAll('.section-title').forEach(title => {
+            title.addEventListener('click', () => {
+                const content = title.nextElementSibling;
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                } else {
+                    content.style.display = 'block';
+                }
+            });
+        });
+    </script>
+
+
+
+
+        <li class="link-container">
+            <a href="https://www.izas-outdoor.com/" target="_blank">Izas</a>
+            
+        </li>
+        <button onclick="showImage('image1')">Evidencia</button>
+            <img id="image1" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/1.JPG" alt="Izas" style="display:none;">
+        
+        <li class="link-container">
+            <a href="https://naturaselection.com/" target="_blank">Natura</a>
+            <button onclick="showImage('image2')">Evidencia</button>
+            <img id="image2" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/2.JPG" alt="Natura" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://www.blenom.com/" target="_blank">Blenom</a>
+            <button onclick="showImage('image3')">Evidencia</button>
+            <img id="image3" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/3.JPG" alt="Blenom" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://bioksan.com/" target="_blank">Bioksan</a>
+            <button onclick="showImage('image4')">Evidencia</button>
+            <img id="image4" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/24.JPG" alt="Bioksan" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://www.ulanka.com/" target="_blank">Ulanka</a>
+            <button onclick="showImage('image5')">Evidencia</button>
+            <img id="image5" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/4.JPG" alt="Ulanka" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://www.3dids.com/" target="_blank">3DIDS</a>
+            <button onclick="showImage('image6')">Evidencia</button>
+            <img id="image6" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/5.JPG" alt="3DIDS" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://pedrogarcia.com/" target="_blank">Pedro Garcia</a>
+            <button onclick="showImage('image7')">Evidencia</button>
+            <img id="image7" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/6.JPG" alt="Pedro Garcia" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://www.maletasgreenwich.com/" target="_blank">Greenwich</a>
+            <button onclick="showImage('image8')">Evidencia</button>
+            <img id="image8" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/7.JPG" alt="Greenwich" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://qubbos.es/" target="_blank">Qubbos</a>
+            <button onclick="showImage('image9')">Evidencia</button>
+            <img id="image9" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/8.JPG" alt="Qubbos" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://piensosloboazul.com/" target="_blank">Lobo Azul</a>
+            <button onclick="showImage('image10')">Evidencia</button>
+            <img id="image10" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/9.JPG" alt="Lobo Azul" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://padelproshop.com/" target="_blank">Padel Pro Shop</a>
+            <button onclick="showImage('image11')">Evidencia</button>
+            <img id="image11" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/10.JPG" alt="Padel Pro Shop" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://berghaus.es/" target="_blank">Berghaus</a>
+            <button onclick="showImage('image12')">Evidencia</button>
+            <img id="image12" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/11.JPG" alt="Berghaus" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://callaghan.es/" target="_blank">Callaghan</a>
+            <button onclick="showImage('image13')">Evidencia</button>
+            <img id="image13" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/12.JPG" alt="Callaghan" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://santamarinacosmetics.com/" target="_blank">Santa Maria Cosmetics</a>
+            <button onclick="showImage('image14')">Evidencia</button>
+            <img id="image14" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/13.JPG" alt="Santa Maria Cosmetics" style="display:none;">
+        </li>
+        
+     <!--
+        <li class="link-container">
+            <a href="https://saintmichelart.es/" target="_blank">Saintmichelart ((testing store - no real))</a>
+            
+          
+        </li> -->
+        
+        <li class="link-container">
+            <a href="https://mueblesiborra.com/" target="_blank">Muebles Iborra</a>
+            <button onclick="showImage('image16')">Evidencia</button>
+            <img id="image16" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/22.JPG" alt="Muebles Iborra" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://addahome.com/" target="_blank">Adda Home</a>
+            <button onclick="showImage('image17')">Evidencia</button>
+            <img id="image17" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/14.JPG" alt="Adda Home" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://www.disfracesjarana.com/" target="_blank">Jarana</a>
+            <button onclick="showImage('image18')">Evidencia</button>
+            <img id="image18" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/15.JPG" alt="Jarana" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://www.salimerprofesionales.com/" target="_blank">Slamer</a>
+            <button onclick="showImage('image19')">Evidencia</button>
+            <img id="image19" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/16.JPG" alt="Slamer" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://engel.es/" target="_blank">Engel</a>
+            <button onclick="showImage('image20')">Evidencia</button>
+            <img id="image20" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/17.JPG" alt="Engel" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://bomboneriapons.com/" target="_blank">Bomboneria Pons</a>
+            
+            <button onclick="showImage('image21')">Evidencia</button>
+            <img id="image21" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/18.JPG" alt="Bomboneria Pons" style="display:none;">
+        
+     </li>
+     
+     	 <li class="link-container">
+            <a href="https://www.colchonesbluenight.com/product-category/colchones/" target="_blank">Colchones Bluenight</a>
+             <button onclick="showImage('image33')">Evidencia</button>
+            <img id="image33" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/33.JPG" alt="Bomboneria Pons" style="display:none;">
+        
+        </li>
+           
+          
+        
+        <li class="link-container">
+            <a href="https://aldanahome.com/" target="_blank">Aldana Home</a>
+            <button onclick="showImage('image22')">Evidencia</button>
+            <img id="image22" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/19.JPG" alt="Aldana Home" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://nuevavajilla.com/" target="_blank">Nueva Vajilla</a>
+            <button onclick="showImage('image23')">Evidencia</button>
+            <img id="image23" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/21.JPG" alt="Nueva Vajilla" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://www.palaciodecongresosdealicante.com/" target="_blank">Palacio de Congreso</a>
+            <button onclick="showImage('image24')">Evidencia</button>
+            <img id="image24" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/23.JPG" alt="Palacio de Congreso" style="display:none;">
+        </li>
+        
+        <li class="link-container">
+            <a href="https://delieco.com/" target="_blank">Delieco</a>
+            <button onclick="showImage('image25')">Evidencia</button>
+            <img id="image25" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/20.JPG" alt="Delieco" style="display:none;">
+        </li>
+     
+     
+      <li class="link-container">
+            <a href="https://saintmichelart.es/" target="_blank">Saint Michel Art</a>
+            <button onclick="showImage('image28')">Evidencia</button>
+            <img id="image28" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/234.JPG" alt="Saint Michel Art" style="display:none;">
+        </li>
+     
+     
+     	  <li class="link-container">
+            <a href="https://weareyouin.com/es-es/" target="_blank">Iotencnia You In</a>
+            <button onclick="showImage('image26')">Evidencia</button>
+            <img id="image26" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/60.JPG" alt="Iotencia Youin In" style="display:none;">
+        </li>
+     
+     
+     	  <li class="link-container">
+            <a href="https://www.peygran.com/" target="_blank">Peygran</a>
+            <button onclick="showImage('image27')">Evidencia</button>
+            <img id="image27" src="https://saintmichelart.es/paginas-input/imagenes-evidencia/56.JPG" alt="Iotencia Youin In" style="display:none;">
+        </li>
+
+
+
+
+        
+        
+
+
+
+
+
+
+    </ul>
+<div style="margin-top:100px;"></div>
+<div style="margin-top:400px;"></div>
+  
+</body>
+</html>
