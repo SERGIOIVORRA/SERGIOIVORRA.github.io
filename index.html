@@ -217,10 +217,26 @@
     color: red; 
     border-bottom: 2px solid red;
 }
+.green {
+            color: green;
+            border-bottom: 2px solid green;
+        }
 </style>
+<script>
+        function toggleCustomerColor() {
+            const element = document.querySelector('.section-title');
+            if (element.classList.contains('customerjs')) {
+                element.classList.remove('customerjs');
+                element.classList.add('green');
+            } else {
+                element.classList.remove('green');
+                element.classList.add('customerjs');
+            }
+        }
+</script>
 
  <div class="section">
-            <h2 style="" class="customerjs section-title">CUSTOMERS</h2>
+            <h2 style="" class="customerjs section-title" onclick="toggleCustomerColor()">CUSTOMERS</h2>
             <div class="content">
               <p>Como desarrollador especializado en Shopify, te ofrezco la creación de una tienda online totalmente personalizada, optimizada para maximizar tus ventas y mejorar la tasa de conversión. Me encargo de todo el proceso, desde la configuración inicial hasta la personalización avanzada del diseño, garantizando una plataforma fácil de gestionar y editar.
 
