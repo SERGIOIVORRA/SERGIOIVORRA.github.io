@@ -392,24 +392,15 @@
 
     <div id="img4" class="modal">
         <span class="close" onclick="closeModal('img4')">&times;</span>
-        
-        <!-- Contenedor del slider -->
-        <div class="slider-container">
-            <img class="slider active" src="https://sergioivorra.github.io/SHOPIFY1.jpeg" >
+            <img class="slider" src="https://sergioivorra.github.io/SHOPIFY1.jpeg" >
             <img class="slider" src="https://sergioivorra.github.io/SHOPIFY2.jpeg" alt="Digital Transformation 2">
             <img class="slider" src="https://sergioivorra.github.io/SHOPIFY3.jpeg" alt="Digital Transformation 3">
             <img class="slider" src="https://sergioivorra.github.io/SHOPIFY4.jpeg" alt="Digital Transformation 4">
-        </div>
-
-        <!-- Botones para navegar -->
-        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
-        <a class="next" onclick="changeSlide(1)">&#10095;</a>
     </div>
 
+    
+
     <script>
-     // Variables para el slider
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slider');
 
         // Función para abrir el modal
         function openModal(modalId) {
@@ -421,12 +412,7 @@
             document.getElementById(modalId).style.display = "none";
         }
 
-        // Función para cambiar de imagen en el slider
-        function changeSlide(direction) {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + direction + slides.length) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }
+       
     </script>
             </div>
         </div>
