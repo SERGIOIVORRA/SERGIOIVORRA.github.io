@@ -351,29 +351,83 @@
 
 
                 
-                <ul>
-                    <li><strong>Web Application Development (DAW)</strong><br>IGFORMACION, Alicante, España<br>2022 - 2024</li>
-                    <li><strong>Microcomputer Systems and Networks (SMR)</strong><br>Academia COTS, Alicante, España<br>2022 - 2024</li>
+               <ul>
+        <li><strong>Web Application Development (DAW)</strong><br>IGFORMACION, Alicante, España<br>2022 - 2024</li>
+        <li><strong>Microcomputer Systems and Networks (SMR)</strong><br>Academia COTS, Alicante, España<br>2022 - 2024</li>
 
-                    <li><strong><a href="Digitales.jpeg">Digital Risks</a></strong><br>Virtuox, Zaragoza</li>
-                    <li ><strong>Digital Competencies</strong><br>Virtuox, Zaragoza</li>
-                    <li><strong>Digital Transformation in Organizations</strong><br>Virtuox, Zaragoza</li>
+        <li onclick="openModal('img1')"><strong>Digital Risks</strong><br>Virtuox, Zaragoza</li>
+        <li onclick="openModal('img2')"><strong>Digital Competencies</strong><br>Virtuox, Zaragoza</li>
+        <li onclick="openModal('img3')"><strong>Digital Transformation in Organizations</strong><br>Virtuox, Zaragoza</li>
 
-                    
-                    <li><strong>Autocad 2D y 3D 2024</strong><br>Labora, Alicante, España</li>
-                    
-                    <li><strong>Shopify Development Fundamentals Assessment</strong><br><a href="https://academy.shopify.com/page/badges">Shopify Courses</a></li>
-                    <li><strong>Selling Shopify Fundamentals Assessment</strong></li>
-                    <li><strong>Solution Planning Fundamentals Assessment</strong></li>
-                    <li><strong>Marketing Fundamentals Assessment</strong></li>
-                    <li><strong>Headless at Shopify for Business Consultants Assessment</strong></li>
-                    <li><strong>Liquid Storefronts for Theme Developers Assessment</strong></li>
-                    <li><strong>Headless at Shopify for Developers Assessment</strong></li>
-                    <li><strong>Shopify POS Solution-Based Selling Assessment</strong></li>
-                    <li><strong>Shopify POS Launch and Operations Assessment</strong></li>
-                    <li><strong>Positioning International Selling with Shopify Assessment</strong></li>
-                    <li><strong>Selling and Positioning Shopify Marketing Products Assessment</strong></li>
-                </ul>
+        <li><strong>Autocad 2D y 3D 2024</strong><br>Labora, Alicante, España</li>
+
+        <li><strong>Shopify Development Fundamentals Assessment</strong></li>
+        <li><strong>Selling Shopify Fundamentals Assessment</strong></li>
+        <li><strong>Solution Planning Fundamentals Assessment</strong></li>
+        <li><strong>Marketing Fundamentals Assessment</strong></li>
+        <li><strong>Headless at Shopify for Business Consultants Assessment</strong></li>
+        <li><strong>Liquid Storefronts for Theme Developers Assessment</strong></li>
+        <li><strong>Headless at Shopify for Developers Assessment</strong></li>
+        <li><strong>Shopify POS Solution-Based Selling Assessment</strong></li>
+        <li><strong>Shopify POS Launch and Operations Assessment</strong></li>
+        <li><strong>Positioning International Selling with Shopify Assessment</strong></li>
+        <li><strong>Selling and Positioning Shopify Marketing Products Assessment</strong></li>
+    </ul>
+
+    <!-- Modals para cada imagen -->
+    <div id="img1" class="modal">
+        <span class="close" onclick="closeModal('img1')">&times;</span>
+        <img class="modal-content" src="https://sergioivorra.github.io/Digitales.jpeg" alt="Digital Risks">
+    </div>
+
+    <div id="img2" class="modal">
+        <span class="close" onclick="closeModal('img2')">&times;</span>
+        <img class="modal-content" src="https://sergioivorra.github.io/Digitales.jpeg" alt="Digital Competencies">
+    </div>
+
+    <div id="img3" class="modal">
+        <span class="close" onclick="closeModal('img3')">&times;</span>
+        <img class="modal-content" src="https://sergioivorra.github.io/Digitales.jpeg" alt="Digital Transformation">
+    </div>
+
+    <div id="img4" class="modal">
+        <span class="close" onclick="closeModal('img4')">&times;</span>
+        
+        <!-- Contenedor del slider -->
+        <div class="slider-container">
+            <img class="slider active" src="https://sergioivorra.github.io/SHOPIFY1.jpeg" >
+            <img class="slider" src="https://sergioivorra.github.io/SHOPIFY2.jpeg" alt="Digital Transformation 2">
+            <img class="slider" src="https://sergioivorra.github.io/SHOPIFY3.jpeg" alt="Digital Transformation 3">
+            <img class="slider" src="https://sergioivorra.github.io/SHOPIFY4.jpeg" alt="Digital Transformation 4">
+        </div>
+
+        <!-- Botones para navegar -->
+        <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+        <a class="next" onclick="changeSlide(1)">&#10095;</a>
+    </div>
+
+    <script>
+     // Variables para el slider
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slider');
+
+        // Función para abrir el modal
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = "block";
+        }
+
+        // Función para cerrar el modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
+        // Función para cambiar de imagen en el slider
+        function changeSlide(direction) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (currentSlide + direction + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+        }
+    </script>
             </div>
         </div>
        
