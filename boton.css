@@ -124,7 +124,7 @@
 
 @media (max-width: 768px) {
   .neu-button {
-    font-size: 6px; /* Tamaño de texto reducido */
+    font-size: 10px; /* Tamaño de texto reducido */
     padding: 5px 20px; /* Ajusta el padding para pantallas más pequeñas */
    
   }
