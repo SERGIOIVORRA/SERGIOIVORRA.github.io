@@ -1561,13 +1561,29 @@
 
 <div class="container3">
     <label class="switch">
-      <input class="togglesw" type="checkbox" checked="" onclick="toggleListItems33()">
+      <input id="toggleSwitch" class="togglesw" type="checkbox" checked="" disabled>
       <div class="indicator left"></div>
       <div class="indicator right"></div>
       <div class="button3"></div>
     </label>
-</div> 
+</div>
 
+<button onclick="requestPassword()">Habilitar</button>
+
+<script>
+  function requestPassword() {
+    const correctPassword = "gpgrivatee-32rf431";
+    const userPassword = prompt("Introduce la contraseña para habilitar el interruptor:");
+
+    if (userPassword === correctPassword) {
+      alert("Contraseña correcta. El interruptor está habilitado.");
+      document.getElementById("toggleSwitch").disabled = false;
+      document.getElementById("toggleSwitch").onclick = toggleListItems33;
+    } else {
+      alert("Contraseña incorrecta. Inténtalo de nuevo.");
+    }
+  }
+</script>
 
 <style>
 .link-containeraa{
