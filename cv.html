@@ -1118,7 +1118,113 @@
         }
           </style>
             <p><strong></strong></p>
-          
+
+
+
+<script>
+(() => {
+  // ======= CONFIGURACIÓN RÁPIDA =======
+  const NAME = "Sergio Ivorra";                  // Texto que se animará en la pestaña
+  const BASE_COLOR = "#111";                     // Fondo del favicon
+  const TEXT_COLOR = "#fff";                     // Texto del favicon
+  const FONT = "bold 38px Arial, sans-serif";    // Fuente del favicon
+  // =====================================
+
+  if (window.__titleFaviconAnim) return; // Evita instancias duplicadas
+  window.__titleFaviconAnim = true;
+
+  // 1) Animación del título con pausa al cambiar de pestaña y RRM
+  const dot = "·";
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const noiseFrames = Array.from({ length: 24 }, () =>
+    Array.from({ length: NAME.length }, () => (Math.random() < 0.6 ? dot : " ")).join("")
+  );
+
+  let i = 0, stage = 0, stopped = false;
+  const onVis = () => { stopped = document.hidden; };
+  document.addEventListener("visibilitychange", onVis, { passive:true });
+
+  function animateTitle() {
+    if (stopped) return setTimeout(animateTitle, 400);
+
+    if (stage === 0) {
+      document.title = noiseFrames[i % noiseFrames.length];
+      i++;
+      if (i > 36) { stage = 1; i = 0; return setTimeout(animateTitle, 300); }
+      return setTimeout(animateTitle, 120);
+    } else if (stage === 1) {
+      const out = NAME.split("").map((ch, idx) => (idx <= i ? ch : dot)).join("");
+      document.title = out;
+      i++;
+      if (i < NAME.length) return setTimeout(animateTitle, 80);
+      stage = 2; i = 0; return setTimeout(animateTitle, 1500);
+    } else {
+      document.title = i % 2 ? NAME : dot.repeat(NAME.length);
+      i++;
+      return setTimeout(animateTitle, 900);
+    }
+  }
+
+  if (!prefersReduced) {
+    animateTitle();
+  } else {
+    document.title = NAME; // Sin animación si el usuario prefiere reducir movimiento
+  }
+
+  // 2) Favicon animado: reutiliza <link rel="icon"> si existe
+  let link = document.querySelector('link[rel~="icon"]');
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "icon";
+    document.head.appendChild(link);
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 64; canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+
+  // Iniciales a partir de NAME (máximo 2 caracteres)
+  const initials = (NAME.match(/\b[\p{L}\p{N}]/gu) || [])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  let t = 0;
+  function drawFavicon() {
+    if (stopped || prefersReduced) {
+      // Favicon estático si la pestaña no está activa o RRM
+      ctx.clearRect(0, 0, 64, 64);
+      ctx.fillStyle = BASE_COLOR;
+      ctx.fillRect(0, 0, 64, 64);
+      ctx.fillStyle = TEXT_COLOR;
+      ctx.globalAlpha = 1;
+      ctx.font = FONT;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(initials, 32, 34);
+      link.href = canvas.toDataURL("image/png");
+      return requestAnimationFrame(drawFavicon);
+    }
+
+    ctx.clearRect(0, 0, 64, 64);
+    ctx.fillStyle = BASE_COLOR;
+    ctx.fillRect(0, 0, 64, 64);
+
+    ctx.fillStyle = TEXT_COLOR;
+    ctx.font = FONT;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.globalAlpha = 0.6 + 0.4 * Math.sin(t / 8);
+    ctx.fillText(initials, 32, 34);
+
+    link.href = canvas.toDataURL("image/png");
+    t++;
+    requestAnimationFrame(drawFavicon);
+  }
+  drawFavicon();
+})();
+</script>
+
           	
        </header>
 
