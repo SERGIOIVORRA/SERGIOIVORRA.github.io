@@ -1120,110 +1120,179 @@
             <p><strong></strong></p>
 
 
-
 <script>
 (() => {
-  // ======= CONFIGURACIÓN RÁPIDA =======
-  const NAME = "Sergio Ivorra";                  // Texto que se animará en la pestaña
-  const BASE_COLOR = "#111";                     // Fondo del favicon
-  const TEXT_COLOR = "#fff";                     // Texto del favicon
-  const FONT = "bold 38px Arial, sans-serif";    // Fuente del favicon
-  // =====================================
+  // ======================= CONFIG =======================
+  const NAME = "Sergio Ivorra";   // Texto base del título
+  const GRID = 8;                 // Tamaño del tablero del favicon (8x8)
+  const SPEED_MS = 110;           // Velocidad del snake del favicon
+  const BG = "#0a0a0a";           // Fondo favicon
+  const SNAKE = "#31D0FF";        // Color snake
+  const FOOD = "#FFC531";         // Color comida
+  const DOT = "·";                // Punto usado en el título
+  // ======================================================
 
-  if (window.__titleFaviconAnim) return; // Evita instancias duplicadas
-  window.__titleFaviconAnim = true;
+  if (window.__snakeFav) return;  // Evita múltiples inyecciones
+  window.__snakeFav = true;
 
-  // 1) Animación del título con pausa al cambiar de pestaña y RRM
-  const dot = "·";
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const noiseFrames = Array.from({ length: 24 }, () =>
-    Array.from({ length: NAME.length }, () => (Math.random() < 0.6 ? dot : " ")).join("")
-  );
+  const prefersReduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  let i = 0, stage = 0, stopped = false;
-  const onVis = () => { stopped = document.hidden; };
-  document.addEventListener("visibilitychange", onVis, { passive:true });
+  // ---------- 1) TÍTULO: serpiente que se come puntos ----------
+  (function titleSnake(){
+    if (prefersReduced) { document.title = NAME; return; }
 
-  function animateTitle() {
-    if (stopped) return setTimeout(animateTitle, 400);
+    // Construimos una tira de puntos + nombre al final, y un "head" 🐍 que avanza
+    const PAD = 10;
+    const track = DOT.repeat(18) + " " + NAME;  // recorrido largo y luego el nombre
+    let t = 0;
+    let eaten = 0;
 
-    if (stage === 0) {
-      document.title = noiseFrames[i % noiseFrames.length];
-      i++;
-      if (i > 36) { stage = 1; i = 0; return setTimeout(animateTitle, 300); }
-      return setTimeout(animateTitle, 120);
-    } else if (stage === 1) {
-      const out = NAME.split("").map((ch, idx) => (idx <= i ? ch : dot)).join("");
-      document.title = out;
-      i++;
-      if (i < NAME.length) return setTimeout(animateTitle, 80);
-      stage = 2; i = 0; return setTimeout(animateTitle, 1500);
-    } else {
-      document.title = i % 2 ? NAME : dot.repeat(NAME.length);
-      i++;
-      return setTimeout(animateTitle, 900);
+    function frame(){
+      if (document.hidden) { return setTimeout(frame, 500); }
+
+      // Posición de la cabeza sobre el tramo de puntos (antes del nombre)
+      const headPos = t % (18 + PAD);
+      const eatZone = Math.min(headPos, 18);
+
+      // Construimos el string: puntos comidos -> espacio, el resto puntos
+      const dots = Array.from({length:18})
+        .map((_,i) => i < eatZone ? " " : DOT)
+        .join("");
+
+      const headChar = "🐍"; // puedes usar ">" si prefieres ASCII
+      const titleLeft = dots.slice(0, Math.min(headPos, 17));
+      const titleRight = dots.slice(Math.min(headPos, 17));
+      const composed =
+        titleLeft +
+        (headPos < 18 ? headChar : " ") +
+        titleRight +
+        " " + NAME;
+
+      if (headPos > eaten && headPos <= 18) eaten = headPos;
+
+      document.title = composed + `  (x${Math.max(eaten,1)})`;
+      t++;
+      setTimeout(frame, 90);
     }
-  }
+    frame();
+  })();
 
-  if (!prefersReduced) {
-    animateTitle();
-  } else {
-    document.title = NAME; // Sin animación si el usuario prefiere reducir movimiento
-  }
+  // ---------- 2) FAVICON: juego Snake real en 8x8 ----------
+  const link = (() => {
+    let l = document.querySelector('link[rel~="icon"]') || document.createElement("link");
+    l.rel = "icon";
+    l.type = "image/png";
+    l.sizes = "64x64";
+    if (!l.parentNode) document.head.appendChild(l);
+    return l;
+  })();
 
-  // 2) Favicon animado: reutiliza <link rel="icon"> si existe
-  let link = document.querySelector('link[rel~="icon"]');
-  if (!link) {
-    link = document.createElement("link");
-    link.rel = "icon";
-    document.head.appendChild(link);
-  }
+  const cvs = document.createElement("canvas");
+  cvs.width = 64; cvs.height = 64;
+  const ctx = cvs.getContext("2d", { alpha: false });
 
-  const canvas = document.createElement("canvas");
-  canvas.width = 64; canvas.height = 64;
-  const ctx = canvas.getContext("2d");
+  // estado del snake en grid 8x8
+  const scale = cvs.width / GRID;
+  let snake = [{x:2,y:4},{x:1,y:4},{x:0,y:4}]; // cabeza es [0]
+  let dir = {x:1,y:0};
+  let food = spawnFood();
+  let last = 0;
 
-  // Iniciales a partir de NAME (máximo 2 caracteres)
-  const initials = (NAME.match(/\b[\p{L}\p{N}]/gu) || [])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  // A* simple “seguir comida” con prioridades (para que parezca inteligente)
+  function chooseDir() {
+    const head = snake[0];
+    const options = [
+      {x: 1,y: 0}, {x:-1,y: 0}, {x: 0,y: 1}, {x: 0,y:-1}
+    ];
 
-  let t = 0;
-  function drawFavicon() {
-    if (stopped || prefersReduced) {
-      // Favicon estático si la pestaña no está activa o RRM
-      ctx.clearRect(0, 0, 64, 64);
-      ctx.fillStyle = BASE_COLOR;
-      ctx.fillRect(0, 0, 64, 64);
-      ctx.fillStyle = TEXT_COLOR;
-      ctx.globalAlpha = 1;
-      ctx.font = FONT;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(initials, 32, 34);
-      link.href = canvas.toDataURL("image/png");
-      return requestAnimationFrame(drawFavicon);
+    // no permitimos girar 180º
+    const noBack = options.filter(o => !(o.x === -dir.x && o.y === -dir.y));
+
+    // ordena por distancia “Manhattan” al objetivo
+    noBack.sort((a,b) => {
+      const da = Math.abs((head.x+a.x)-food.x)+Math.abs((head.y+a.y)-food.y);
+      const db = Math.abs((head.x+b.x)-food.x)+Math.abs((head.y+b.y)-food.y);
+      return da - db;
+    });
+
+    // elige la primera que no choque con su cuerpo (si puede)
+    for (const o of noBack) {
+      const nx = wrap(head.x + o.x), ny = wrap(head.y + o.y);
+      if (!hits(nx, ny)) { dir = o; return; }
     }
-
-    ctx.clearRect(0, 0, 64, 64);
-    ctx.fillStyle = BASE_COLOR;
-    ctx.fillRect(0, 0, 64, 64);
-
-    ctx.fillStyle = TEXT_COLOR;
-    ctx.font = FONT;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.globalAlpha = 0.6 + 0.4 * Math.sin(t / 8);
-    ctx.fillText(initials, 32, 34);
-
-    link.href = canvas.toDataURL("image/png");
-    t++;
-    requestAnimationFrame(drawFavicon);
+    // si todas chocan, coge la primera (inevitable)
+    dir = noBack[0] || dir;
   }
-  drawFavicon();
+
+  function wrap(v){ return (v + GRID) % GRID; }
+  function hits(x,y){
+    return snake.some(seg => seg.x===x && seg.y===y);
+  }
+  function spawnFood(){
+    let x,y;
+    do {
+      x = Math.floor(Math.random()*GRID);
+      y = Math.floor(Math.random()*GRID);
+    } while (hits(x,y));
+    return {x,y};
+  }
+
+  function step(ts){
+    if (prefersReduced) { drawStatic(); requestAnimationFrame(step); return; }
+    if (document.hidden) { drawStatic(); return setTimeout(()=>step(performance.now()), 500); }
+
+    if (ts - last < SPEED_MS) { return requestAnimationFrame(step); }
+    last = ts;
+
+    chooseDir();
+    const head = snake[0];
+    const nx = wrap(head.x + dir.x), ny = wrap(head.y + dir.y);
+
+    const eating = (nx === food.x && ny === food.y);
+
+    // mover
+    snake.unshift({x:nx, y:ny});
+    if (!eating) { snake.pop(); }
+    else { food = spawnFood(); }
+
+    draw();
+    requestAnimationFrame(step);
+  }
+
+  function drawBG(){
+    ctx.fillStyle = BG;
+    ctx.fillRect(0,0,cvs.width,cvs.height);
+  }
+  function drawGridDot(x,y,color){
+    ctx.fillStyle = color;
+    ctx.fillRect(x*scale+1, y*scale+1, scale-2, scale-2);
+  }
+  function draw(){
+    drawBG();
+    // comida
+    drawGridDot(food.x, food.y, FOOD);
+    // snake
+    for (let i=snake.length-1;i>=0;i--){
+      const seg = snake[i];
+      drawGridDot(seg.x, seg.y, SNAKE);
+    }
+    link.href = cvs.toDataURL("image/png");
+  }
+  function drawStatic(){
+    // snake congelado con comida visible
+    draw();
+  }
+
+  // arranque
+  draw();
+  requestAnimationFrame(step);
+
+  // refuerzos para romper caches de favicon
+  setTimeout(draw, 250);
+  setTimeout(draw, 1000);
 })();
 </script>
+
 
           	
        </header>
