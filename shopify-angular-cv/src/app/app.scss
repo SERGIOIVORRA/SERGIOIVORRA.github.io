@@ -1,0 +1,92 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f7f7f7;
+  color: #111;
+  font-family: Arial, sans-serif;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e7e7e7;
+  position: sticky;
+  top: 0;
+}
+
+.brand {
+  color: #111;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+}
+
+.nav a {
+  color: #444;
+  text-decoration: none;
+}
+
+.nav .active {
+  color: #000;
+  font-weight: 700;
+}
+
+.page {
+  padding: 24px;
+}
+
+.cart-btn {
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.cart-drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 360px;
+  height: 100vh;
+  background: #fff;
+  border-left: 1px solid #e1e1e1;
+  padding: 16px;
+  z-index: 30;
+}
+
+.cart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-list {
+  margin: 16px 0;
+  display: grid;
+  gap: 12px;
+}
+
+.cart-item {
+  border: 1px solid #efefef;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.checkout {
+  display: inline-block;
+  margin-top: 16px;
+  background: #111;
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 14px;
+}
