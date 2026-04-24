@@ -20,7 +20,20 @@ type Product = {
   template: `
     <section class="hero">
       <h1>Storefront Shopify en Angular</h1>
-      <p>Explora productos, colecciones y una PDP mejorada conectada con la Storefront API.</p>
+      <p>
+        Experiencia ultra rapida tipo SPA: navegacion sin recargas, transiciones fluidas y UX premium
+        para ecommerce de marcas grandes.
+      </p>
+      <div class="hero-badges">
+        <span>Sin recargas completas</span>
+        <span>Arquitectura escalable por componentes</span>
+        <span>Preparado para equipos y features enterprise</span>
+      </div>
+      <p class="hero-detail">
+        Angular permite separar dominios (catalogo, carrito, checkout, cuenta), reutilizar logica y escalar
+        con testing, tipado estricto y mantenimiento profesional a largo plazo. Frente a un theme tradicional,
+        tienes mas control de producto, rendimiento y evolucion tecnica.
+      </p>
       <div class="hero-actions">
         <a class="cta" routerLink="/collections">Ir a colecciones</a>
         <a class="cta ghost" href="https://artcuadros.myshopify.com/account" target="_blank" rel="noreferrer">Entrar a mi cuenta</a>
@@ -48,6 +61,9 @@ type Product = {
   `,
   styles: [`
     .hero { background:#fff; border:1px solid #ececec; border-radius:12px; padding:20px; margin-bottom:24px; }
+    .hero-badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .hero-badges span { border:1px solid #ddd; border-radius:999px; padding:5px 10px; font-size:12px; font-weight:600; background:#fafafa; }
+    .hero-detail { margin-top:10px; color:#333; line-height:1.55; max-width:900px; }
     .hero-actions { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
     .cta { display:inline-block; background:#111; color:#fff; padding:10px 14px; text-decoration:none; border-radius:6px; }
     .cta.ghost { background:#fff; color:#111; border:1px solid #111; }

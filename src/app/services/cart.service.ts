@@ -38,4 +38,8 @@ export class CartService {
     this.items.set([...this.items(), item]);
     this.isDrawerOpen.set(true);
   }
+
+  removeItem(index: number): void {
+    this.items.update((currentItems) => currentItems.filter((_, currentIndex) => currentIndex !== index));
+  }
 }

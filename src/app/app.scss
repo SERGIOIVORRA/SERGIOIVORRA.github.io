@@ -102,6 +102,23 @@
   padding: 10px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.remove-item {
+  border: 1px solid #d7d7d7;
+  background: #fff;
+  border-radius: 999px;
+  width: 26px;
+  height: 26px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .checkout {

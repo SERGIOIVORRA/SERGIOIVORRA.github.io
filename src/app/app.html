@@ -29,14 +29,17 @@
       <p class="empty">Tu carrito esta vacio.</p>
     } @else {
       <div class="cart-list">
-        @for (item of cartService.items(); track item.merchandiseId) {
+        @for (item of cartService.items(); track $index; let itemIndex = $index) {
           <article class="cart-item">
             <div>
               <strong>{{ item.title }}</strong>
               <p>{{ item.variantTitle }}</p>
             </div>
-            <div class="price">
-              {{ item.price.amount | currency:item.price.currencyCode:'symbol':'1.2-2' }}
+            <div class="cart-item-actions">
+              <div class="price">
+                {{ item.price.amount | currency:item.price.currencyCode:'symbol':'1.2-2' }}
+              </div>
+              <button class="remove-item" (click)="cartService.removeItem(itemIndex)" aria-label="Eliminar producto">X</button>
             </div>
           </article>
         }
