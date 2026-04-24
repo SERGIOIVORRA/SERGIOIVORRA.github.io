@@ -10,7 +10,7 @@ import { CurrencyPipe } from '@angular/common';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = 'Shopify Angular Theme';
+  protected readonly title = 'Sergio Ivorra | Shopify';
 
   constructor(public cartService: CartService) {}
 }

@@ -7,6 +7,7 @@ import { ProjectStructurePageComponent } from './pages/project-structure-page.co
 export const routes: Routes = [
   { path: '', component: HomePageComponent },
   { path: 'collections', component: CollectionsPageComponent },
+  { path: 'collections/:handle', component: CollectionsPageComponent },
   { path: 'product/:handle', component: ProductPageComponent },
   { path: 'project-structure', component: ProjectStructurePageComponent },
   { path: '**', redirectTo: '' }

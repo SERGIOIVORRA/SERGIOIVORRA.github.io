@@ -1,10 +1,9 @@
 <header class="topbar">
   <a class="brand" routerLink="/">{{ title }}</a>
   <nav class="nav">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
     <a routerLink="/collections" routerLinkActive="active">Colecciones</a>
-    <a routerLink="/project-structure" routerLinkActive="active">Estructura</a>
-    <a href="https://sergioivorra.github.io/cv" target="_blank" rel="noreferrer">CV</a>
+    <a routerLink="/project-structure" routerLinkActive="active">Proyecto</a>
   </nav>
   <button class="cart-btn" (click)="cartService.toggleDrawer()">
     Carrito ({{ cartService.totalItems() }})

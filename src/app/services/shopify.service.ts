@@ -22,14 +22,69 @@ export class ShopifyService {
 
   getCollections() {
     return this.request<{
-      collections: { nodes: Array<{ id: string; handle: string; title: string; description: string }> };
+      collections: {
+        nodes: Array<{
+          id: string;
+          handle: string;
+          title: string;
+          description: string;
+          image: { url: string; altText: string | null } | null;
+        }>;
+      };
     }>(`
       query GetCollections {
         collections(first: 12) {
-          nodes { id handle title description }
+          nodes {
+            id
+            handle
+            title
+            description
+            image { url altText }
+          }
         }
       }
     `);
+  }
+
+  getCollectionByHandle(handle: string) {
+    return this.request<{
+      collection: {
+        id: string;
+        handle: string;
+        title: string;
+        description: string;
+        products: {
+          nodes: Array<{
+            id: string;
+            handle: string;
+            title: string;
+            featuredImage: { url: string; altText: string | null } | null;
+            priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+          }>;
+        };
+      } | null;
+    }>(
+      `
+      query GetCollectionByHandle($handle: String!) {
+        collection(handle: $handle) {
+          id
+          handle
+          title
+          description
+          products(first: 40) {
+            nodes {
+              id
+              handle
+              title
+              featuredImage { url altText }
+              priceRange { minVariantPrice { amount currencyCode } }
+            }
+          }
+        }
+      }
+      `,
+      { handle },
+    );
   }
 
   getProducts() {

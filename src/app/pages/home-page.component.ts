@@ -19,8 +19,9 @@ type Product = {
   imports: [RouterLink, CurrencyPipe],
   template: `
     <section class="hero">
-      <h1>Home Page</h1>
-      <p>Base de theme en Angular conectada con Shopify Storefront API.</p>
+      <h1>Storefront Shopify en Angular</h1>
+      <p>Explora productos, colecciones y una PDP mejorada conectada con la Storefront API.</p>
+      <a class="cta" routerLink="/collections">Ir a colecciones</a>
     </section>
 
     <section class="products">
@@ -43,8 +44,10 @@ type Product = {
     </section>
   `,
   styles: [`
+    .hero { background:#fff; border:1px solid #ececec; border-radius:12px; padding:20px; margin-bottom:24px; }
+    .cta { display:inline-block; margin-top:12px; background:#111; color:#fff; padding:10px 14px; text-decoration:none; border-radius:6px; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-    .card { background:#fff; padding:12px; border:1px solid #ececec; }
+    .card { background:#fff; padding:12px; border:1px solid #ececec; border-radius:10px; }
     img { width:100%; height:180px; object-fit:cover; margin-bottom:8px; }
     .actions { display:flex; gap:8px; }
   `]
