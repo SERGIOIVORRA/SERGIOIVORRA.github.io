@@ -39,19 +39,19 @@ import { Component } from '@angular/core';
       <section class="grid">
         <article>
           <h3>+ Lady Gaga (Shopify Hydrogen)</h3>
-          <p>Case study publicado con +128% add-to-cart y +55% AOV tras el rebuild del sitio oficial.</p>
+          <p>Caso headless oficial: +128% add-to-cart y +55% AOV tras el rebuild con Shopify Hydrogen.</p>
         </article>
         <article>
-          <h3>+ Haus Labs (Lady Gaga brand)</h3>
-          <p>Post-purchase quiz flow en Shopify con 16% de compra en full-size y hasta 75% completion.</p>
+          <h3>+ Mattel (Shopify + Headless CMS)</h3>
+          <p>Primera venta agotada en 13 minutos sin caida; evolucion a flash sales diarias con stack composable.</p>
         </article>
         <article>
-          <h3>+ Gymshark (Shopify Plus)</h3>
-          <p>Replatform desde Adobe a Shopify; marca global con £41M ventas 2017 y escalado en 131 paises.</p>
+          <h3>+ Mattel CX (Headless)</h3>
+          <p>Mejora de conversion de 4.9x en web y 9.5x en mobile con arquitectura modular y reusable.</p>
         </article>
         <article>
-          <h3>+ Mastermind Toys (Shopify)</h3>
-          <p>Case Shopify reporta +286% conversion y +288% clientes atendidos via chat.</p>
+          <h3>+ Haus Labs (Composable stack)</h3>
+          <p>Lanzamiento global en 100 paises desde dia uno y flujo digital que mejora conversion del trial a full-size.</p>
         </article>
       </section>
 
@@ -61,9 +61,10 @@ import { Component } from '@angular/core';
           <li><a href="https://report.adidas-group.com/2023/en/group-management-report-financial-review/business-performance/income-statement.html" target="_blank" rel="noreferrer">adidas Annual Report 2023 - Income Statement</a></li>
           <li><a href="https://report.adidas-group.com/2023/en/group-management-report-financial-review/business-performance-by-segment/north-america.html" target="_blank" rel="noreferrer">adidas Annual Report 2023 - North America</a></li>
           <li><a href="https://commerce-ui.com/work/official-lady-gaga-shopify-hydrogen-website" target="_blank" rel="noreferrer">Official Lady Gaga Shopify Hydrogen case</a></li>
-          <li><a href="http://customers.convertflow.com/stories/haus-labs" target="_blank" rel="noreferrer">Haus Labs Shopify conversion case</a></li>
-          <li><a href="https://www.shopify.com/case-studies/gymshark" target="_blank" rel="noreferrer">Gymshark - Shopify case study</a></li>
-          <li><a href="https://www.shopify.com/au/case-studies/mastermind-toys" target="_blank" rel="noreferrer">Mastermind Toys - Shopify case study</a></li>
+          <li><a href="https://www.contentstack.com/resources/case-study/mattel-augments-shopifys-scalable-e-commerce-with-contentstacks-enterprise-ready-cms-capabilities-for-a-dynamic-cross-brand-experience" target="_blank" rel="noreferrer">Mattel headless + Shopify case</a></li>
+          <li><a href="https://contentstack.com/resources/case-study/mattel-reimagines-customer-experience-to-maximize-engagement-and-drive-higher-conversions" target="_blank" rel="noreferrer">Mattel conversion uplift (headless)</a></li>
+          <li><a href="https://www.flow.io/blog/how-lady-gagas-haus-labs-launched-around-the-world-in-one-day-and-you-can-too" target="_blank" rel="noreferrer">Haus Labs global launch (composable commerce)</a></li>
+          <li><a href="http://customers.convertflow.com/stories/haus-labs" target="_blank" rel="noreferrer">Haus Labs conversion flow case</a></li>
         </ul>
       </section>
 
