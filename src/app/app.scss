@@ -62,7 +62,7 @@
 }
 
 .crystal-layer {
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 999;
@@ -70,7 +70,7 @@
 }
 
 .crystal {
-  position: fixed;
+  position: absolute;
   border: 1px solid rgba(255, 255, 255, 0.75);
   background:
     radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.15) 55%, rgba(120, 180, 255, 0.08) 100%);

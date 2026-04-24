@@ -92,8 +92,8 @@ export class App {
     this.lastCrystalAt = now;
     const crystal = {
       id: ++this.crystalId,
-      x: event.clientX + (Math.random() * 14 - 7),
-      y: event.clientY + (Math.random() * 14 - 7),
+      x: event.pageX + (Math.random() * 14 - 7),
+      y: event.pageY + (Math.random() * 14 - 7),
       size: 6 + Math.random() * 8,
       rotate: Math.random() * 180,
     };

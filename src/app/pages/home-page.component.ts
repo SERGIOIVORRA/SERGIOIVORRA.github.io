@@ -217,7 +217,7 @@ type CollectionProduct = {
       <p class="real-cases-title">{{ i18n.lang() === 'en' ? 'Real ecommerce references in this showcase:' : 'Referencias ecommerce reales en este showcase:' }} Lady Gaga, Mattel, Ruggable, SKIMS, Allbirds, Staples, Gymshark, Brooklinen, JB Hi-Fi, Inkbox.</p>
       <div class="grid">
         @for (product of featuredProducts(); track product.handle; let idx = $index) {
-          <article class="card" [class.card-sm]="cardSize(product.handle) === 'sm'" [class.card-lg]="cardSize(product.handle) === 'lg'" [routerLink]="['/product', product.handle]">
+          <article class="card" [routerLink]="['/product', product.handle]">
             @if (nuevoTag(product.metafields); as badge) {
               <span class="corner-badge">{{ badge }}</span>
             }
@@ -241,7 +241,6 @@ type CollectionProduct = {
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
               <a [routerLink]="['/product', product.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
-              <button class="tool-btn" (click)="resizeCard($event, product.handle)">□</button>
               <button class="tool-btn" (click)="moveCardRight($event, idx)">↔</button>
               <button [disabled]="!product.availableForSale || isInCart(product)" (click)="onAddToCart($event, product)">
                 @if (!product.availableForSale) {
@@ -328,8 +327,6 @@ type CollectionProduct = {
     .real-cases-title { color:#bcbcbc; font-size:12px; margin:2px 0 14px; line-height:1.5; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
     .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; display:flex; flex-direction:column; cursor:pointer; position:relative; overflow:hidden; }
-    .card.card-sm { transform:scale(.95); transform-origin:top center; }
-    .card.card-lg { transform:scale(1.03); transform-origin:top center; }
     .card:hover { transform: translateY(-3px); }
     .corner-badge {
       position:absolute;
@@ -388,7 +385,6 @@ export class HomePageComponent implements OnInit {
   readonly crystalFx = signal(100);
   readonly orbFx = signal(26);
   readonly blockEditMode = signal(false);
-  readonly cardSizeMap = signal<Record<string, 'sm' | 'md' | 'lg'>>({});
   readonly sectionOrderMap = signal<Record<string, number>>({
     hero: 0, controls: 1, price: 2, inspiration: 3, value: 4, products: 5,
   });
@@ -503,20 +499,6 @@ export class HomePageComponent implements OnInit {
 
   stopCardNavigation(event: Event): void {
     event.stopPropagation();
-  }
-
-  cardSize(handle: string): 'sm' | 'md' | 'lg' {
-    return this.cardSizeMap()[handle] ?? 'md';
-  }
-
-  resizeCard(event: Event, handle: string): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.cardSizeMap.update((current) => {
-      const currentSize = current[handle] ?? 'md';
-      const nextSize = currentSize === 'md' ? 'lg' : currentSize === 'lg' ? 'sm' : 'md';
-      return { ...current, [handle]: nextSize };
-    });
   }
 
   moveCardRight(event: Event, index: number): void {
