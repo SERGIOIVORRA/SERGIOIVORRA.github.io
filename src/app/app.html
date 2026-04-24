@@ -5,6 +5,10 @@
     <a routerLink="/collections" routerLinkActive="active">Colecciones</a>
     <a routerLink="/project-structure" routerLinkActive="active">Proyecto</a>
   </nav>
+  <div class="account-links">
+    <a class="account-link ghost" [href]="registerUrl" target="_blank" rel="noreferrer">Crear cuenta</a>
+    <a class="account-link" [href]="loginUrl" target="_blank" rel="noreferrer">Login</a>
+  </div>
   <button class="cart-btn" (click)="cartService.toggleDrawer()">
     Carrito ({{ cartService.totalItems() }})
   </button>

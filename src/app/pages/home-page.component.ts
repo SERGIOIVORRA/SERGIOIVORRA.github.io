@@ -21,7 +21,10 @@ type Product = {
     <section class="hero">
       <h1>Storefront Shopify en Angular</h1>
       <p>Explora productos, colecciones y una PDP mejorada conectada con la Storefront API.</p>
-      <a class="cta" routerLink="/collections">Ir a colecciones</a>
+      <div class="hero-actions">
+        <a class="cta" routerLink="/collections">Ir a colecciones</a>
+        <a class="cta ghost" href="https://artcuadros.myshopify.com/account" target="_blank" rel="noreferrer">Entrar a mi cuenta</a>
+      </div>
     </section>
 
     <section class="products">
@@ -45,7 +48,9 @@ type Product = {
   `,
   styles: [`
     .hero { background:#fff; border:1px solid #ececec; border-radius:12px; padding:20px; margin-bottom:24px; }
-    .cta { display:inline-block; margin-top:12px; background:#111; color:#fff; padding:10px 14px; text-decoration:none; border-radius:6px; }
+    .hero-actions { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .cta { display:inline-block; background:#111; color:#fff; padding:10px 14px; text-decoration:none; border-radius:6px; }
+    .cta.ghost { background:#fff; color:#111; border:1px solid #111; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
     .card { background:#fff; padding:12px; border:1px solid #ececec; border-radius:10px; }
     img { width:100%; height:180px; object-fit:cover; margin-bottom:8px; }

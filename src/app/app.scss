@@ -43,6 +43,28 @@
   padding: 24px;
 }
 
+.account-links {
+  display: flex;
+  gap: 8px;
+}
+
+.account-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #111;
+  background: #111;
+  color: #fff;
+  font-weight: 600;
+}
+
+.account-link.ghost {
+  background: #fff;
+  color: #111;
+}
+
 .cart-btn {
   border: 1px solid #111;
   background: #111;
@@ -89,4 +111,10 @@
   color: #fff;
   text-decoration: none;
   padding: 10px 14px;
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    flex-wrap: wrap;
+  }
 }
