@@ -1,0 +1,46 @@
+<header class="topbar">
+  <a class="brand" routerLink="/">{{ title }}</a>
+  <nav class="nav">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/collections" routerLinkActive="active">Colecciones</a>
+    <a routerLink="/project-structure" routerLinkActive="active">Estructura</a>
+    <a href="https://sergioivorra.github.io/cv" target="_blank" rel="noreferrer">CV</a>
+  </nav>
+  <button class="cart-btn" (click)="cartService.toggleDrawer()">
+    Carrito ({{ cartService.totalItems() }})
+  </button>
+</header>
+
+<main class="page">
+  <router-outlet />
+</main>
+
+@if (cartService.isDrawerOpen()) {
+  <aside class="cart-drawer">
+    <div class="cart-head">
+      <h3>Tu carrito</h3>
+      <button (click)="cartService.toggleDrawer()">X</button>
+    </div>
+
+    @if (cartService.items().length === 0) {
+      <p class="empty">Tu carrito esta vacio.</p>
+    } @else {
+      <div class="cart-list">
+        @for (item of cartService.items(); track item.merchandiseId) {
+          <article class="cart-item">
+            <div>
+              <strong>{{ item.title }}</strong>
+              <p>{{ item.variantTitle }}</p>
+            </div>
+            <div class="price">
+              {{ item.price.amount | currency:item.price.currencyCode:'symbol':'1.2-2' }}
+            </div>
+          </article>
+        }
+      </div>
+      <a class="checkout" [href]="cartService.checkoutUrl()" target="_blank" rel="noreferrer">
+        Ir al checkout
+      </a>
+    }
+  </aside>
+}

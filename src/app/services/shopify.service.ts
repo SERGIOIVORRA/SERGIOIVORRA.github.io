@@ -1,0 +1,116 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
+
+@Injectable({ providedIn: 'root' })
+export class ShopifyService {
+  private readonly apiUrl = `https://${environment.shopifyStoreDomain}/api/2025-01/graphql.json`;
+
+  constructor(private http: HttpClient) {}
+
+  private async request<T>(query: string, variables: Record<string, unknown> = {}): Promise<T> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': environment.shopifyStorefrontToken,
+    });
+
+    const body = { query, variables };
+    const response = await firstValueFrom(this.http.post<{ data: T }>(this.apiUrl, body, { headers }));
+    return response.data;
+  }
+
+  getCollections() {
+    return this.request<{
+      collections: { nodes: Array<{ id: string; handle: string; title: string; description: string }> };
+    }>(`
+      query GetCollections {
+        collections(first: 12) {
+          nodes { id handle title description }
+        }
+      }
+    `);
+  }
+
+  getProducts() {
+    return this.request<{
+      products: {
+        nodes: Array<{
+          id: string;
+          handle: string;
+          title: string;
+          description: string;
+          featuredImage: { url: string; altText: string | null } | null;
+          priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+          variants: { nodes: Array<{ id: string; title: string }> };
+        }>;
+      };
+    }>(`
+      query GetProducts {
+        products(first: 16) {
+          nodes {
+            id handle title description
+            featuredImage { url altText }
+            priceRange { minVariantPrice { amount currencyCode } }
+            variants(first: 1) { nodes { id title } }
+          }
+        }
+      }
+    `);
+  }
+
+  getProductByHandle(handle: string) {
+    return this.request<{
+      product: {
+        id: string;
+        title: string;
+        description: string;
+        featuredImage: { url: string; altText: string | null } | null;
+        priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+        variants: { nodes: Array<{ id: string; title: string }> };
+      } | null;
+    }>(
+      `
+      query GetProductByHandle($handle: String!) {
+        product(handle: $handle) {
+          id title description
+          featuredImage { url altText }
+          priceRange { minVariantPrice { amount currencyCode } }
+          variants(first: 10) { nodes { id title } }
+        }
+      }
+    `,
+      { handle },
+    );
+  }
+
+  createCart(merchandiseId: string) {
+    return this.request<{
+      cartCreate: { cart: { id: string; checkoutUrl: string } };
+    }>(
+      `
+      mutation CreateCart($merchandiseId: ID!) {
+        cartCreate(input: { lines: [{ merchandiseId: $merchandiseId, quantity: 1 }] }) {
+          cart { id checkoutUrl }
+        }
+      }
+    `,
+      { merchandiseId },
+    );
+  }
+
+  addCartLine(cartId: string, merchandiseId: string) {
+    return this.request<{
+      cartLinesAdd: { cart: { checkoutUrl: string } };
+    }>(
+      `
+      mutation AddLine($cartId: ID!, $merchandiseId: ID!) {
+        cartLinesAdd(cartId: $cartId, lines: [{ merchandiseId: $merchandiseId, quantity: 1 }]) {
+          cart { checkoutUrl }
+        }
+      }
+    `,
+      { cartId, merchandiseId },
+    );
+  }
+}
