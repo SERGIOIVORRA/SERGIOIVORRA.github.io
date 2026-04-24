@@ -79,6 +79,9 @@ type CollectionProduct = {
           <div class="grid">
             @for (product of filteredProducts(); track product.id) {
               <article class="card" [routerLink]="['/product', product.handle]">
+                @if (nuevoTag(product.metafields); as badge) {
+                  <span class="corner-badge">{{ badge }}</span>
+                }
                 @if (product.featuredImage) {
                   <img [src]="product.featuredImage.url" [alt]="product.featuredImage.altText || product.title" />
                 }
@@ -122,8 +125,23 @@ type CollectionProduct = {
     .products { border:1px solid #2f2f2f; background:#111; padding:14px; }
     .result-count { color:#a7a7a7; margin-top:0; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
-    .card { border:1px solid #2f2f2f; background:#151515; padding:10px; display:flex; flex-direction:column; cursor:pointer; }
+    .card { border:1px solid #2f2f2f; background:#151515; padding:10px; display:flex; flex-direction:column; cursor:pointer; position:relative; overflow:hidden; }
     .card img { width:100%; height:180px; object-fit:cover; margin-bottom:8px; }
+    .corner-badge {
+      position:absolute;
+      top:8px;
+      right:8px;
+      writing-mode:vertical-rl;
+      text-orientation:mixed;
+      border:1px solid #3a3a3a;
+      background:#151515;
+      color:#f3f3f3;
+      font-size:9px;
+      letter-spacing:.8px;
+      padding:6px 4px;
+      text-transform:uppercase;
+      z-index:2;
+    }
     .tag-list { display:flex; flex-wrap:wrap; gap:6px; min-height:24px; margin-bottom:6px; }
     .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
     .card h3 { min-height:52px; margin:6px 0; }
@@ -215,6 +233,15 @@ export class CollectionDetailPageComponent implements OnInit {
     return metafields
       .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
       .map((field) => ({ label: `${field.namespace}.${field.key}`, value: field.value }));
+  }
+
+  nuevoTag(metafields: Array<{ namespace: string; key: string; value: string } | null>): string | null {
+    const field = metafields.find((item) =>
+      item?.namespace === 'custom'
+      && item?.key === 'nuevo_sergio'
+      && Boolean(item.value?.trim()),
+    );
+    return field?.value?.trim() ?? null;
   }
 
   stopCardNavigation(event: Event): void {

@@ -89,6 +89,26 @@ import { I18nService } from '../services/i18n.service';
           }
         </div>
       </section>
+
+      <section class="compare">
+        <h2>* {{ i18n.lang() === 'en' ? 'Angular vs Hydrogen - Technical comparison' : 'Angular vs Hydrogen - comparativa tecnica' }}</h2>
+        <p>{{ i18n.lang() === 'en' ? 'Hydrogen is strong, but this shows where Angular can still win in enterprise workflows.' : 'Hydrogen es potente, pero aqui se ve donde Angular aun puede ganar en flujos enterprise.' }}</p>
+        <div class="chart">
+          @for (row of compareHydrogenRows; track row.metricEs) {
+            <article class="chart-row">
+              <h3>{{ i18n.lang() === 'en' ? row.metricEn : row.metricEs }}</h3>
+              <div class="bars">
+                <div class="bar-label">Angular</div>
+                <div class="bar-wrap"><span class="bar angular" [style.width.%]="row.angular">{{ row.angular }}/100</span></div>
+              </div>
+              <div class="bars">
+                <div class="bar-label">Hydrogen</div>
+                <div class="bar-wrap"><span class="bar theme" [style.width.%]="row.hydrogen">{{ row.hydrogen }}/100</span></div>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
     </section>
   `,
   styles: [`
@@ -157,5 +177,16 @@ export class AngularProPageComponent {
     { metricEs: 'Capacidad de UX custom', metricEn: 'Custom UX capability', angular: 97, theme: 67 },
     { metricEs: 'Testing y CI/CD enterprise', metricEn: 'Enterprise testing and CI/CD', angular: 93, theme: 57 },
     { metricEs: 'Flexibilidad en datos y metacampos', metricEn: 'Data and metafield flexibility', angular: 92, theme: 69 },
+  ];
+
+  readonly compareHydrogenRows = [
+    { metricEs: 'Rendimiento en navegacion SPA', metricEn: 'SPA navigation performance', angular: 94, hydrogen: 91 },
+    { metricEs: 'Estructura para equipos Angular enterprise', metricEn: 'Structure for Angular enterprise teams', angular: 96, hydrogen: 82 },
+    { metricEs: 'Ecosistema de tooling corporativo', metricEn: 'Enterprise tooling ecosystem', angular: 95, hydrogen: 84 },
+    { metricEs: 'Control avanzado de estado UI', metricEn: 'Advanced UI state control', angular: 92, hydrogen: 86 },
+    { metricEs: 'Curva de escalado en proyectos largos', metricEn: 'Scaling curve on long-term projects', angular: 93, hydrogen: 85 },
+    { metricEs: 'Integracion con backends complejos', metricEn: 'Integration with complex backends', angular: 94, hydrogen: 88 },
+    { metricEs: 'Productividad en componentes grandes', metricEn: 'Productivity on large component systems', angular: 93, hydrogen: 87 },
+    { metricEs: 'Flexibilidad multi-dominio fuera de Shopify', metricEn: 'Multi-domain flexibility beyond Shopify', angular: 95, hydrogen: 83 },
   ];
 }

@@ -17,6 +17,19 @@ type Product = {
   variants: { nodes: Array<{ id: string; title: string }> };
 };
 
+type CollectionProduct = {
+  id: string;
+  handle: string;
+  title: string;
+  tags: string[];
+  availableForSale: boolean;
+  productType: string;
+  vendor: string;
+  metafields: Array<{ namespace: string; key: string; value: string } | null>;
+  featuredImage: { url: string; altText: string | null } | null;
+  priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+};
+
 @Component({
   standalone: true,
   selector: 'app-home-page',
@@ -60,11 +73,7 @@ type Product = {
       </div>
       <label class="live-field">
         {{ i18n.t('home.livePriceLabel') }}: {{ livePriceMax() }}€
-        <select [value]="livePriceMax()" (change)="livePriceMax.set(+$any($event.target).value)">
-          @for (option of livePriceOptions; track option) {
-            <option [value]="option">{{ option }}€</option>
-          }
-        </select>
+        <input type="range" min="0" max="1000" step="5" [value]="livePriceMax()" (input)="livePriceMax.set(+$any($event.target).value)" />
       </label>
       <p class="live-result">{{ filteredByLivePrice().length }} {{ i18n.t('home.livePriceResults') }}</p>
       <div class="live-grid">
@@ -125,6 +134,9 @@ type Product = {
       <div class="grid">
         @for (product of products(); track product.handle) {
           <article class="card" [routerLink]="['/product', product.handle]">
+            @if (nuevoTag(product.metafields); as badge) {
+              <span class="corner-badge">{{ badge }}</span>
+            }
             @if (product.featuredImage) {
               <img [src]="product.featuredImage.url" [alt]="product.featuredImage.altText || product.title" />
             }
@@ -145,11 +157,13 @@ type Product = {
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
               <a [routerLink]="['/product', product.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
-              <button [disabled]="!product.availableForSale" (click)="onAddToCart($event, product)">
-                @if (product.availableForSale) {
-                  + {{ i18n.t('common.add') }}
-                } @else {
+              <button [disabled]="!product.availableForSale || isInCart(product)" (click)="onAddToCart($event, product)">
+                @if (!product.availableForSale) {
                   {{ i18n.t('common.outOfStock') }}
+                } @else if (isInCart(product)) {
+                  {{ i18n.t('common.inCart') }}
+                } @else {
+                  + {{ i18n.t('common.add') }}
                 }
               </button>
             </div>
@@ -207,8 +221,23 @@ type Product = {
     .cta { display:inline-block; background:#d6d6d6; color:#111; padding:10px 14px; text-decoration:none; border:1px solid #bdbdbd; font-weight:700; }
     .cta.ghost { background:transparent; color:#fff; border:1px solid #3d3d3d; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-    .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; display:flex; flex-direction:column; cursor:pointer; }
+    .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; display:flex; flex-direction:column; cursor:pointer; position:relative; overflow:hidden; }
     .card:hover { transform: translateY(-3px); }
+    .corner-badge {
+      position:absolute;
+      top:8px;
+      right:8px;
+      writing-mode:vertical-rl;
+      text-orientation:mixed;
+      border:1px solid #3a3a3a;
+      background:#151515;
+      color:#f3f3f3;
+      font-size:9px;
+      letter-spacing:.8px;
+      padding:6px 4px;
+      text-transform:uppercase;
+      z-index:2;
+    }
     img { width:100%; height:180px; object-fit:cover; margin-bottom:8px; filter: grayscale(.12); }
     .tag-list { display:flex; flex-wrap:wrap; gap:6px; min-height:24px; margin-bottom:6px; }
     .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
@@ -240,10 +269,10 @@ type Product = {
 })
 export class HomePageComponent implements OnInit {
   readonly products = signal<Product[]>([]);
+  readonly collectionProducts = signal<CollectionProduct[]>([]);
   readonly livePriceMax = signal(0);
-  readonly livePriceOptions = [0, 50, 100, 200, 300, 500, 800, 1000];
   readonly filteredByLivePrice = computed(() =>
-    this.products()
+    this.collectionProducts()
       .filter((product) => Number(product.priceRange.minVariantPrice.amount || 0) <= this.livePriceMax())
       .sort((a, b) => Number(a.priceRange.minVariantPrice.amount) - Number(b.priceRange.minVariantPrice.amount))
       .slice(0, 12),
@@ -256,8 +285,12 @@ export class HomePageComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    const data = await this.shopifyService.getProducts();
+    const [data, collectionData] = await Promise.all([
+      this.shopifyService.getProducts(),
+      this.shopifyService.getCollectionByHandle('saintmichelart'),
+    ]);
     this.products.set(data.products.nodes);
+    this.collectionProducts.set(collectionData.collection?.products.nodes ?? []);
   }
 
   addToCart(product: Product): void {
@@ -279,6 +312,11 @@ export class HomePageComponent implements OnInit {
     this.addToCart(product);
   }
 
+  isInCart(product: Product): boolean {
+    const firstVariant = product.variants.nodes[0];
+    return firstVariant ? this.cartService.hasItem(firstVariant.id) : false;
+  }
+
   stopCardNavigation(event: Event): void {
     event.stopPropagation();
   }
@@ -293,5 +331,14 @@ export class HomePageComponent implements OnInit {
     return metafields
       .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
       .map((field) => ({ label: `${field.namespace}.${field.key}`, value: field.value }));
+  }
+
+  nuevoTag(metafields: Array<{ namespace: string; key: string; value: string } | null>): string | null {
+    const field = metafields.find((item) =>
+      item?.namespace === 'custom'
+      && item?.key === 'nuevo_sergio'
+      && Boolean(item.value?.trim()),
+    );
+    return field?.value?.trim() ?? null;
   }
 }

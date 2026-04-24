@@ -29,7 +29,16 @@ export class CartService {
     return this.items().length;
   }
 
+  hasItem(merchandiseId: string): boolean {
+    return this.items().some((item) => item.merchandiseId === merchandiseId);
+  }
+
   async addItem(item: CartItem): Promise<void> {
+    if (this.hasItem(item.merchandiseId)) {
+      this.isDrawerOpen.set(true);
+      return;
+    }
+
     if (!this.cartId) {
       const data = await this.shopifyService.createCart(item.merchandiseId);
       this.cartId = data.cartCreate.cart.id;

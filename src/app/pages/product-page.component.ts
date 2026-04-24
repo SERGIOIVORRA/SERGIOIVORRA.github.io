@@ -70,17 +70,22 @@ type ExtraField = {
             <div class="recommended-grid">
               @for (item of recommendations(); track item.handle) {
                 <article class="recommended-card">
+                  @if (nuevoTag(item.metafields ?? []); as badge) {
+                    <span class="corner-badge">{{ badge }}</span>
+                  }
                   @if (item.featuredImage) {
                     <img [src]="item.featuredImage.url" [alt]="item.featuredImage.altText || item.title" (click)="goToProduct(item.handle)" />
                   }
                   <h3 (click)="goToProduct(item.handle)">{{ item.title }}</h3>
                   <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
                   <div class="recommended-actions">
-                    <button [disabled]="!item.availableForSale" (click)="onAddToCart($event, item)">
-                      @if (item.availableForSale) {
-                        + {{ i18n.t('common.add') }}
-                      } @else {
+                    <button [disabled]="!item.availableForSale || isInCart(item)" (click)="onAddToCart($event, item)">
+                      @if (!item.availableForSale) {
                         {{ i18n.t('common.outOfStock') }}
+                      } @else if (isInCart(item)) {
+                        {{ i18n.t('common.inCart') }}
+                      } @else {
+                        + {{ i18n.t('common.add') }}
                       }
                     </button>
                   </div>
@@ -182,7 +187,22 @@ type ExtraField = {
     .recommended-head { display:flex; justify-content:space-between; align-items:center; }
     .recommended-head a { color:#fff; text-decoration:none; font-weight:700; }
     .recommended-grid { margin-top:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-    .recommended-card { background:#111; border:1px solid #2f2f2f; padding:12px; display:flex; flex-direction:column; cursor:pointer; }
+    .recommended-card { background:#111; border:1px solid #2f2f2f; padding:12px; display:flex; flex-direction:column; cursor:pointer; position:relative; overflow:hidden; }
+    .corner-badge {
+      position:absolute;
+      top:8px;
+      right:8px;
+      writing-mode:vertical-rl;
+      text-orientation:mixed;
+      border:1px solid #3a3a3a;
+      background:#151515;
+      color:#f3f3f3;
+      font-size:9px;
+      letter-spacing:.8px;
+      padding:6px 4px;
+      text-transform:uppercase;
+      z-index:2;
+    }
     .recommended-card img { width:100%; height:180px; object-fit:cover; margin-bottom:10px; }
     .recommended-card img, .recommended-card h3 { cursor:pointer; }
     .recommended-card h3 { min-height:52px; margin:6px 0; }
@@ -302,6 +322,11 @@ export class ProductPageComponent implements OnInit {
     this.addToCart(product);
   }
 
+  isInCart(product: Product): boolean {
+    const firstVariant = product.variants.nodes[0];
+    return firstVariant ? this.cartService.hasItem(firstVariant.id) : false;
+  }
+
   setImageMode(mode: 'square' | 'tall' | 'wide'): void {
     this.imageMode.set(mode);
   }
@@ -316,5 +341,14 @@ export class ProductPageComponent implements OnInit {
     if (mode === 'tall') return 'img-tall';
     if (mode === 'wide') return 'img-wide';
     return 'img-square';
+  }
+
+  nuevoTag(metafields: Array<{ namespace: string; key: string; value: string } | null>): string | null {
+    const field = metafields.find((item) =>
+      item?.namespace === 'custom'
+      && item?.key === 'nuevo_sergio'
+      && Boolean(item.value?.trim()),
+    );
+    return field?.value?.trim() ?? null;
   }
 }
