@@ -10,6 +10,7 @@ type Product = {
   title: string;
   description: string;
   tags: string[];
+  metafields: Array<{ namespace: string; key: string; value: string } | null>;
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   variants: { nodes: Array<{ id: string; title: string }> };
@@ -97,6 +98,11 @@ type Product = {
               }
             </div>
             <h3>{{ product.title }}</h3>
+            <div class="meta-list">
+              @for (field of filledMetafields(product.metafields); track field.label) {
+                <small>{{ field.label }}: {{ field.value }}</small>
+              }
+            </div>
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
               <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> {{ i18n.t('common.view') }}</a>
@@ -142,6 +148,8 @@ type Product = {
     .tag-list { display:flex; flex-wrap:wrap; gap:6px; min-height:24px; margin-bottom:6px; }
     .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
     .card h3 { margin:6px 0 8px; min-height:56px; }
+    .meta-list { display:grid; gap:4px; min-height:42px; margin-bottom:8px; }
+    .meta-list small { color:#a5a5a5; font-size:10px; line-height:1.2; }
     .card p { margin:0 0 10px; }
     .actions { display:flex; gap:8px; margin-top:auto; }
     .actions a, .actions button { background:#171717; color:#fff; border:1px solid #373737; padding:8px 10px; text-decoration:none; font-weight:700; }
@@ -183,5 +191,13 @@ export class HomePageComponent implements OnInit {
 
   topTags(tags: string[]): string[] {
     return tags.filter(Boolean).slice(0, 3);
+  }
+
+  filledMetafields(
+    metafields: Array<{ namespace: string; key: string; value: string } | null>,
+  ): Array<{ label: string; value: string }> {
+    return metafields
+      .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
+      .map((field) => ({ label: `${field.namespace}.${field.key}`, value: field.value }));
   }
 }

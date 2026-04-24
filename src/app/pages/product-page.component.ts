@@ -21,7 +21,11 @@ type Product = {
   selector: 'app-product-page',
   imports: [CurrencyPipe, RouterLink],
   template: `
-    @if (product(); as p) {
+    @if (isLoading()) {
+      <p>Cargando producto...</p>
+    } @else if (loadError()) {
+      <p>{{ loadError() }}</p>
+    } @else if (product(); as p) {
       <article class="product">
         @if (p.featuredImage) {
           <img [src]="p.featuredImage.url" [alt]="p.featuredImage.altText || p.title" [class]="imageModeClass()" />
@@ -83,8 +87,6 @@ type Product = {
           }
         </div>
       </section>
-    } @else {
-      <p>Cargando producto...</p>
     }
   `,
   styles: [`
@@ -170,6 +172,8 @@ export class ProductPageComponent implements OnInit {
   readonly recommendations = signal<Array<Product & { handle: string }>>([]);
   readonly extraInfo = signal<Array<{ label: string; value: string }>>([]);
   readonly imageMode = signal<'square' | 'tall' | 'wide'>('square');
+  readonly isLoading = signal(true);
+  readonly loadError = signal('');
 
   constructor(
     private route: ActivatedRoute,
@@ -180,17 +184,42 @@ export class ProductPageComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const handle = this.route.snapshot.paramMap.get('handle');
-    if (!handle) return;
+    if (!handle) {
+      this.isLoading.set(false);
+      this.loadError.set('No se encontro el handle del producto.');
+      return;
+    }
 
-    const data = await this.shopifyService.getProductByHandle(handle);
-    this.product.set(data.product);
-    this.extraInfo.set(this.mapMetafields(data.product?.metafields ?? []));
+    this.isLoading.set(true);
+    this.loadError.set('');
+    try {
+      const [productData, productsData] = await Promise.all([
+        this.shopifyService.getProductByHandle(handle),
+        this.shopifyService.getProducts(),
+      ]);
 
-    const productsData = await this.shopifyService.getProducts();
-    const recommended = productsData.products.nodes
-      .filter((item) => item.handle !== handle)
-      .slice(0, 4);
-    this.recommendations.set(recommended);
+      if (!productData.product) {
+        this.loadError.set('No se pudo cargar este producto. Revisa token o disponibilidad.');
+        this.product.set(null);
+        return;
+      }
+
+      this.product.set(productData.product);
+      this.extraInfo.set(this.mapMetafields(productData.product.metafields ?? []));
+
+      const recommended = productsData.products.nodes
+        .filter((item) => item.handle !== handle)
+        .slice(0, 4);
+      this.recommendations.set(recommended);
+    } catch (error) {
+      this.product.set(null);
+      this.extraInfo.set([]);
+      this.recommendations.set([]);
+      this.loadError.set('Error cargando producto. Revisa Storefront token y metacampos.');
+      console.error(error);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   addToCart(product: Product): void {

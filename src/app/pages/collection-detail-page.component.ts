@@ -12,6 +12,7 @@ type CollectionProduct = {
   availableForSale: boolean;
   productType: string;
   vendor: string;
+  metafields: Array<{ namespace: string; key: string; value: string } | null>;
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
 };
@@ -88,6 +89,11 @@ type CollectionProduct = {
                 </div>
                 <h3>{{ product.title }}</h3>
                 <small>{{ product.vendor }} · {{ product.productType || 'General' }}</small>
+                <div class="meta-list">
+                  @for (field of filledMetafields(product.metafields); track field.label) {
+                    <small>{{ field.label }}: {{ field.value }}</small>
+                  }
+                </div>
                 <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
                 <div class="actions">
                   <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> {{ i18n.t('common.view') }}</a>
@@ -119,6 +125,8 @@ type CollectionProduct = {
     .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
     .card h3 { min-height:52px; margin:6px 0; }
     .card small { color:#9d9d9d; }
+    .meta-list { display:grid; gap:4px; min-height:42px; margin-bottom:8px; }
+    .meta-list small { color:#9d9d9d; font-size:10px; line-height:1.2; }
     .card p { margin:8px 0 10px; }
     .actions { margin-top:auto; }
     .actions a { display:inline-block; text-decoration:none; color:#fff; font-weight:700; border:1px solid #3a3a3a; padding:8px 10px; background:#101010; }
@@ -135,7 +143,7 @@ export class CollectionDetailPageComponent implements OnInit {
   readonly collectionDescription = signal('');
   readonly products = signal<CollectionProduct[]>([]);
   readonly searchTerm = signal('');
-  readonly maxPrice = signal(300);
+  readonly maxPrice = signal(1000);
   readonly sortBy = signal('featured');
   readonly onlyInStock = signal(false);
   readonly selectedType = signal('all');
@@ -193,5 +201,13 @@ export class CollectionDetailPageComponent implements OnInit {
 
   topTags(tags: string[]): string[] {
     return tags.filter(Boolean).slice(0, 3);
+  }
+
+  filledMetafields(
+    metafields: Array<{ namespace: string; key: string; value: string } | null>,
+  ): Array<{ label: string; value: string }> {
+    return metafields
+      .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
+      .map((field) => ({ label: `${field.namespace}.${field.key}`, value: field.value }));
   }
 }

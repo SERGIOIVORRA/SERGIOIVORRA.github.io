@@ -16,7 +16,15 @@ export class ShopifyService {
     });
 
     const body = { query, variables };
-    const response = await firstValueFrom(this.http.post<{ data: T }>(this.apiUrl, body, { headers }));
+    const response = await firstValueFrom(
+      this.http.post<{ data?: T; errors?: Array<{ message: string }> }>(this.apiUrl, body, { headers }),
+    );
+    if (response.errors?.length) {
+      throw new Error(response.errors.map((error) => error.message).join(' | '));
+    }
+    if (!response.data) {
+      throw new Error('Respuesta vacia de Shopify Storefront API');
+    }
     return response.data;
   }
 
@@ -62,6 +70,7 @@ export class ShopifyService {
             availableForSale: boolean;
             productType: string;
             vendor: string;
+            metafields: Array<{ namespace: string; key: string; value: string } | null>;
             featuredImage: { url: string; altText: string | null } | null;
             priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
           }>;
@@ -84,6 +93,21 @@ export class ShopifyService {
               availableForSale
               productType
               vendor
+            metafields(identifiers: [
+              { namespace: "custom", key: "material" },
+              { namespace: "custom", key: "dimensions" },
+              { namespace: "custom", key: "artist" },
+              { namespace: "custom", key: "technique" },
+              { namespace: "custom", key: "year" },
+              { namespace: "details", key: "material" },
+              { namespace: "details", key: "dimensions" },
+              { namespace: "details", key: "artist" },
+              { namespace: "details", key: "origin" }
+            ]) {
+              namespace
+              key
+              value
+            }
               featuredImage { url altText }
               priceRange { minVariantPrice { amount currencyCode } }
             }
@@ -104,6 +128,7 @@ export class ShopifyService {
           title: string;
           description: string;
           tags: string[];
+          metafields: Array<{ namespace: string; key: string; value: string } | null>;
           featuredImage: { url: string; altText: string | null } | null;
           priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
           variants: { nodes: Array<{ id: string; title: string }> };
@@ -114,6 +139,21 @@ export class ShopifyService {
         products(first: 16) {
           nodes {
             id handle title description tags
+            metafields(identifiers: [
+              { namespace: "custom", key: "material" },
+              { namespace: "custom", key: "dimensions" },
+              { namespace: "custom", key: "artist" },
+              { namespace: "custom", key: "technique" },
+              { namespace: "custom", key: "year" },
+              { namespace: "details", key: "material" },
+              { namespace: "details", key: "dimensions" },
+              { namespace: "details", key: "artist" },
+              { namespace: "details", key: "origin" }
+            ]) {
+              namespace
+              key
+              value
+            }
             featuredImage { url altText }
             priceRange { minVariantPrice { amount currencyCode } }
             variants(first: 1) { nodes { id title } }
