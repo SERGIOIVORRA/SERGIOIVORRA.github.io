@@ -21,29 +21,6 @@
   <router-outlet />
 </main>
 
-<div class="crystal-layer" aria-hidden="true">
-  @for (crystal of crystals(); track crystal.id) {
-    <span
-      class="crystal"
-      [style.left.px]="crystal.x"
-      [style.top.px]="crystal.y"
-      [style.width.px]="crystal.size"
-      [style.height.px]="crystal.size"
-      [style.transform]="'translate(-50%, -50%) rotate(' + crystal.rotate + 'deg)'"
-    ></span>
-  }
-</div>
-
-<div class="distant-orb" aria-hidden="true">
-  <span class="orb-core"></span>
-  <span class="orb-shard shard-a"></span>
-  <span class="orb-shard shard-b"></span>
-  <span class="orb-shard shard-c"></span>
-  <span class="orb-shard shard-d"></span>
-  <span class="orb-shard shard-e"></span>
-  <span class="orb-shard shard-f"></span>
-</div>
-
 <div class="darkness-layer" aria-hidden="true"></div>
 
 @if (footerVisible()) {

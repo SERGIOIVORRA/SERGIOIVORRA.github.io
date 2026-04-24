@@ -236,7 +236,7 @@ export class ShopifyService {
   }
 
   prefetchCollectionDetails(handles: string[]): void {
-    for (const handle of [...new Set(handles)]) {
+    for (const handle of [...new Set(handles)].slice(0, 3)) {
       if (handle) {
         void this.getCollectionByHandle(handle);
       }

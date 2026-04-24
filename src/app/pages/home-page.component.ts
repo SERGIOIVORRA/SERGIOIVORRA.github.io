@@ -73,7 +73,18 @@ type CollectionProduct = {
       </div>
       <p class="hero-detail">{{ i18n.t('home.heroDetail') }}</p>
       <div class="hero-actions">
-        <a class="cta" routerLink="/collections">- {{ i18n.t('home.goCollections') }}</a>
+        <div class="capacity-split">
+          @if (!capacitySplitOpen()) {
+            <button type="button" class="cta capacity-trigger" (click)="capacitySplitOpen.set(true)">
+              - {{ i18n.t('home.capacityButton') }}
+            </button>
+          } @else {
+            <div class="capacity-split-row" role="group" [attr.aria-label]="i18n.t('home.capacityButton')">
+              <a class="cta split-half" routerLink="/performance-lab" (click)="capacitySplitOpen.set(false)">- {{ i18n.t('home.capacityToLab') }}</a>
+              <a class="cta split-half split-half-alt" routerLink="/angular-pro" (click)="capacitySplitOpen.set(false)">+ {{ i18n.t('home.capacityToAngularPro') }}</a>
+            </div>
+          }
+        </div>
         <a class="cta ghost" href="https://artcuadros.myshopify.com/account" target="_blank" rel="noreferrer">+ {{ i18n.t('home.loginAccount') }}</a>
       </div>
     </section>
@@ -103,6 +114,27 @@ type CollectionProduct = {
           <label>
             {{ i18n.lang() === 'en' ? 'Saturation' : 'Saturacion' }}: {{ saturation() }}%
             <input type="range" min="60" max="160" step="1" [value]="saturation()" (input)="setSaturation(+$any($event.target).value)" />
+          </label>
+          <label>
+            {{ i18n.lang() === 'en' ? 'Typography' : 'Tipografia' }}
+            <select [value]="fontFamily()" (change)="setFontFamily($any($event.target).value)">
+              <option value="'Space Mono', 'Courier New', monospace">Space Mono</option>
+              <option value="'Inter', 'Segoe UI', sans-serif">Inter / Sans</option>
+              <option value="'Georgia', 'Times New Roman', serif">Georgia / Serif</option>
+              <option value="'Trebuchet MS', 'Verdana', sans-serif">Trebuchet / Verdana</option>
+            </select>
+          </label>
+          <label>
+            {{ i18n.lang() === 'en' ? 'Background color' : 'Color de fondo' }}
+            <input type="color" [value]="backgroundColor()" (input)="setBackgroundColor($any($event.target).value)" />
+          </label>
+          <label>
+            {{ i18n.lang() === 'en' ? 'Text color' : 'Color de texto' }}
+            <input type="color" [value]="textColor()" (input)="setTextColor($any($event.target).value)" />
+          </label>
+          <label>
+            {{ i18n.lang() === 'en' ? 'Accent color' : 'Color acento' }}
+            <input type="color" [value]="accentColor()" (input)="setAccentColor($any($event.target).value)" />
           </label>
           <label>
             {{ i18n.lang() === 'en' ? 'Crystal fx' : 'Efecto cristal' }}: {{ crystalFx() }}%
@@ -300,7 +332,7 @@ type CollectionProduct = {
     .block-tools button { border:1px solid #3a3a3a; background:#0f0f0f; color:#f5f5f5; width:28px; height:28px; font-weight:700; cursor:pointer; }
     .controls-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; align-items:end; }
     .controls-grid label { display:grid; gap:6px; font-size:12px; }
-    .controls-grid input { border:1px solid #3a3a3a; }
+    .controls-grid input, .controls-grid select { border:1px solid #3a3a3a; background:#131313; color:#fff; padding:8px; }
     .controls-grid button { border:1px solid #3a3a3a; background:#151515; color:#fff; padding:9px 12px; font-weight:700; cursor:pointer; }
     .live-head p { color:#bdbdbd; margin:6px 0 10px; }
     .live-field { display:grid; gap:6px; max-width:260px; font-size:12px; margin-bottom:8px; }
@@ -320,7 +352,12 @@ type CollectionProduct = {
     .value-grid { margin-top:12px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
     .value-grid article { border:1px solid #2b2b2b; padding:12px; background:#161616; }
     .value-grid article h3::before { content:'+ '; color:#9f9f9f; }
-    .hero-actions { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+    .hero-actions { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; align-items:stretch; }
+    .capacity-split { display:inline-flex; min-width:min(100%, 320px); }
+    .capacity-trigger { cursor:pointer; font:inherit; text-align:center; width:100%; }
+    .capacity-split-row { display:flex; width:100%; border:1px solid #bdbdbd; }
+    .split-half { flex:1; text-align:center; border:0; border-radius:0; margin:0; min-width:0; }
+    .split-half-alt { background:#111; color:#f4f4f4; border-left:1px solid #bdbdbd; }
     .cta { display:inline-block; background:#d6d6d6; color:#111; padding:10px 14px; text-decoration:none; border:1px solid #bdbdbd; font-weight:700; }
     .cta.ghost { background:transparent; color:#fff; border:1px solid #3d3d3d; }
     .products { position:relative; }
@@ -382,9 +419,14 @@ export class HomePageComponent implements OnInit {
   readonly darkness = signal(0);
   readonly contrast = signal(100);
   readonly saturation = signal(100);
+  readonly fontFamily = signal("'Space Mono', 'Courier New', monospace");
+  readonly backgroundColor = signal('#0b0b0b');
+  readonly textColor = signal('#f4f4f4');
+  readonly accentColor = signal('#d6d6d6');
   readonly crystalFx = signal(100);
   readonly orbFx = signal(26);
   readonly blockEditMode = signal(false);
+  readonly capacitySplitOpen = signal(false);
   readonly sectionOrderMap = signal<Record<string, number>>({
     hero: 0, controls: 1, price: 2, inspiration: 3, value: 4, products: 5,
   });
@@ -435,6 +477,26 @@ export class HomePageComponent implements OnInit {
     this.applyVisualVars();
   }
 
+  setFontFamily(value: string): void {
+    this.fontFamily.set(value);
+    this.applyVisualVars();
+  }
+
+  setBackgroundColor(value: string): void {
+    this.backgroundColor.set(value);
+    this.applyVisualVars();
+  }
+
+  setTextColor(value: string): void {
+    this.textColor.set(value);
+    this.applyVisualVars();
+  }
+
+  setAccentColor(value: string): void {
+    this.accentColor.set(value);
+    this.applyVisualVars();
+  }
+
   setCrystalFx(value: number): void {
     this.crystalFx.set(value);
     this.applyVisualVars();
@@ -450,6 +512,10 @@ export class HomePageComponent implements OnInit {
     this.darkness.set(0);
     this.contrast.set(100);
     this.saturation.set(100);
+    this.fontFamily.set("'Space Mono', 'Courier New', monospace");
+    this.backgroundColor.set('#0b0b0b');
+    this.textColor.set('#f4f4f4');
+    this.accentColor.set('#d6d6d6');
     this.crystalFx.set(100);
     this.orbFx.set(26);
     this.applyVisualVars();
@@ -539,6 +605,10 @@ export class HomePageComponent implements OnInit {
     this.document.documentElement.style.setProperty('--ui-darkness', `${this.darkness() / 100}`);
     this.document.documentElement.style.setProperty('--ui-contrast', `${this.contrast() / 100}`);
     this.document.documentElement.style.setProperty('--ui-saturation', `${this.saturation() / 100}`);
+    this.document.documentElement.style.setProperty('--ui-font-family', this.fontFamily());
+    this.document.documentElement.style.setProperty('--ui-bg-color', this.backgroundColor());
+    this.document.documentElement.style.setProperty('--ui-text-color', this.textColor());
+    this.document.documentElement.style.setProperty('--ui-accent-color', this.accentColor());
     this.document.documentElement.style.setProperty('--ui-crystal-opacity', `${this.crystalFx() / 100}`);
     this.document.documentElement.style.setProperty('--ui-orb-opacity', `${this.orbFx() / 100}`);
     this.document.defaultView?.localStorage.setItem('home.visualPrefs', JSON.stringify({
@@ -546,6 +616,10 @@ export class HomePageComponent implements OnInit {
       darkness: this.darkness(),
       contrast: this.contrast(),
       saturation: this.saturation(),
+      fontFamily: this.fontFamily(),
+      backgroundColor: this.backgroundColor(),
+      textColor: this.textColor(),
+      accentColor: this.accentColor(),
       crystalFx: this.crystalFx(),
       orbFx: this.orbFx(),
     }));
@@ -555,11 +629,15 @@ export class HomePageComponent implements OnInit {
     const raw = this.document.defaultView?.localStorage.getItem('home.visualPrefs');
     if (!raw) return;
     try {
-      const prefs = JSON.parse(raw) as Partial<Record<'brightness' | 'darkness' | 'contrast' | 'saturation' | 'crystalFx' | 'orbFx', number>>;
+      const prefs = JSON.parse(raw) as Partial<Record<'brightness' | 'darkness' | 'contrast' | 'saturation' | 'crystalFx' | 'orbFx', number> & Record<'fontFamily' | 'backgroundColor' | 'textColor' | 'accentColor', string>>;
       if (typeof prefs.brightness === 'number') this.brightness.set(prefs.brightness);
       if (typeof prefs.darkness === 'number') this.darkness.set(prefs.darkness);
       if (typeof prefs.contrast === 'number') this.contrast.set(prefs.contrast);
       if (typeof prefs.saturation === 'number') this.saturation.set(prefs.saturation);
+      if (typeof prefs.fontFamily === 'string') this.fontFamily.set(prefs.fontFamily);
+      if (typeof prefs.backgroundColor === 'string') this.backgroundColor.set(prefs.backgroundColor);
+      if (typeof prefs.textColor === 'string') this.textColor.set(prefs.textColor);
+      if (typeof prefs.accentColor === 'string') this.accentColor.set(prefs.accentColor);
       if (typeof prefs.crystalFx === 'number') this.crystalFx.set(prefs.crystalFx);
       if (typeof prefs.orbFx === 'number') this.orbFx.set(prefs.orbFx);
     } catch {
