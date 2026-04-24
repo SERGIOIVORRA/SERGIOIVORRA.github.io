@@ -1,5 +1,11 @@
 /* Flat panels — sin cristal / sin backdrop-filter (mejor rendimiento) */
 
+html,
+body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
 body {
   background: #090b10;
 }

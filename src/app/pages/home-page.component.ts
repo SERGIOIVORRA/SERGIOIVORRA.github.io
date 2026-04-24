@@ -182,7 +182,6 @@ type CollectionProduct = {
           </div>
           <div class="meta-sim-panel" id="meta-sim">
             <h4 class="meta-sim-title">{{ i18n.lang() === 'en' ? 'Simulate Storefront metafield call' : 'Simular llamada a metacampos (Storefront)' }}</h4>
-            <p class="meta-sim-hint">{{ i18n.lang() === 'en' ? 'Demo only — does not hit Shopify. Like a Network tab preview.' : 'Solo demo — no llama a Shopify. Como una vista previa de la pestana Red.' }}</p>
             <div class="meta-sim-actions">
               <button type="button" (click)="simulateMetafieldQuery('product')">{{ i18n.lang() === 'en' ? 'product.metafields' : 'product.metafields' }}</button>
               <button type="button" (click)="simulateMetafieldQuery('metaobject')">{{ i18n.lang() === 'en' ? 'metaobject (ref)' : 'metaobject (ref)' }}</button>
@@ -360,7 +359,7 @@ type CollectionProduct = {
     </div>
   `,
   styles: [`
-    .home-layout { display:flex; flex-direction:column; }
+    .home-layout { display:flex; flex-direction:column; max-width:100%; overflow-x:clip; box-sizing:border-box; }
     .hero { background:#111; border:1px solid #2f2f2f; padding:24px; margin-bottom:24px; position:relative; overflow:hidden; }
     .hero::after {
       content:'';
@@ -418,8 +417,7 @@ type CollectionProduct = {
     .demo-jump__link { color:#a8d4ff; font-weight:700; text-decoration:underline; }
     .meta-sim-panel { margin-top:14px; padding-top:14px; border-top:1px dashed #3a3a3a; }
     .meta-sim-title { margin:0 0 6px; font-size:11px; letter-spacing:.8px; text-transform:uppercase; color:#e0e0e0; }
-    .meta-sim-hint { margin:0 0 10px; font-size:11px; color:#9a9a9a; line-height:1.4; }
-    .meta-sim-actions { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+    .meta-sim-actions { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 8px; }
     .meta-sim-actions button {
       border:1px solid #4a4a6a;
       background:#18182a;
@@ -451,7 +449,7 @@ type CollectionProduct = {
     .editor-panel > .controls-grid { padding:12px; }
     .editor-panel > .metafield-editor { padding:0 12px 12px; border-top:1px solid #252525; margin-top:4px; }
     .metafield-editor-title { margin:10px 0 8px; font-size:11px; letter-spacing:.8px; text-transform:uppercase; color:#bdbdbd; }
-    .metafield-row { display:grid; grid-template-columns:minmax(120px,200px) 1fr; gap:10px; align-items:start; margin-bottom:10px; padding:10px; background:#141414; border:1px solid #2f2f2f; }
+    .metafield-row { display:grid; grid-template-columns:minmax(120px,200px) 1fr; gap:10px; align-items:start; margin-bottom:10px; padding:10px; background:#141414; border:1px solid #2f2f2f; min-width:0; }
     .metafield-label-col { display:grid; gap:6px; }
     .metafield-pill { display:inline-block; font-size:9px; letter-spacing:.5px; text-transform:uppercase; padding:2px 6px; border:1px solid #3a3a3a; color:#9a9a9a; width:fit-content; }
     .metafield-label-text strong { font-size:11px; color:#e8e8e8; }
@@ -459,7 +457,7 @@ type CollectionProduct = {
     .meta-key code { font-size:10px; color:#a8cfff; }
     .metafield-input-col { display:grid; gap:8px; }
     .metafield-input-wrap { display:flex; gap:6px; align-items:center; }
-    .meta-grow { flex:1; min-width:0; }
+    .meta-grow { flex:1; min-width:0; width:100%; max-width:100%; box-sizing:border-box; }
     .dynamic-source-btn { flex-shrink:0; width:34px; height:34px; border:1px solid #3a3a3a; background:#101010; color:#cfcfcf; cursor:pointer; font-size:15px; line-height:1; display:grid; place-items:center; }
     .dynamic-source-btn:hover { border-color:#5a5a5a; color:#fff; }
     .meta-thumb { max-width:120px; border:1px solid #2f2f2f; background:#0c0c0c; padding:2px; }
@@ -576,6 +574,10 @@ type CollectionProduct = {
       .hero-main { grid-template-columns:1fr; }
       .console-pair { grid-template-columns:1fr; }
     }
+    @media (max-width: 640px) {
+      .metafield-row { grid-template-columns:1fr; }
+      .controls-grid { grid-template-columns:1fr; }
+    }
   `]
 })
 export class HomePageComponent implements OnInit {
@@ -601,8 +603,15 @@ export class HomePageComponent implements OnInit {
   readonly metaSimBusy = signal(false);
   private metaSimTimer: ReturnType<typeof setTimeout> | undefined;
   private readonly defaultSectionOrder: Record<string, number> = {
-    hero: 0, controls: 1, price: 2, console: 3, inspiration: 4, value: 5, products: 6,
+    hero: 0,
+    products: 1,
+    controls: 2,
+    price: 3,
+    console: 4,
+    inspiration: 5,
+    value: 6,
   };
+  private readonly sectionOrderStorageKey = 'home.sectionOrder.v5';
   readonly sectionOrderMap = signal<Record<string, number>>({ ...this.defaultSectionOrder });
   readonly filteredByLivePrice = computed(() =>
     this.collectionProducts()
@@ -825,7 +834,7 @@ export class HomePageComponent implements OnInit {
     [next[index], next[swapWith]] = [next[swapWith], next[index]];
     const map = next.reduce<Record<string, number>>((acc, id, idx) => ({ ...acc, [id]: idx }), {});
     this.sectionOrderMap.set(map);
-    this.document.defaultView?.localStorage.setItem('home.sectionOrder', JSON.stringify(map));
+    this.document.defaultView?.localStorage.setItem(this.sectionOrderStorageKey, JSON.stringify(map));
   }
 
   addToCart(product: Product): void {
@@ -931,7 +940,7 @@ export class HomePageComponent implements OnInit {
   }
 
   private restoreSectionOrder(): void {
-    const raw = this.document.defaultView?.localStorage.getItem('home.sectionOrder');
+    const raw = this.document.defaultView?.localStorage.getItem(this.sectionOrderStorageKey);
     const merged: Record<string, number> = { ...this.defaultSectionOrder };
     if (raw) {
       try {

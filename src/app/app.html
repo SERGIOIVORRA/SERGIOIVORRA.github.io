@@ -44,7 +44,9 @@
           <article class="cart-item">
             <div>
               <strong>{{ item.title }}</strong>
-              <p>{{ item.variantTitle }}</p>
+              @if (formatCartVariant(item.variantTitle); as vline) {
+                <p class="cart-variant">{{ vline }}</p>
+              }
             </div>
             <div class="cart-item-actions">
               <div class="price">

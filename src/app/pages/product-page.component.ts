@@ -255,6 +255,31 @@ type ExtraField = {
     @media (max-width: 980px) {
       .product { grid-template-columns:1fr; }
     }
+    @media (max-width: 640px) {
+      .product { padding:12px; gap:14px; max-width:100%; box-sizing:border-box; overflow-x:clip; }
+      .product-gallery { width:100%; min-width:0; }
+      .product-gallery .product-main-img {
+        width:100%;
+        max-width:none;
+        object-fit:cover;
+        object-position:center;
+      }
+      .product-gallery .product-main-img.img-square {
+        aspect-ratio:3/4;
+        min-height:min(88vw, 480px);
+      }
+      .product-gallery .product-main-img.img-tall {
+        aspect-ratio:2/3;
+        min-height:min(95vw, 520px);
+      }
+      .product-gallery .product-main-img.img-wide {
+        aspect-ratio:1/1;
+        min-height:min(92vw, 500px);
+      }
+      .gallery-thumbs { justify-content:flex-start; }
+      .thumb img { width:64px; height:64px; }
+      .recommended-grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
+    }
   `]
 })
 export class ProductPageComponent {

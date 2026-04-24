@@ -62,6 +62,17 @@ export class App {
     }
   }
 
+  /** Texto de variante para carrito: quita sufijos basura (p. ej. "/ NO") y valores vacios. */
+  formatCartVariant(variantTitle: string | undefined): string | null {
+    let v = (variantTitle ?? '').trim();
+    if (!v) return null;
+    v = v.replace(/\s*\/\s*NO\s*$/i, '').replace(/\s*\/\s*N\/A\s*$/i, '').trim();
+    if (!v) return null;
+    const up = v.toUpperCase();
+    if (up === 'NO' || up === 'DEFAULT TITLE' || up === 'TITLE') return null;
+    return v;
+  }
+
   private scheduleFooterReveal(): void {
     if (this.footerTimer) {
       clearTimeout(this.footerTimer);
