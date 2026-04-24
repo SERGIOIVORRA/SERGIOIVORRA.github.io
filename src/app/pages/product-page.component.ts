@@ -24,10 +24,15 @@ type Product = {
     @if (product(); as p) {
       <article class="product">
         @if (p.featuredImage) {
-          <img [src]="p.featuredImage.url" [alt]="p.featuredImage.altText || p.title" />
+          <img [src]="p.featuredImage.url" [alt]="p.featuredImage.altText || p.title" [class]="imageModeClass()" />
         }
         <div>
           <h1>{{ p.title }}</h1>
+          <div class="image-mode-switch">
+            <button (click)="setImageMode('square')" [class.active]="imageMode() === 'square'">Cuadrado</button>
+            <button (click)="setImageMode('tall')" [class.active]="imageMode() === 'tall'">Largo</button>
+            <button (click)="setImageMode('wide')" [class.active]="imageMode() === 'wide'">Ancho</button>
+          </div>
           <div class="tag-list">
             @for (tag of topTags(p.tags); track tag) {
               <span class="tag">{{ tag }}</span>
@@ -102,7 +107,26 @@ type Product = {
       border-top:26px solid #f5f5f5;
       border-right:26px solid transparent;
     }
-    img { width:100%; max-height:420px; object-fit:cover; }
+    img { width:100%; object-fit:cover; border:1px solid #2f2f2f; background:#0f0f0f; }
+    .img-square { aspect-ratio:1/1; }
+    .img-tall { aspect-ratio:4/5; }
+    .img-wide { aspect-ratio:16/9; }
+    .image-mode-switch { display:flex; gap:8px; margin:8px 0 10px; }
+    .image-mode-switch button {
+      margin-top:0;
+      padding:6px 10px;
+      background:#171717;
+      color:#f0f0f0;
+      border:1px solid #3a3a3a;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .image-mode-switch .active {
+      background:#d6d6d6;
+      color:#111;
+      border-color:#bdbdbd;
+      font-weight:700;
+    }
     .tag-list { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 6px; }
     .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
     .description { color:#bdbdbd; line-height:1.6; }
@@ -145,6 +169,7 @@ export class ProductPageComponent implements OnInit {
   readonly product = signal<Product | null>(null);
   readonly recommendations = signal<Array<Product & { handle: string }>>([]);
   readonly extraInfo = signal<Array<{ label: string; value: string }>>([]);
+  readonly imageMode = signal<'square' | 'tall' | 'wide'>('square');
 
   constructor(
     private route: ActivatedRoute,
@@ -199,5 +224,16 @@ export class ProductPageComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
     this.addToCart(product);
+  }
+
+  setImageMode(mode: 'square' | 'tall' | 'wide'): void {
+    this.imageMode.set(mode);
+  }
+
+  imageModeClass(): string {
+    const mode = this.imageMode();
+    if (mode === 'tall') return 'img-tall';
+    if (mode === 'wide') return 'img-wide';
+    return 'img-square';
   }
 }
