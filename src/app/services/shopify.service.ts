@@ -58,6 +58,9 @@ export class ShopifyService {
             id: string;
             handle: string;
             title: string;
+            availableForSale: boolean;
+            productType: string;
+            vendor: string;
             featuredImage: { url: string; altText: string | null } | null;
             priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
           }>;
@@ -76,6 +79,9 @@ export class ShopifyService {
               id
               handle
               title
+              availableForSale
+              productType
+              vendor
               featuredImage { url altText }
               priceRange { minVariantPrice { amount currencyCode } }
             }
