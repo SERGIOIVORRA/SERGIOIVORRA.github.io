@@ -1,9 +1,10 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DOCUMENT } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../services/cart.service';
 import { I18nService } from '../services/i18n.service';
 import { ShopifyService } from '../services/shopify.service';
+import { Inject } from '@angular/core';
 
 type Product = {
   handle: string;
@@ -67,6 +68,21 @@ type CollectionProduct = {
       <div class="hero-actions">
         <a class="cta" routerLink="/collections">- {{ i18n.t('home.goCollections') }}</a>
         <a class="cta ghost" href="https://artcuadros.myshopify.com/account" target="_blank" rel="noreferrer">+ {{ i18n.t('home.loginAccount') }}</a>
+      </div>
+    </section>
+
+    <section class="visual-controls">
+      <h2>* {{ i18n.lang() === 'en' ? 'Visual controls' : 'Controles visuales' }}</h2>
+      <div class="controls-grid">
+        <label>
+          {{ i18n.lang() === 'en' ? 'Brightness' : 'Brillo' }}: {{ brightness() }}%
+          <input type="range" min="70" max="130" step="1" [value]="brightness()" (input)="setBrightness(+$any($event.target).value)" />
+        </label>
+        <label>
+          {{ i18n.lang() === 'en' ? 'Darkness' : 'Oscuridad' }}: {{ darkness() }}%
+          <input type="range" min="0" max="45" step="1" [value]="darkness()" (input)="setDarkness(+$any($event.target).value)" />
+        </label>
+        <button type="button" (click)="resetVisuals()">{{ i18n.lang() === 'en' ? 'Revert visuals' : 'Revertir visual' }}</button>
       </div>
     </section>
 
@@ -214,6 +230,11 @@ type CollectionProduct = {
     .demo-track.after .pulse span { background:#d6d6d6; animation: fastSpa .45s linear infinite; }
     .hero-detail { margin-top:10px; color:#bbb; line-height:1.55; max-width:900px; }
     .live-price-lab { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; }
+    .visual-controls { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; }
+    .controls-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; align-items:end; }
+    .controls-grid label { display:grid; gap:6px; font-size:12px; }
+    .controls-grid input { border:1px solid #3a3a3a; }
+    .controls-grid button { border:1px solid #3a3a3a; background:#151515; color:#fff; padding:9px 12px; font-weight:700; cursor:pointer; }
     .live-head p { color:#bdbdbd; margin:6px 0 10px; }
     .live-field { display:grid; gap:6px; max-width:260px; font-size:12px; margin-bottom:8px; }
     .live-field select { border:1px solid #3a3a3a; background:#131313; color:#fff; padding:8px; }
@@ -286,6 +307,8 @@ export class HomePageComponent implements OnInit {
   readonly products = signal<Product[]>([]);
   readonly collectionProducts = signal<CollectionProduct[]>([]);
   readonly livePriceMax = signal(0);
+  readonly brightness = signal(100);
+  readonly darkness = signal(0);
   readonly filteredByLivePrice = computed(() =>
     this.collectionProducts()
       .filter((product) => Number(product.priceRange.minVariantPrice.amount || 0) <= this.livePriceMax())
@@ -297,6 +320,7 @@ export class HomePageComponent implements OnInit {
     private shopifyService: ShopifyService,
     private cartService: CartService,
     public i18n: I18nService,
+    @Inject(DOCUMENT) private document: Document,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -306,6 +330,23 @@ export class HomePageComponent implements OnInit {
     ]);
     this.products.set(data.products.nodes);
     this.collectionProducts.set(collectionData.collection?.products.nodes ?? []);
+    this.applyVisualVars();
+  }
+
+  setBrightness(value: number): void {
+    this.brightness.set(value);
+    this.applyVisualVars();
+  }
+
+  setDarkness(value: number): void {
+    this.darkness.set(value);
+    this.applyVisualVars();
+  }
+
+  resetVisuals(): void {
+    this.brightness.set(100);
+    this.darkness.set(0);
+    this.applyVisualVars();
   }
 
   addToCart(product: Product): void {
@@ -355,5 +396,10 @@ export class HomePageComponent implements OnInit {
       && Boolean(item.value?.trim()),
     );
     return field?.value?.trim() ?? null;
+  }
+
+  private applyVisualVars(): void {
+    this.document.documentElement.style.setProperty('--ui-brightness', `${this.brightness() / 100}`);
+    this.document.documentElement.style.setProperty('--ui-darkness', `${this.darkness() / 100}`);
   }
 }

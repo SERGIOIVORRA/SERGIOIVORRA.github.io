@@ -4,6 +4,7 @@
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ i18n.t('nav.home') }}</a>
     <a routerLink="/collections" routerLinkActive="active">{{ i18n.t('nav.collections') }}</a>
     <a routerLink="/angular-pro" routerLinkActive="active">Angular PRO</a>
+    <a routerLink="/performance-lab" routerLinkActive="active">{{ i18n.t('nav.performance') }}</a>
     <a routerLink="/project-structure" routerLinkActive="active">{{ i18n.t('nav.project') }}</a>
   </nav>
   <div class="account-links">
@@ -32,6 +33,18 @@
     ></span>
   }
 </div>
+
+<div class="distant-orb" aria-hidden="true">
+  <span class="orb-core"></span>
+  <span class="orb-shard shard-a"></span>
+  <span class="orb-shard shard-b"></span>
+  <span class="orb-shard shard-c"></span>
+  <span class="orb-shard shard-d"></span>
+  <span class="orb-shard shard-e"></span>
+  <span class="orb-shard shard-f"></span>
+</div>
+
+<div class="darkness-layer" aria-hidden="true"></div>
 
 @if (footerVisible()) {
   <footer class="site-footer reveal">
