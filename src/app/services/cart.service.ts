@@ -14,8 +14,12 @@ export class CartService {
   readonly isDrawerOpen = signal(false);
   readonly checkoutUrl = signal('https://www.shopify.com');
   private cartId: string | null = null;
+  private readonly storageKey = 'shopify_cv_cart_state';
+  private readonly cookieKey = 'shopify_cv_cart_items';
 
-  constructor(private shopifyService: ShopifyService) {}
+  constructor(private shopifyService: ShopifyService) {
+    this.restoreState();
+  }
 
   toggleDrawer() {
     this.isDrawerOpen.set(!this.isDrawerOpen());
@@ -37,9 +41,42 @@ export class CartService {
 
     this.items.set([...this.items(), item]);
     this.isDrawerOpen.set(true);
+    this.persistState();
   }
 
   removeItem(index: number): void {
     this.items.update((currentItems) => currentItems.filter((_, currentIndex) => currentIndex !== index));
+    this.persistState();
+  }
+
+  private persistState(): void {
+    const state = {
+      cartId: this.cartId,
+      checkoutUrl: this.checkoutUrl(),
+      items: this.items(),
+    };
+    localStorage.setItem(this.storageKey, JSON.stringify(state));
+    document.cookie = `${this.cookieKey}=${encodeURIComponent(String(this.items().length))}; path=/; max-age=2592000; SameSite=Lax`;
+  }
+
+  private restoreState(): void {
+    const raw = localStorage.getItem(this.storageKey);
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw) as {
+        cartId?: string | null;
+        checkoutUrl?: string;
+        items?: CartItem[];
+      };
+      this.cartId = parsed.cartId ?? null;
+      if (parsed.checkoutUrl) {
+        this.checkoutUrl.set(parsed.checkoutUrl);
+      }
+      if (Array.isArray(parsed.items)) {
+        this.items.set(parsed.items);
+      }
+    } catch {
+      localStorage.removeItem(this.storageKey);
+    }
   }
 }
