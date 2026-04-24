@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "sync-cv": "node scripts/sync-cv.mjs",
+    "deploy-cv": "ng build && node scripts/sync-cv.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

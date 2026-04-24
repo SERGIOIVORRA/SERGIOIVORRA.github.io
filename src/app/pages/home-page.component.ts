@@ -105,6 +105,12 @@ type CollectionProduct = {
           <button type="button" (click)="moveSection('controls', 1)">↓</button>
         </div>
       }
+      <nav class="demo-jump" [attr.aria-label]="i18n.lang() === 'en' ? 'Demo shortcuts' : 'Atajos demo'">
+        <span class="demo-jump__label">{{ i18n.lang() === 'en' ? 'Jump:' : 'Ir a:' }}</span>
+        <a class="demo-jump__link" href="#meta-sim">{{ i18n.lang() === 'en' ? 'Simulated metafields' : 'Metacampos simulados' }}</a>
+        <span class="demo-jump__sep" aria-hidden="true">|</span>
+        <a class="demo-jump__link" href="#console-lab">{{ i18n.lang() === 'en' ? 'Simulated consoles' : 'Consolas simuladas' }}</a>
+      </nav>
       <details class="editor-panel" open>
         <summary>* {{ i18n.lang() === 'en' ? 'Visual controls' : 'Controles visuales' }}</summary>
         <div class="controls-grid">
@@ -205,6 +211,22 @@ type CollectionProduct = {
               </div>
             </div>
           </div>
+          <div class="meta-sim-panel" id="meta-sim">
+            <h4 class="meta-sim-title">{{ i18n.lang() === 'en' ? 'Simulate Storefront metafield call' : 'Simular llamada a metacampos (Storefront)' }}</h4>
+            <p class="meta-sim-hint">{{ i18n.lang() === 'en' ? 'Demo only — does not hit Shopify. Like a Network tab preview.' : 'Solo demo — no llama a Shopify. Como una vista previa de la pestana Red.' }}</p>
+            <div class="meta-sim-actions">
+              <button type="button" (click)="simulateMetafieldQuery('product')">{{ i18n.lang() === 'en' ? 'product.metafields' : 'product.metafields' }}</button>
+              <button type="button" (click)="simulateMetafieldQuery('metaobject')">{{ i18n.lang() === 'en' ? 'metaobject (ref)' : 'metaobject (ref)' }}</button>
+              <button type="button" (click)="simulateMetafieldQuery('empty')">{{ i18n.lang() === 'en' ? 'Empty / null' : 'Vacio / null' }}</button>
+              <button type="button" class="meta-sim-clear" (click)="clearMetaSim()">{{ i18n.lang() === 'en' ? 'Clear' : 'Limpiar' }}</button>
+            </div>
+            @if (metaSimBusy()) {
+              <p class="meta-sim-status">{{ i18n.lang() === 'en' ? 'Loading…' : 'Cargando…' }}</p>
+            }
+            @if (metaSimOutput()) {
+              <pre class="meta-sim-pre" role="region" [attr.aria-label]="i18n.lang() === 'en' ? 'Simulated JSON' : 'JSON simulado'">{{ metaSimOutput() }}</pre>
+            }
+          </div>
         </div>
       </details>
     </section>
@@ -242,7 +264,7 @@ type CollectionProduct = {
       </div>
     </section>
 
-    <section class="console-lab" [style.order]="sectionOrder('console')">
+    <section id="console-lab" class="console-lab" [style.order]="sectionOrder('console')">
       @if (blockEditMode()) {
         <div class="block-tools">
           <button type="button" (click)="moveSection('console', -1)">↑</button>
@@ -412,6 +434,50 @@ type CollectionProduct = {
     .fake-console header { padding:8px 10px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
     .fake-console pre { margin:0; padding:10px; font-size:10px; line-height:1.45; color:#c8c8c8; white-space:pre-wrap; word-break:break-word; flex:1; overflow:auto; max-height:220px; font-family:'Consolas','Monaco','Courier New',monospace; }
     .visual-controls { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; position:relative; }
+    .demo-jump {
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:8px 12px;
+      margin-bottom:12px;
+      padding:10px 12px;
+      border:1px solid #3a3a3a;
+      background:#161616;
+      font-size:12px;
+    }
+    .demo-jump__label { color:#888; text-transform:uppercase; letter-spacing:.5px; }
+    .demo-jump__link { color:#a8d4ff; font-weight:700; text-decoration:underline; }
+    .demo-jump__sep { color:#555; user-select:none; }
+    .meta-sim-panel { margin-top:14px; padding-top:14px; border-top:1px dashed #3a3a3a; }
+    .meta-sim-title { margin:0 0 6px; font-size:11px; letter-spacing:.8px; text-transform:uppercase; color:#e0e0e0; }
+    .meta-sim-hint { margin:0 0 10px; font-size:11px; color:#9a9a9a; line-height:1.4; }
+    .meta-sim-actions { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+    .meta-sim-actions button {
+      border:1px solid #4a4a6a;
+      background:#18182a;
+      color:#e4e4ff;
+      padding:8px 10px;
+      font-size:11px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .meta-sim-actions button:hover { border-color:#7a7ab0; }
+    .meta-sim-clear { background:#222 !important; color:#ccc !important; border-color:#444 !important; }
+    .meta-sim-status { font-size:12px; color:#bdbd9a; margin:6px 0; }
+    .meta-sim-pre {
+      margin:0;
+      padding:10px;
+      max-height:220px;
+      overflow:auto;
+      font-size:10px;
+      line-height:1.45;
+      background:#07070d;
+      border:1px solid #2f2f40;
+      color:#c8c8d8;
+      white-space:pre-wrap;
+      word-break:break-word;
+      font-family:'Consolas','Monaco','Courier New',monospace;
+    }
     .editor-panel { border:1px solid #2f2f2f; background:#0f0f0f; }
     .editor-panel summary { cursor:pointer; list-style:none; padding:12px; text-transform:uppercase; font-weight:700; border-bottom:1px solid #252525; background:#151515; }
     .editor-panel > .controls-grid { padding:12px; }
@@ -565,6 +631,9 @@ export class HomePageComponent implements OnInit {
   readonly heroTagline = signal('');
   readonly blockEditMode = signal(false);
   readonly capacitySplitOpen = signal(false);
+  readonly metaSimOutput = signal('');
+  readonly metaSimBusy = signal(false);
+  private metaSimTimer: ReturnType<typeof setTimeout> | undefined;
   private readonly defaultSectionOrder: Record<string, number> = {
     hero: 0, controls: 1, price: 2, console: 3, inspiration: 4, value: 5, products: 6,
   };
@@ -701,6 +770,83 @@ export class HomePageComponent implements OnInit {
 ✓ Sin recarga completa — estado conservado
 ✓ HttpClient: 200 OK (GraphQL Storefront)
 ✓ Deteccion de cambios estable`;
+  }
+
+  clearMetaSim(): void {
+    if (this.metaSimTimer !== undefined) {
+      clearTimeout(this.metaSimTimer);
+      this.metaSimTimer = undefined;
+    }
+    this.metaSimBusy.set(false);
+    this.metaSimOutput.set('');
+  }
+
+  simulateMetafieldQuery(kind: 'product' | 'metaobject' | 'empty'): void {
+    if (this.metaSimTimer !== undefined) {
+      clearTimeout(this.metaSimTimer);
+    }
+    this.metaSimBusy.set(true);
+    this.metaSimOutput.set('');
+    const w = this.document.defaultView;
+    this.metaSimTimer = w?.setTimeout(() => {
+      this.metaSimTimer = undefined;
+      const header =
+        this.i18n.lang() === 'en'
+          ? '// Simulated response (not sent to Shopify)\nPOST …/api/2025-01/graphql.json  200\n\n'
+          : '// Respuesta simulada (no se envia a Shopify)\nPOST …/api/2025-01/graphql.json  200\n\n';
+      if (kind === 'empty') {
+        this.metaSimOutput.set(
+          `${header}${JSON.stringify({ data: { product: { metafields: [] } } }, null, 2)}`,
+        );
+      } else if (kind === 'metaobject') {
+        this.metaSimOutput.set(
+          `${header}${JSON.stringify(
+            {
+              data: {
+                metaobject: {
+                  id: 'gid://shopify/Metaobject/123',
+                  type: 'lookbook',
+                  fields: [
+                    { key: 'headline', value: 'Saint Michel Art' },
+                    { key: 'cta_url', value: '/collections/saintmichelart' },
+                  ],
+                },
+              },
+            },
+            null,
+            2,
+          )}`,
+        );
+      } else {
+        this.metaSimOutput.set(
+          `${header}${JSON.stringify(
+            {
+              data: {
+                product: {
+                  metafields: [
+                    {
+                      namespace: 'custom',
+                      key: 'portada',
+                      type: 'file_reference',
+                      value: 'gid://shopify/MediaImage/987654321',
+                    },
+                    {
+                      namespace: 'custom',
+                      key: 'subline',
+                      type: 'single_line_text_field',
+                      value: 'Storefront headless · navegacion instantanea',
+                    },
+                  ],
+                },
+              },
+            },
+            null,
+            2,
+          )}`,
+        );
+      }
+      this.metaSimBusy.set(false);
+    }, 400);
   }
 
   resetVisuals(): void {
