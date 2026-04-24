@@ -59,6 +59,23 @@
   position: relative;
 }
 
+.crystal-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.crystal {
+  position: fixed;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.15) 55%, rgba(120, 180, 255, 0.08) 100%);
+  clip-path: polygon(50% 0%, 100% 40%, 78% 100%, 22% 100%, 0% 40%);
+  box-shadow: 0 0 12px rgba(190, 220, 255, 0.45);
+  animation: crystalFade .7s ease-out forwards;
+}
+
 .site-footer {
   border-top: 1px solid #2f2f2f;
   padding: 28px 24px 36px;
@@ -85,6 +102,12 @@
 @keyframes footerReveal {
   0% { opacity: 0; transform: translateY(20px); filter: blur(4px); }
   100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes crystalFade {
+  0% { opacity: 0; filter: blur(1px); }
+  20% { opacity: 1; filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.45); }
 }
 
 .page::before,

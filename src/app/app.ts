@@ -21,7 +21,9 @@ export class App {
   protected readonly loginUrl = `https://${environment.shopifyStoreDomain}/account/login`;
   protected readonly registerUrl = `https://${environment.shopifyStoreDomain}/account/register`;
   readonly footerVisible = signal(false);
+  readonly crystals = signal<Array<{ id: number; x: number; y: number; size: number; rotate: number }>>([]);
   private footerTimer: ReturnType<typeof setTimeout> | null = null;
+  private crystalId = 0;
 
   constructor(
     public cartService: CartService,
@@ -69,5 +71,19 @@ export class App {
     this.footerTimer = setTimeout(() => {
       this.footerVisible.set(true);
     }, 1700);
+  }
+
+  emitCrystal(event: MouseEvent): void {
+    const crystal = {
+      id: ++this.crystalId,
+      x: event.clientX + (Math.random() * 14 - 7),
+      y: event.clientY + (Math.random() * 14 - 7),
+      size: 6 + Math.random() * 8,
+      rotate: Math.random() * 180,
+    };
+    this.crystals.update((current) => [...current.slice(-24), crystal]);
+    setTimeout(() => {
+      this.crystals.update((current) => current.filter((item) => item.id !== crystal.id));
+    }, 700);
   }
 }

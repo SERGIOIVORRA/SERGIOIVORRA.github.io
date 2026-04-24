@@ -109,11 +109,24 @@ import { I18nService } from '../services/i18n.service';
           }
         </div>
       </section>
+
+      <section class="systems">
+        <h2>* {{ i18n.lang() === 'en' ? 'Critical systems and major websites built with Angular' : 'Sistemas criticos y webs importantes creadas con Angular' }}</h2>
+        <p>{{ i18n.lang() === 'en' ? 'Proof of enterprise maturity: Angular is used in high-demand products with millions of users and strict reliability requirements.' : 'Prueba de madurez enterprise: Angular se usa en productos de alta demanda con millones de usuarios y requisitos estrictos de fiabilidad.' }}</p>
+        <div class="systems-grid">
+          @for (item of angularSystems; track item.titleEs) {
+            <article>
+              <h3>+ {{ i18n.lang() === 'en' ? item.titleEn : item.titleEs }}</h3>
+              <p>{{ i18n.lang() === 'en' ? item.textEn : item.textEs }}</p>
+            </article>
+          }
+        </div>
+      </section>
     </section>
   `,
   styles: [`
     .wrap { display:grid; gap:18px; }
-    .hero, .numbers, .wins, .sources, .compare, .grid article { border:1px solid #2f2f2f; background:#111; padding:18px; }
+    .hero, .numbers, .wins, .sources, .compare, .systems, .grid article { border:1px solid #2f2f2f; background:#111; padding:18px; }
     .eyebrow { font-size:12px; letter-spacing:1px; color:#a1a1a1; }
     h1, h2, h3 { text-transform: uppercase; }
     .stats-grid { margin-top:10px; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
@@ -133,6 +146,11 @@ import { I18nService } from '../services/i18n.service';
     .bar { height:100%; display:flex; align-items:center; padding:0 6px; font-size:10px; font-weight:700; }
     .bar.angular { background:linear-gradient(90deg,#d5d5d5,#9f9f9f); color:#111; }
     .bar.theme { background:linear-gradient(90deg,#5d5d5d,#3e3e3e); color:#f2f2f2; }
+    .systems p { color:#b8b8b8; margin:8px 0 12px; }
+    .systems-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:10px; }
+    .systems-grid article { border:1px solid #2f2f2f; background:#141414; padding:10px; }
+    .systems-grid h3 { margin:0 0 6px; font-size:13px; }
+    .systems-grid article p { margin:0; font-size:12px; color:#cdcdcd; }
   `]
 })
 export class AngularProPageComponent {
@@ -188,5 +206,44 @@ export class AngularProPageComponent {
     { metricEs: 'Integracion con backends complejos', metricEn: 'Integration with complex backends', angular: 94, hydrogen: 88 },
     { metricEs: 'Productividad en componentes grandes', metricEn: 'Productivity on large component systems', angular: 93, hydrogen: 87 },
     { metricEs: 'Flexibilidad multi-dominio fuera de Shopify', metricEn: 'Multi-domain flexibility beyond Shopify', angular: 95, hydrogen: 83 },
+  ];
+
+  readonly angularSystems = [
+    {
+      titleEs: 'Google Cloud Console',
+      textEs: 'Panel critico usado por equipos globales para infraestructura cloud, operaciones y seguridad a gran escala.',
+      titleEn: 'Google Cloud Console',
+      textEn: 'Mission-critical console used by global teams for cloud infrastructure, operations and security at scale.',
+    },
+    {
+      titleEs: 'Google Ads',
+      textEs: 'Plataforma de publicidad de alto trafico y altisima criticidad en ingresos para marcas y anunciantes.',
+      titleEn: 'Google Ads',
+      textEn: 'High-traffic advertising platform with revenue-critical workflows for brands and advertisers.',
+    },
+    {
+      titleEs: 'Microsoft Office Web (partes SPA)',
+      textEs: 'Experiencias web complejas de productividad en tiempo real con interfaces ricas y estado de app avanzado.',
+      titleEn: 'Microsoft Office Web (SPA areas)',
+      textEn: 'Complex web productivity experiences with rich UIs and advanced app state handling.',
+    },
+    {
+      titleEs: 'Deutsche Bahn (portales digitales)',
+      textEs: 'Casos de movilidad y autoservicio con alta concurrencia y necesidad de UX robusta multiplataforma.',
+      titleEn: 'Deutsche Bahn (digital portals)',
+      textEn: 'Mobility and self-service use cases with high concurrency and robust cross-platform UX requirements.',
+    },
+    {
+      titleEs: 'Forbes (secciones de producto digital)',
+      textEs: 'Experiencias editoriales y comerciales con componentes reutilizables y despliegue continuo.',
+      titleEn: 'Forbes (digital product areas)',
+      textEn: 'Editorial and commercial experiences with reusable components and continuous deployment.',
+    },
+    {
+      titleEs: 'Upwork (módulos de plataforma)',
+      textEs: 'Workflows complejos de marketplace B2B/B2C con estado, filtros y paneles operativos de gran escala.',
+      titleEn: 'Upwork (platform modules)',
+      textEn: 'Complex B2B/B2C marketplace workflows with state, filters and large-scale operational dashboards.',
+    },
   ];
 }

@@ -16,9 +16,22 @@
   </button>
 </header>
 
-<main class="page">
+<main class="page" (mousemove)="emitCrystal($event)">
   <router-outlet />
 </main>
+
+<div class="crystal-layer" aria-hidden="true">
+  @for (crystal of crystals(); track crystal.id) {
+    <span
+      class="crystal"
+      [style.left.px]="crystal.x"
+      [style.top.px]="crystal.y"
+      [style.width.px]="crystal.size"
+      [style.height.px]="crystal.size"
+      [style.transform]="'translate(-50%, -50%) rotate(' + crystal.rotate + 'deg)'"
+    ></span>
+  }
+</div>
 
 @if (footerVisible()) {
   <footer class="site-footer reveal">

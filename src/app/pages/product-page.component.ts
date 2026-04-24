@@ -83,7 +83,7 @@ type ExtraField = {
                       @if (!item.availableForSale) {
                         {{ i18n.t('common.outOfStock') }}
                       } @else if (isInCart(item)) {
-                        {{ i18n.t('common.inCart') }}
+                        {{ i18n.t('common.added') }}
                       } @else {
                         + {{ i18n.t('common.add') }}
                       }
@@ -324,7 +324,7 @@ export class ProductPageComponent implements OnInit {
 
   isInCart(product: Product): boolean {
     const firstVariant = product.variants.nodes[0];
-    return firstVariant ? this.cartService.hasItem(firstVariant.id) : false;
+    return firstVariant ? this.cartService.hasOrPendingItem(firstVariant.id) : false;
   }
 
   setImageMode(mode: 'square' | 'tall' | 'wide'): void {

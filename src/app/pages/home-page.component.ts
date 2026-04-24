@@ -48,6 +48,10 @@ type CollectionProduct = {
         </div>
         <aside class="speed-demo" aria-label="Angular vs Shopify speed demo">
           <h3>* {{ i18n.lang() === 'en' ? 'Navigation speed demo' : 'Demo de velocidad de navegacion' }}</h3>
+          <div class="demo-icons">
+            <span class="demo-chip loading">⟳ {{ i18n.lang() === 'en' ? 'Page reload flow' : 'Flujo con recarga de pagina' }}</span>
+            <span class="demo-chip no-reload">✕ {{ i18n.lang() === 'en' ? 'No reload when navigating' : 'No hay recarga al navegar' }}</span>
+          </div>
           <div class="demo-track before">
             <small>{{ i18n.lang() === 'en' ? 'Classic theme reload' : 'Theme clasico con recarga' }}</small>
             <div class="pulse"><span></span></div>
@@ -79,8 +83,13 @@ type CollectionProduct = {
       <div class="live-grid">
         @for (product of filteredByLivePrice(); track product.handle) {
           <article class="live-card">
-            <strong>{{ product.title }}</strong>
-            <span>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</span>
+            @if (product.featuredImage) {
+              <img [src]="product.featuredImage.url" [alt]="product.featuredImage.altText || product.title" />
+            }
+            <div class="live-card-body">
+              <strong>{{ product.title }}</strong>
+              <span>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</span>
+            </div>
           </article>
         } @empty {
           <p class="live-empty">{{ i18n.t('home.livePriceEmpty') }}</p>
@@ -161,7 +170,7 @@ type CollectionProduct = {
                 @if (!product.availableForSale) {
                   {{ i18n.t('common.outOfStock') }}
                 } @else if (isInCart(product)) {
-                  {{ i18n.t('common.inCart') }}
+                  {{ i18n.t('common.added') }}
                 } @else {
                   + {{ i18n.t('common.add') }}
                 }
@@ -193,6 +202,10 @@ type CollectionProduct = {
     .speed-demo { border:1px solid #2f2f2f; background:#141414; padding:10px; }
     .speed-demo h3 { margin:0 0 8px; font-size:12px; color:#e0e0e0; }
     .speed-demo p { margin:8px 0 0; font-size:11px; color:#bcbcbc; line-height:1.4; }
+    .demo-icons { display:grid; gap:6px; margin-bottom:8px; }
+    .demo-chip { display:inline-flex; align-items:center; gap:6px; border:1px solid #303030; background:#101010; color:#d3d3d3; padding:4px 6px; font-size:10px; text-transform:uppercase; }
+    .demo-chip.loading { color:#d3b7b7; border-color:#4d3535; }
+    .demo-chip.no-reload { color:#bfe2bf; border-color:#355235; }
     .demo-track { margin-bottom:8px; }
     .demo-track small { display:block; margin-bottom:4px; color:#a5a5a5; font-size:10px; text-transform:uppercase; }
     .pulse { border:1px solid #2f2f2f; background:#0f0f0f; height:12px; overflow:hidden; }
@@ -206,9 +219,11 @@ type CollectionProduct = {
     .live-field select { border:1px solid #3a3a3a; background:#131313; color:#fff; padding:8px; }
     .live-result { color:#a8a8a8; font-size:12px; margin:8px 0; }
     .live-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:8px; }
-    .live-card { border:1px solid #2f2f2f; background:#151515; padding:8px 10px; display:flex; justify-content:space-between; gap:8px; }
+    .live-card { border:1px solid #2f2f2f; background:#151515; padding:8px; display:grid; gap:8px; }
+    .live-card img { width:100%; height:120px; object-fit:cover; border:1px solid #2f2f2f; margin:0; filter:none; }
+    .live-card-body { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; }
     .live-card strong { font-size:11px; }
-    .live-card span { font-size:11px; color:#cfcfcf; }
+    .live-card span { font-size:11px; color:#cfcfcf; white-space:nowrap; }
     .live-empty { color:#9a9a9a; font-size:12px; }
     .inspiration, .value { background:#111; border:1px solid #2f2f2f; padding:20px; margin-bottom:24px; }
     .inspiration a { color:#fff; font-weight:700; }
@@ -314,7 +329,7 @@ export class HomePageComponent implements OnInit {
 
   isInCart(product: Product): boolean {
     const firstVariant = product.variants.nodes[0];
-    return firstVariant ? this.cartService.hasItem(firstVariant.id) : false;
+    return firstVariant ? this.cartService.hasOrPendingItem(firstVariant.id) : false;
   }
 
   stopCardNavigation(event: Event): void {
