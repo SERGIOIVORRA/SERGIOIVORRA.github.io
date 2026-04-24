@@ -45,8 +45,7 @@ import { I18nService } from '../services/i18n.service';
       </section>
 
       <section class="notes">
-        <h2>* {{ i18n.lang() === 'en' ? 'Theme editor (demo — not connected)' : 'Editor de theme (demo — no conecta)' }}</h2>
-        <p class="notes-hint">{{ i18n.lang() === 'en' ? 'Placeholder only: nothing is sent or stored.' : 'Solo maqueta: no se envia ni guarda nada.' }}</p>
+        <h2>* {{ i18n.lang() === 'en' ? 'Theme editor' : 'Editor de theme' }}</h2>
         <form class="fake-editor-login" (submit)="$event.preventDefault()">
           <label>
             <span>{{ i18n.lang() === 'en' ? 'User' : 'Usuario' }}</span>
@@ -77,7 +76,6 @@ import { I18nService } from '../services/i18n.service';
     .bar.t { background:linear-gradient(90deg,#6a6a6a,#3e3e3e); }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; margin-top:10px; }
     .grid article { border:1px solid #2f2f2f; background:#151515; padding:10px; }
-    .notes-hint { margin:6px 0 12px; font-size:11px; color:#9a9a9a; line-height:1.4; }
     .fake-editor-login { display:grid; gap:10px; max-width:320px; margin-top:4px; }
     .fake-editor-login label { display:grid; gap:4px; font-size:11px; color:#c4c4c4; }
     .fake-editor-login input { border:1px solid #3a3a3a; background:#131313; color:#fff; padding:8px 10px; font:inherit; }

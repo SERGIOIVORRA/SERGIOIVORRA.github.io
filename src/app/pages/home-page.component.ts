@@ -44,12 +44,6 @@ type CollectionProduct = {
           <button type="button" (click)="moveSection('hero', 1)">↓</button>
         </div>
       }
-      @if (heroImageUrl().trim()) {
-        <figure class="hero-portada-wrap">
-          <img class="hero-portada-img" [src]="heroImageUrl()" alt="" loading="eager" decoding="async" (error)="clearHeroImage()" />
-          <figcaption class="hero-portada-caption">{{ i18n.t('home.heroPortadaPreview') }} · <code>{{ i18n.t('home.metafieldPortadaKey') }}</code></figcaption>
-        </figure>
-      }
       <div class="hero-main">
         <div>
           <h1>{{ i18n.t('home.heroTitle') }}</h1>
@@ -108,8 +102,6 @@ type CollectionProduct = {
       <nav class="demo-jump" [attr.aria-label]="i18n.lang() === 'en' ? 'Demo shortcuts' : 'Atajos demo'">
         <span class="demo-jump__label">{{ i18n.lang() === 'en' ? 'Jump:' : 'Ir a:' }}</span>
         <a class="demo-jump__link" href="#meta-sim">{{ i18n.lang() === 'en' ? 'Simulated metafields' : 'Metacampos simulados' }}</a>
-        <span class="demo-jump__sep" aria-hidden="true">|</span>
-        <a class="demo-jump__link" href="#console-lab">{{ i18n.lang() === 'en' ? 'Simulated consoles' : 'Consolas simuladas' }}</a>
       </nav>
       <details class="editor-panel" open>
         <summary>* {{ i18n.lang() === 'en' ? 'Visual controls' : 'Controles visuales' }}</summary>
@@ -158,29 +150,6 @@ type CollectionProduct = {
         </div>
         <div class="metafield-editor">
           <h4 class="metafield-editor-title">{{ i18n.t('home.metafieldsEditorTitle') }}</h4>
-          <datalist id="meta-image-suggestions">
-            @for (u of imagePresetUrls; track u) {
-              <option [value]="u"></option>
-            }
-          </datalist>
-          <div class="metafield-row">
-            <div class="metafield-label-col">
-              <span class="metafield-pill">{{ i18n.lang() === 'en' ? 'File' : 'Archivo' }}</span>
-              <div class="metafield-label-text">
-                <strong>{{ i18n.t('home.metafieldPortadaLabel') }}</strong>
-                <div class="meta-key"><code>{{ i18n.t('home.metafieldPortadaKey') }}</code></div>
-              </div>
-            </div>
-            <div class="metafield-input-col">
-              <div class="metafield-input-wrap">
-                <input type="text" class="meta-grow" [value]="heroImageUrl()" [attr.placeholder]="i18n.t('home.metafieldImageHint')" list="meta-image-suggestions" (input)="setHeroImageUrl($any($event.target).value)" />
-                <button type="button" class="dynamic-source-btn" [attr.aria-label]="i18n.t('home.dynamicSource')" [title]="i18n.t('home.dynamicSource')" (click)="cycleHeroImagePreset()">⎔</button>
-              </div>
-              @if (heroImageUrl().trim()) {
-                <div class="meta-thumb"><img [src]="heroImageUrl()" alt="" (error)="clearHeroImage()" /></div>
-              }
-            </div>
-          </div>
           <div class="metafield-row">
             <div class="metafield-label-col">
               <span class="metafield-pill">{{ i18n.lang() === 'en' ? 'Single line' : 'Una linea' }}</span>
@@ -447,7 +416,6 @@ type CollectionProduct = {
     }
     .demo-jump__label { color:#888; text-transform:uppercase; letter-spacing:.5px; }
     .demo-jump__link { color:#a8d4ff; font-weight:700; text-decoration:underline; }
-    .demo-jump__sep { color:#555; user-select:none; }
     .meta-sim-panel { margin-top:14px; padding-top:14px; border-top:1px dashed #3a3a3a; }
     .meta-sim-title { margin:0 0 6px; font-size:11px; letter-spacing:.8px; text-transform:uppercase; color:#e0e0e0; }
     .meta-sim-hint { margin:0 0 10px; font-size:11px; color:#9a9a9a; line-height:1.4; }
@@ -496,10 +464,6 @@ type CollectionProduct = {
     .dynamic-source-btn:hover { border-color:#5a5a5a; color:#fff; }
     .meta-thumb { max-width:120px; border:1px solid #2f2f2f; background:#0c0c0c; padding:2px; }
     .meta-thumb img { width:100%; height:72px; object-fit:cover; margin:0; display:block; }
-    .hero-portada-wrap { margin:0 0 14px; border:1px solid #2f2f2f; background:#101010; overflow:hidden; }
-    .hero-portada-img { display:block; width:100%; max-height:240px; object-fit:cover; margin:0; height:auto; filter:none; }
-    .hero-portada-caption { margin:0; padding:6px 10px; font-size:10px; color:#9a9a9a; border-top:1px solid #2a2a2a; background:#141414; }
-    .hero-portada-caption code { color:#a8cfff; font-size:10px; }
     .hero-meta-subline { margin:-4px 0 10px; font-size:13px; color:color-mix(in srgb, var(--ui-accent-color, #d6d6d6) 85%, #fff 15%); letter-spacing:.4px; text-transform:none; font-weight:600; }
     .block-tools { position:absolute; right:10px; top:10px; display:flex; gap:6px; z-index:4; }
     .block-tools button { border:1px solid #3a3a3a; background:#0f0f0f; color:#f5f5f5; width:28px; height:28px; font-weight:700; cursor:pointer; }
@@ -615,12 +579,6 @@ type CollectionProduct = {
   `]
 })
 export class HomePageComponent implements OnInit {
-  readonly imagePresetUrls = [
-    'collections/collection-01.jpg',
-    'collections/collection-02.jpg',
-    'collections/collection-03.jpg',
-  ];
-  private imagePresetCycle = 0;
   private accentPresetCycle = 0;
   readonly accentPresets = ['#d6d6d6', '#4ec5ff', '#7a5f46', '#e8e4dc', '#ff5a7a'];
 
@@ -636,7 +594,6 @@ export class HomePageComponent implements OnInit {
   readonly backgroundColor = signal('#0b0b0b');
   readonly textColor = signal('#f4f4f4');
   readonly accentColor = signal('#d6d6d6');
-  readonly heroImageUrl = signal('');
   readonly heroTagline = signal('');
   readonly blockEditMode = signal(false);
   readonly capacitySplitOpen = signal(false);
@@ -714,26 +671,8 @@ export class HomePageComponent implements OnInit {
     this.applyVisualVars();
   }
 
-  setHeroImageUrl(value: string): void {
-    this.heroImageUrl.set(value.trim());
-    this.applyVisualVars();
-  }
-
   setHeroTagline(value: string): void {
     this.heroTagline.set(value);
-    this.applyVisualVars();
-  }
-
-  clearHeroImage(): void {
-    this.heroImageUrl.set('');
-    this.applyVisualVars();
-  }
-
-  cycleHeroImagePreset(): void {
-    const list = this.imagePresetUrls;
-    const next = list[this.imagePresetCycle % list.length] ?? '';
-    this.imagePresetCycle += 1;
-    this.heroImageUrl.set(next);
     this.applyVisualVars();
   }
 
@@ -835,15 +774,15 @@ export class HomePageComponent implements OnInit {
                   metafields: [
                     {
                       namespace: 'custom',
-                      key: 'portada',
-                      type: 'file_reference',
-                      value: 'gid://shopify/MediaImage/987654321',
-                    },
-                    {
-                      namespace: 'custom',
                       key: 'subline',
                       type: 'single_line_text_field',
                       value: 'Storefront headless · navegacion instantanea',
+                    },
+                    {
+                      namespace: 'custom',
+                      key: 'nuevo_sergio',
+                      type: 'single_line_text_field',
+                      value: 'Nuevo',
                     },
                   ],
                 },
@@ -867,7 +806,6 @@ export class HomePageComponent implements OnInit {
     this.backgroundColor.set('#0b0b0b');
     this.textColor.set('#f4f4f4');
     this.accentColor.set('#d6d6d6');
-    this.heroImageUrl.set('');
     this.heroTagline.set('');
     this.applyVisualVars();
   }
@@ -969,7 +907,6 @@ export class HomePageComponent implements OnInit {
       backgroundColor: this.backgroundColor(),
       textColor: this.textColor(),
       accentColor: this.accentColor(),
-      heroImageUrl: this.heroImageUrl(),
       heroTagline: this.heroTagline(),
     }));
   }
@@ -978,7 +915,7 @@ export class HomePageComponent implements OnInit {
     const raw = this.document.defaultView?.localStorage.getItem('home.visualPrefs');
     if (!raw) return;
     try {
-      const prefs = JSON.parse(raw) as Partial<Record<'brightness' | 'darkness' | 'contrast' | 'saturation', number> & Record<'fontFamily' | 'backgroundColor' | 'textColor' | 'accentColor' | 'heroImageUrl' | 'heroTagline', string>>;
+      const prefs = JSON.parse(raw) as Partial<Record<'brightness' | 'darkness' | 'contrast' | 'saturation', number> & Record<'fontFamily' | 'backgroundColor' | 'textColor' | 'accentColor' | 'heroTagline', string>>;
       if (typeof prefs.brightness === 'number') this.brightness.set(prefs.brightness);
       if (typeof prefs.darkness === 'number') this.darkness.set(prefs.darkness);
       if (typeof prefs.contrast === 'number') this.contrast.set(prefs.contrast);
@@ -987,7 +924,6 @@ export class HomePageComponent implements OnInit {
       if (typeof prefs.backgroundColor === 'string') this.backgroundColor.set(prefs.backgroundColor);
       if (typeof prefs.textColor === 'string') this.textColor.set(prefs.textColor);
       if (typeof prefs.accentColor === 'string') this.accentColor.set(prefs.accentColor);
-      if (typeof prefs.heroImageUrl === 'string') this.heroImageUrl.set(prefs.heroImageUrl);
       if (typeof prefs.heroTagline === 'string') this.heroTagline.set(prefs.heroTagline);
     } catch {
       // ignore invalid persisted data
