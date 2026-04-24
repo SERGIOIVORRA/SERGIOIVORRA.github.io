@@ -6,6 +6,30 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class ShopifyService {
   private readonly apiUrl = `https://${environment.shopifyStoreDomain}/api/2025-01/graphql.json`;
+  private collectionsCache: {
+    data: {
+      collections: {
+        nodes: Array<{
+          id: string;
+          handle: string;
+          title: string;
+          description: string;
+          image: { url: string; altText: string | null } | null;
+        }>;
+      };
+    } | null;
+    promise: Promise<{
+      collections: {
+        nodes: Array<{
+          id: string;
+          handle: string;
+          title: string;
+          description: string;
+          image: { url: string; altText: string | null } | null;
+        }>;
+      };
+    }> | null;
+  } = { data: null, promise: null };
 
   constructor(private http: HttpClient) {}
 
@@ -29,7 +53,13 @@ export class ShopifyService {
   }
 
   getCollections() {
-    return this.request<{
+    if (this.collectionsCache.data) {
+      return Promise.resolve(this.collectionsCache.data);
+    }
+    if (this.collectionsCache.promise) {
+      return this.collectionsCache.promise;
+    }
+    this.collectionsCache.promise = this.request<{
       collections: {
         nodes: Array<{
           id: string;
@@ -51,7 +81,19 @@ export class ShopifyService {
           }
         }
       }
-    `);
+    `).then((data) => {
+      this.collectionsCache.data = data;
+      this.collectionsCache.promise = null;
+      return data;
+    }).catch((error) => {
+      this.collectionsCache.promise = null;
+      throw error;
+    });
+    return this.collectionsCache.promise;
+  }
+
+  prefetchCollections(): void {
+    void this.getCollections();
   }
 
   getCollectionByHandle(handle: string) {

@@ -21,6 +21,7 @@ type ExtraField = {
   label: string;
   value: string;
   imageUrl?: string;
+  cdnUrl?: string;
 };
 
 @Component({
@@ -75,7 +76,6 @@ type ExtraField = {
                   <h3 (click)="goToProduct(item.handle)">{{ item.title }}</h3>
                   <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
                   <div class="recommended-actions">
-                    <button type="button" class="view-btn" (click)="goToProduct(item.handle)"><span class="icon">?</span> {{ i18n.t('common.view') }}</button>
                     <button [disabled]="!item.availableForSale" (click)="onAddToCart($event, item)">
                       @if (item.availableForSale) {
                         + {{ i18n.t('common.add') }}
@@ -104,6 +104,7 @@ type ExtraField = {
                   <input [value]="field.value" readonly />
                   @if (field.imageUrl) {
                     <img class="meta-image" [src]="field.imageUrl" [alt]="field.label" />
+                    <input class="cdn-url" [value]="field.cdnUrl || field.imageUrl" readonly />
                   }
                 </article>
               }
@@ -175,6 +176,7 @@ type ExtraField = {
     .meta-card small { color:#9c9c9c; text-transform:uppercase; letter-spacing:.7px; }
     .meta-card input { margin-top:4px; border:1px solid #3a3a3a; background:#111; color:#ddd; padding:6px; width:100%; }
     .meta-image { margin-top:8px; width:100%; height:140px; object-fit:cover; border:1px solid #2f2f2f; }
+    .cdn-url { font-size:10px; color:#9ec3ff; }
     .recommended { margin-top:28px; }
     .recommended.in-side { margin-top:8px; border-top:1px solid #2f2f2f; padding-top:12px; }
     .recommended-head { display:flex; justify-content:space-between; align-items:center; }
@@ -186,15 +188,6 @@ type ExtraField = {
     .recommended-card h3 { min-height:52px; margin:6px 0; }
     .recommended-card p { margin:8px 0 10px; }
     .recommended-actions { display:flex; gap:8px; align-items:center; margin-top:auto; }
-    .recommended-actions .view-btn {
-      text-decoration:none;
-      color:#fff;
-      font-weight:700;
-      background:#151515;
-      border:1px solid #3a3a3a;
-      padding:8px 10px;
-      margin-top:0;
-    }
     .icon { margin-right:4px; color:#bcbcbc; }
     .recommended-actions button { margin-top:0; }
     button:disabled { opacity:.6; cursor:not-allowed; border-color:#4a2323; color:#c7a8a8; }
@@ -287,14 +280,20 @@ export class ProductPageComponent implements OnInit {
       }));
 
     const mediaIds = filled
-      .map((field) => field.value.trim())
-      .filter((value) => value.startsWith('gid://shopify/MediaImage/'));
+      .flatMap((field) => this.extractMediaImageIds(field.value))
+      .filter(Boolean);
     const mediaMap = await this.shopifyService.getMediaImageUrls(mediaIds);
 
     return filled.map((field) => ({
       ...field,
-      imageUrl: mediaMap[field.value.trim()],
+      imageUrl: this.extractMediaImageIds(field.value).map((id) => mediaMap[id]).find(Boolean),
+      cdnUrl: this.extractMediaImageIds(field.value).map((id) => mediaMap[id]).find(Boolean),
     }));
+  }
+
+  private extractMediaImageIds(value: string): string[] {
+    const matches = value.match(/gid:\/\/shopify\/MediaImage\/\d+/g);
+    return matches ? [...new Set(matches)] : [];
   }
 
   onAddToCart(event: Event, product: Product): void {

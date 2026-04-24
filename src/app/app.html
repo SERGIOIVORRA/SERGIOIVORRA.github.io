@@ -20,9 +20,11 @@
   <router-outlet />
 </main>
 
-<footer class="site-footer">
-  <p>ANGULAR</p>
-</footer>
+@if (footerVisible()) {
+  <footer class="site-footer reveal">
+    <p>ANGULAR</p>
+  </footer>
+}
 
 @if (cartService.isDrawerOpen()) {
   <aside class="cart-drawer">

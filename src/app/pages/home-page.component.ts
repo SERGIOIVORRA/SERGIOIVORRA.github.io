@@ -158,7 +158,7 @@ type Product = {
     .pulse { border:1px solid #2f2f2f; background:#0f0f0f; height:12px; overflow:hidden; }
     .pulse span { display:block; height:100%; width:32%; }
     .demo-track.before .pulse span { background:#7b4040; animation: slowReload 2.6s ease-in-out infinite; }
-    .demo-track.after .pulse span { background:#d6d6d6; animation: fastSpa .9s linear infinite; }
+    .demo-track.after .pulse span { background:#d6d6d6; animation: fastSpa .45s linear infinite; }
     .hero-detail { margin-top:10px; color:#bbb; line-height:1.55; max-width:900px; }
     .inspiration, .value { background:#111; border:1px solid #2f2f2f; padding:20px; margin-bottom:24px; }
     .inspiration a { color:#fff; font-weight:700; }

@@ -44,7 +44,6 @@ type Collection = {
               <p>{{ collection.description || i18n.t('collection.curated') }}</p>
               <div class="actions">
                 <a [routerLink]="['/collections', collection.handle]">- {{ i18n.t('collection.viewProducts') }}</a>
-                <a [href]="collectionUrl(collection.handle)" target="_blank" rel="noreferrer">+ {{ i18n.t('collection.openCollection') }}</a>
               </div>
             </div>
           </article>
@@ -122,9 +121,5 @@ export class CollectionsPageComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const data = await this.shopifyService.getCollections();
     this.collections.set(data.collections.nodes);
-  }
-
-  collectionUrl(handle: string): string {
-    return `https://${this.storeDomain}/collections/${handle}`;
   }
 }
