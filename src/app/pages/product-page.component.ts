@@ -13,7 +13,7 @@ type Product = {
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   variants: { nodes: Array<{ id: string; title: string }> };
-  metafields?: Array<{ namespace: string; key: string; value: string } | null>;
+  metafields?: { nodes: Array<{ namespace: string; key: string; value: string }> };
 };
 
 @Component({
@@ -22,7 +22,7 @@ type Product = {
   imports: [CurrencyPipe, RouterLink],
   template: `
     @if (isLoading()) {
-      <p>Cargando producto...</p>
+      <p>{{ i18n.t('product.loading') }}</p>
     } @else if (loadError()) {
       <p>{{ loadError() }}</p>
     } @else if (product(); as p) {
@@ -33,9 +33,9 @@ type Product = {
         <div>
           <h1>{{ p.title }}</h1>
           <div class="image-mode-switch">
-            <button (click)="setImageMode('square')" [class.active]="imageMode() === 'square'">Cuadrado</button>
-            <button (click)="setImageMode('tall')" [class.active]="imageMode() === 'tall'">Largo</button>
-            <button (click)="setImageMode('wide')" [class.active]="imageMode() === 'wide'">Ancho</button>
+            <button (click)="setImageMode('square')" [class.active]="imageMode() === 'square'">{{ i18n.t('product.image.square') }}</button>
+            <button (click)="setImageMode('tall')" [class.active]="imageMode() === 'tall'">{{ i18n.t('product.image.tall') }}</button>
+            <button (click)="setImageMode('wide')" [class.active]="imageMode() === 'wide'">{{ i18n.t('product.image.wide') }}</button>
           </div>
           <div class="tag-list">
             @for (tag of topTags(p.tags); track tag) {
@@ -45,7 +45,7 @@ type Product = {
           <p class="description">{{ p.description }}</p>
           <strong>{{ p.priceRange.minVariantPrice.amount | currency:p.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</strong>
           <div>
-            <button (click)="addToCart(p)">+ ANADIR AL CARRITO</button>
+            <button (click)="addToCart(p)">+ {{ i18n.t('product.addToCart') }}</button>
           </div>
         </div>
       </article>
@@ -66,8 +66,8 @@ type Product = {
 
       <section class="recommended">
         <div class="recommended-head">
-          <h2>Recomendados para ti</h2>
-          <a routerLink="/collections">Ver mas productos</a>
+          <h2>{{ i18n.t('product.recommended') }}</h2>
+          <a routerLink="/collections">{{ i18n.t('product.viewMore') }}</a>
         </div>
         <div class="recommended-grid">
           @for (item of recommendations(); track item.handle) {
@@ -78,12 +78,12 @@ type Product = {
               <h3>{{ item.title }}</h3>
               <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
               <div class="recommended-actions">
-                <a [routerLink]="['/product', item.handle]"><span class="icon">▸</span> {{ i18n.t('common.view') }}</a>
+                <a [routerLink]="['/product', item.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
                 <button (click)="onAddToCart($event, item)">+ {{ i18n.t('common.add') }}</button>
               </div>
             </article>
           } @empty {
-            <p>No hay recomendados disponibles ahora mismo.</p>
+            <p>{{ i18n.t('product.noRecommendations') }}</p>
           }
         </div>
       </section>
@@ -199,13 +199,13 @@ export class ProductPageComponent implements OnInit {
       ]);
 
       if (!productData.product) {
-        this.loadError.set('No se pudo cargar este producto. Revisa token o disponibilidad.');
+        this.loadError.set(this.i18n.t('product.notFound'));
         this.product.set(null);
         return;
       }
 
       this.product.set(productData.product);
-      this.extraInfo.set(this.mapMetafields(productData.product.metafields ?? []));
+      this.extraInfo.set(this.mapMetafields(productData.product.metafields?.nodes ?? []));
 
       const recommended = productsData.products.nodes
         .filter((item) => item.handle !== handle)
@@ -215,7 +215,7 @@ export class ProductPageComponent implements OnInit {
       this.product.set(null);
       this.extraInfo.set([]);
       this.recommendations.set([]);
-      this.loadError.set('Error cargando producto. Revisa Storefront token y metacampos.');
+      this.loadError.set(this.i18n.t('product.loadError'));
       console.error(error);
     } finally {
       this.isLoading.set(false);
@@ -239,10 +239,10 @@ export class ProductPageComponent implements OnInit {
   }
 
   private mapMetafields(
-    metafields: Array<{ namespace: string; key: string; value: string } | null>,
+    metafields: Array<{ namespace: string; key: string; value: string }>,
   ): Array<{ label: string; value: string }> {
     return metafields
-      .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
+      .filter((field) => Boolean(field?.value?.trim()))
       .map((field) => ({
         label: `${field.namespace}.${field.key}`,
         value: field.value,

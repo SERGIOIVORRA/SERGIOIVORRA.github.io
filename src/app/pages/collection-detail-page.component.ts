@@ -12,7 +12,7 @@ type CollectionProduct = {
   availableForSale: boolean;
   productType: string;
   vendor: string;
-  metafields: Array<{ namespace: string; key: string; value: string } | null>;
+  metafields: { nodes: Array<{ namespace: string; key: string; value: string }> };
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
 };
@@ -31,10 +31,10 @@ type CollectionProduct = {
 
       <div class="layout">
         <aside class="filters">
-          <h3>+ FILTROS</h3>
+          <h3>+ {{ i18n.t('collection.filterTitle') }}</h3>
 
           <label class="field">
-            Buscar
+            {{ i18n.t('collection.search') }}
             <input
               type="search"
               [value]="searchTerm()"
@@ -44,29 +44,29 @@ type CollectionProduct = {
           </label>
 
           <label class="field">
-            Orden
+            {{ i18n.t('collection.order') }}
             <select [value]="sortBy()" (change)="sortBy.set($any($event.target).value)">
-              <option value="featured">Destacados</option>
-              <option value="price-asc">Precio asc</option>
-              <option value="price-desc">Precio desc</option>
-              <option value="title-asc">Nombre A-Z</option>
+              <option value="featured">{{ i18n.t('collection.order.featured') }}</option>
+              <option value="price-asc">{{ i18n.t('collection.order.priceAsc') }}</option>
+              <option value="price-desc">{{ i18n.t('collection.order.priceDesc') }}</option>
+              <option value="title-asc">{{ i18n.t('collection.order.titleAsc') }}</option>
             </select>
           </label>
 
           <label class="field">
-            Precio maximo: {{ maxPrice() }}
+            {{ i18n.t('collection.priceMax') }}: {{ maxPrice() }}
             <input type="range" min="10" max="1000" step="5" [value]="maxPrice()" (input)="maxPrice.set(+$any($event.target).value)" />
           </label>
 
           <label class="field checkbox">
             <input type="checkbox" [checked]="onlyInStock()" (change)="onlyInStock.set($any($event.target).checked)" />
-            Solo disponibles
+            {{ i18n.t('collection.onlyAvailable') }}
           </label>
 
           <label class="field">
-            Tipo de producto
+            {{ i18n.t('collection.productType') }}
             <select [value]="selectedType()" (change)="selectedType.set($any($event.target).value)">
-              <option value="all">Todos</option>
+              <option value="all">{{ i18n.t('collection.all') }}</option>
               @for (type of productTypes(); track type) {
                 <option [value]="type">{{ type }}</option>
               }
@@ -90,17 +90,17 @@ type CollectionProduct = {
                 <h3>{{ product.title }}</h3>
                 <small>{{ product.vendor }} · {{ product.productType || 'General' }}</small>
                 <div class="meta-list">
-                  @for (field of filledMetafields(product.metafields); track field.label) {
+                  @for (field of filledMetafields(product.metafields.nodes); track field.label) {
                     <small>{{ field.label }}: {{ field.value }}</small>
                   }
                 </div>
                 <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
                 <div class="actions">
-                  <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> {{ i18n.t('common.view') }}</a>
+                  <a [routerLink]="['/product', product.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
                 </div>
               </article>
             } @empty {
-              <p class="empty">No hay productos que coincidan con tus filtros en tiempo real.</p>
+              <p class="empty">{{ i18n.t('collection.noMatches') }}</p>
             }
           </div>
         </div>
@@ -204,10 +204,10 @@ export class CollectionDetailPageComponent implements OnInit {
   }
 
   filledMetafields(
-    metafields: Array<{ namespace: string; key: string; value: string } | null>,
+    metafields: Array<{ namespace: string; key: string; value: string }>,
   ): Array<{ label: string; value: string }> {
     return metafields
-      .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
+      .filter((field) => Boolean(field?.value?.trim()))
       .map((field) => ({ label: `${field.namespace}.${field.key}`, value: field.value }));
   }
 }

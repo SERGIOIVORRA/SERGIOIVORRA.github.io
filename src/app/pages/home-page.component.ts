@@ -10,7 +10,7 @@ type Product = {
   title: string;
   description: string;
   tags: string[];
-  metafields: Array<{ namespace: string; key: string; value: string } | null>;
+  metafields: { nodes: Array<{ namespace: string; key: string; value: string }> };
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   variants: { nodes: Array<{ id: string; title: string }> };
@@ -85,7 +85,7 @@ type Product = {
     </section>
 
     <section class="products" id="products-section">
-      <h2>* Productos destacados</h2>
+      <h2>* {{ i18n.t('home.featuredProducts') }}</h2>
       <div class="grid">
         @for (product of products(); track product.handle) {
           <article class="card" [routerLink]="['/product', product.handle]">
@@ -99,13 +99,13 @@ type Product = {
             </div>
             <h3>{{ product.title }}</h3>
             <div class="meta-list">
-              @for (field of filledMetafields(product.metafields); track field.label) {
+              @for (field of filledMetafields(product.metafields.nodes); track field.label) {
                 <small>{{ field.label }}: {{ field.value }}</small>
               }
             </div>
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
-              <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> {{ i18n.t('common.view') }}</a>
+              <a [routerLink]="['/product', product.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
               <button (click)="onAddToCart($event, product)">+ {{ i18n.t('common.add') }}</button>
             </div>
           </article>
@@ -194,10 +194,10 @@ export class HomePageComponent implements OnInit {
   }
 
   filledMetafields(
-    metafields: Array<{ namespace: string; key: string; value: string } | null>,
+    metafields: Array<{ namespace: string; key: string; value: string }>,
   ): Array<{ label: string; value: string }> {
     return metafields
-      .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
+      .filter((field) => Boolean(field?.value?.trim()))
       .map((field) => ({ label: `${field.namespace}.${field.key}`, value: field.value }));
   }
 }
