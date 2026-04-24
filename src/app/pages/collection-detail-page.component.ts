@@ -1,6 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { I18nService } from '../services/i18n.service';
 import { ShopifyService } from '../services/shopify.service';
 
 type CollectionProduct = {
@@ -22,7 +23,7 @@ type CollectionProduct = {
   template: `
     <section class="collection-page">
       <div class="collection-head">
-        <a class="back" routerLink="/collections">- VOLVER A COLECCIONES</a>
+        <a class="back" routerLink="/collections">- {{ i18n.t('common.backCollections') }}</a>
         <h1>* {{ collectionTitle() || 'Coleccion' }}</h1>
         <p>{{ collectionDescription() || 'Filtrado en tiempo real estilo Shopify para navegar rapido.' }}</p>
       </div>
@@ -73,10 +74,10 @@ type CollectionProduct = {
         </aside>
 
         <div class="products">
-          <p class="result-count">{{ filteredProducts().length }} resultados</p>
+          <p class="result-count">{{ filteredProducts().length }} {{ i18n.t('common.results') }}</p>
           <div class="grid">
             @for (product of filteredProducts(); track product.id) {
-              <article class="card">
+              <article class="card" [routerLink]="['/product', product.handle]">
                 @if (product.featuredImage) {
                   <img [src]="product.featuredImage.url" [alt]="product.featuredImage.altText || product.title" />
                 }
@@ -89,7 +90,7 @@ type CollectionProduct = {
                 <small>{{ product.vendor }} · {{ product.productType || 'General' }}</small>
                 <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
                 <div class="actions">
-                  <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> VER</a>
+                  <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> {{ i18n.t('common.view') }}</a>
                 </div>
               </article>
             } @empty {
@@ -112,7 +113,7 @@ type CollectionProduct = {
     .products { border:1px solid #2f2f2f; background:#111; padding:14px; }
     .result-count { color:#a7a7a7; margin-top:0; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
-    .card { border:1px solid #2f2f2f; background:#151515; padding:10px; display:flex; flex-direction:column; }
+    .card { border:1px solid #2f2f2f; background:#151515; padding:10px; display:flex; flex-direction:column; cursor:pointer; }
     .card img { width:100%; height:180px; object-fit:cover; margin-bottom:8px; }
     .tag-list { display:flex; flex-wrap:wrap; gap:6px; min-height:24px; margin-bottom:6px; }
     .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
@@ -172,7 +173,11 @@ export class CollectionDetailPageComponent implements OnInit {
     return result;
   });
 
-  constructor(private route: ActivatedRoute, private shopifyService: ShopifyService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private shopifyService: ShopifyService,
+    public i18n: I18nService,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     const handle = this.route.snapshot.paramMap.get('handle');

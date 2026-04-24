@@ -2,6 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../services/cart.service';
+import { I18nService } from '../services/i18n.service';
 import { ShopifyService } from '../services/shopify.service';
 
 type Product = {
@@ -82,11 +83,11 @@ type Product = {
       </div>
     </section>
 
-    <section class="products">
+    <section class="products" id="products-section">
       <h2>* Productos destacados</h2>
       <div class="grid">
         @for (product of products(); track product.handle) {
-          <article class="card">
+          <article class="card" [routerLink]="['/product', product.handle]">
             @if (product.featuredImage) {
               <img [src]="product.featuredImage.url" [alt]="product.featuredImage.altText || product.title" />
             }
@@ -98,8 +99,8 @@ type Product = {
             <h3>{{ product.title }}</h3>
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
-              <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> VER</a>
-              <button (click)="addToCart(product)">+ ANADIR</button>
+              <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> {{ i18n.t('common.view') }}</a>
+              <button (click)="onAddToCart($event, product)">+ {{ i18n.t('common.add') }}</button>
             </div>
           </article>
         }
@@ -135,7 +136,7 @@ type Product = {
     .cta { display:inline-block; background:#d6d6d6; color:#111; padding:10px 14px; text-decoration:none; border:1px solid #bdbdbd; font-weight:700; }
     .cta.ghost { background:transparent; color:#fff; border:1px solid #3d3d3d; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-    .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; display:flex; flex-direction:column; }
+    .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; display:flex; flex-direction:column; cursor:pointer; }
     .card:hover { transform: translateY(-3px); }
     img { width:100%; height:180px; object-fit:cover; margin-bottom:8px; filter: grayscale(.12); }
     .tag-list { display:flex; flex-wrap:wrap; gap:6px; min-height:24px; margin-bottom:6px; }
@@ -151,7 +152,11 @@ type Product = {
 export class HomePageComponent implements OnInit {
   readonly products = signal<Product[]>([]);
 
-  constructor(private shopifyService: ShopifyService, private cartService: CartService) {}
+  constructor(
+    private shopifyService: ShopifyService,
+    private cartService: CartService,
+    public i18n: I18nService,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     const data = await this.shopifyService.getProducts();
@@ -168,6 +173,12 @@ export class HomePageComponent implements OnInit {
       variantTitle: firstVariant.title,
       price: product.priceRange.minVariantPrice,
     });
+  }
+
+  onAddToCart(event: Event, product: Product): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.addToCart(product);
   }
 
   topTags(tags: string[]): string[] {

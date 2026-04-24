@@ -2,6 +2,7 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CartService } from '../services/cart.service';
+import { I18nService } from '../services/i18n.service';
 import { ShopifyService } from '../services/shopify.service';
 
 type Product = {
@@ -42,7 +43,7 @@ type Product = {
 
       @if (extraInfo().length > 0) {
         <section class="meta-section">
-          <h2>* EXTRA INFO</h2>
+          <h2>* {{ i18n.t('common.extraInfo') }}</h2>
           <div class="meta-grid">
             @for (field of extraInfo(); track field.label) {
               <article class="meta-card">
@@ -61,15 +62,15 @@ type Product = {
         </div>
         <div class="recommended-grid">
           @for (item of recommendations(); track item.handle) {
-            <article class="recommended-card">
+            <article class="recommended-card" [routerLink]="['/product', item.handle]">
               @if (item.featuredImage) {
                 <img [src]="item.featuredImage.url" [alt]="item.featuredImage.altText || item.title" />
               }
               <h3>{{ item.title }}</h3>
               <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
               <div class="recommended-actions">
-                <a [routerLink]="['/product', item.handle]"><span class="icon">▸</span> VER</a>
-                <button (click)="addToCart(item)">+ ANADIR</button>
+                <a [routerLink]="['/product', item.handle]"><span class="icon">▸</span> {{ i18n.t('common.view') }}</a>
+                <button (click)="onAddToCart($event, item)">+ {{ i18n.t('common.add') }}</button>
               </div>
             </article>
           } @empty {
@@ -123,7 +124,7 @@ type Product = {
     .recommended-head { display:flex; justify-content:space-between; align-items:center; }
     .recommended-head a { color:#fff; text-decoration:none; font-weight:700; }
     .recommended-grid { margin-top:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-    .recommended-card { background:#111; border:1px solid #2f2f2f; padding:12px; display:flex; flex-direction:column; }
+    .recommended-card { background:#111; border:1px solid #2f2f2f; padding:12px; display:flex; flex-direction:column; cursor:pointer; }
     .recommended-card img { width:100%; height:180px; object-fit:cover; margin-bottom:10px; }
     .recommended-card h3 { min-height:52px; margin:6px 0; }
     .recommended-card p { margin:8px 0 10px; }
@@ -148,7 +149,8 @@ export class ProductPageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private shopifyService: ShopifyService,
-    private cartService: CartService
+    private cartService: CartService,
+    public i18n: I18nService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -191,5 +193,11 @@ export class ProductPageComponent implements OnInit {
         label: `${field.namespace}.${field.key}`,
         value: field.value,
       }));
+  }
+
+  onAddToCart(event: Event, product: Product): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.addToCart(product);
   }
 }

@@ -1,17 +1,18 @@
 <header class="topbar">
-  <a class="brand" routerLink="/">{{ title }}</a>
+  <a class="brand" routerLink="/" (click)="handleBrandClick($event)">{{ title }}</a>
   <nav class="nav">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
-    <a routerLink="/collections" routerLinkActive="active">Colecciones</a>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ i18n.t('nav.home') }}</a>
+    <a routerLink="/collections" routerLinkActive="active">{{ i18n.t('nav.collections') }}</a>
     <a routerLink="/angular-pro" routerLinkActive="active">Angular PRO</a>
-    <a routerLink="/project-structure" routerLinkActive="active">Proyecto</a>
+    <a routerLink="/project-structure" routerLinkActive="active">{{ i18n.t('nav.project') }}</a>
   </nav>
   <div class="account-links">
-    <a class="account-link ghost" [href]="registerUrl" target="_blank" rel="noreferrer">Crear cuenta</a>
-    <a class="account-link" [href]="loginUrl" target="_blank" rel="noreferrer">Login</a>
+    <button class="lang-btn" (click)="i18n.toggleLang()">{{ i18n.t('lang.toggle') }}</button>
+    <a class="account-link ghost" [href]="registerUrl" target="_blank" rel="noreferrer">+{{ i18n.t('nav.createAccount') }}</a>
+    <a class="account-link" [href]="loginUrl" target="_blank" rel="noreferrer">+{{ i18n.t('nav.login') }}</a>
   </div>
   <button class="cart-btn" (click)="cartService.toggleDrawer()">
-    Carrito ({{ cartService.totalItems() }})
+    - {{ i18n.t('nav.cart') }} ({{ cartService.totalItems() }})
   </button>
 </header>
 
@@ -22,12 +23,12 @@
 @if (cartService.isDrawerOpen()) {
   <aside class="cart-drawer">
     <div class="cart-head">
-      <h3>Tu carrito</h3>
+      <h3>{{ i18n.t('cart.title') }}</h3>
       <button (click)="cartService.toggleDrawer()">X</button>
     </div>
 
     @if (cartService.items().length === 0) {
-      <p class="empty">Tu carrito esta vacio.</p>
+      <p class="empty">{{ i18n.t('cart.empty') }}</p>
     } @else {
       <div class="cart-list">
         @for (item of cartService.items(); track $index; let itemIndex = $index) {
@@ -46,7 +47,7 @@
         }
       </div>
       <a class="checkout" [href]="cartService.checkoutUrl()" target="_blank" rel="noreferrer">
-        Ir al checkout
+        {{ i18n.t('cart.checkout') }}
       </a>
     }
   </aside>
