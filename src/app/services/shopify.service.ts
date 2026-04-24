@@ -58,6 +58,7 @@ export class ShopifyService {
             id: string;
             handle: string;
             title: string;
+            tags: string[];
             availableForSale: boolean;
             productType: string;
             vendor: string;
@@ -79,6 +80,7 @@ export class ShopifyService {
               id
               handle
               title
+              tags
               availableForSale
               productType
               vendor
@@ -101,6 +103,7 @@ export class ShopifyService {
           handle: string;
           title: string;
           description: string;
+          tags: string[];
           featuredImage: { url: string; altText: string | null } | null;
           priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
           variants: { nodes: Array<{ id: string; title: string }> };
@@ -110,7 +113,7 @@ export class ShopifyService {
       query GetProducts {
         products(first: 16) {
           nodes {
-            id handle title description
+            id handle title description tags
             featuredImage { url altText }
             priceRange { minVariantPrice { amount currencyCode } }
             variants(first: 1) { nodes { id title } }
@@ -124,20 +127,38 @@ export class ShopifyService {
     return this.request<{
       product: {
         id: string;
+        handle: string;
         title: string;
         description: string;
+        tags: string[];
         featuredImage: { url: string; altText: string | null } | null;
         priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
         variants: { nodes: Array<{ id: string; title: string }> };
+        metafields: Array<{ namespace: string; key: string; value: string } | null>;
       } | null;
     }>(
       `
       query GetProductByHandle($handle: String!) {
         product(handle: $handle) {
-          id title description
+          id handle title description tags
           featuredImage { url altText }
           priceRange { minVariantPrice { amount currencyCode } }
           variants(first: 10) { nodes { id title } }
+          metafields(identifiers: [
+            { namespace: "custom", key: "material" },
+            { namespace: "custom", key: "dimensions" },
+            { namespace: "custom", key: "artist" },
+            { namespace: "custom", key: "technique" },
+            { namespace: "custom", key: "year" },
+            { namespace: "details", key: "material" },
+            { namespace: "details", key: "dimensions" },
+            { namespace: "details", key: "artist" },
+            { namespace: "details", key: "origin" }
+          ]) {
+            namespace
+            key
+            value
+          }
         }
       }
     `,

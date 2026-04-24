@@ -8,6 +8,7 @@ type Product = {
   handle: string;
   title: string;
   description: string;
+  tags: string[];
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   variants: { nodes: Array<{ id: string; title: string }> };
@@ -89,10 +90,15 @@ type Product = {
             @if (product.featuredImage) {
               <img [src]="product.featuredImage.url" [alt]="product.featuredImage.altText || product.title" />
             }
+            <div class="tag-list">
+              @for (tag of topTags(product.tags); track tag) {
+                <span class="tag">{{ tag }}</span>
+              }
+            </div>
             <h3>{{ product.title }}</h3>
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
-              <a [routerLink]="['/product', product.handle]">- VER</a>
+              <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> VER</a>
               <button (click)="addToCart(product)">+ ANADIR</button>
             </div>
           </article>
@@ -129,12 +135,17 @@ type Product = {
     .cta { display:inline-block; background:#d6d6d6; color:#111; padding:10px 14px; text-decoration:none; border:1px solid #bdbdbd; font-weight:700; }
     .cta.ghost { background:transparent; color:#fff; border:1px solid #3d3d3d; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-    .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; }
+    .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; display:flex; flex-direction:column; }
     .card:hover { transform: translateY(-3px); }
     img { width:100%; height:180px; object-fit:cover; margin-bottom:8px; filter: grayscale(.12); }
-    .actions { display:flex; gap:8px; }
+    .tag-list { display:flex; flex-wrap:wrap; gap:6px; min-height:24px; margin-bottom:6px; }
+    .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
+    .card h3 { margin:6px 0 8px; min-height:56px; }
+    .card p { margin:0 0 10px; }
+    .actions { display:flex; gap:8px; margin-top:auto; }
     .actions a, .actions button { background:#171717; color:#fff; border:1px solid #373737; padding:8px 10px; text-decoration:none; font-weight:700; }
     .actions button { cursor:pointer; }
+    .icon { margin-right:4px; color:#bcbcbc; }
   `]
 })
 export class HomePageComponent implements OnInit {
@@ -157,5 +168,9 @@ export class HomePageComponent implements OnInit {
       variantTitle: firstVariant.title,
       price: product.priceRange.minVariantPrice,
     });
+  }
+
+  topTags(tags: string[]): string[] {
+    return tags.filter(Boolean).slice(0, 3);
   }
 }

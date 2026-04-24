@@ -7,6 +7,7 @@ type CollectionProduct = {
   id: string;
   handle: string;
   title: string;
+  tags: string[];
   availableForSale: boolean;
   productType: string;
   vendor: string;
@@ -79,11 +80,16 @@ type CollectionProduct = {
                 @if (product.featuredImage) {
                   <img [src]="product.featuredImage.url" [alt]="product.featuredImage.altText || product.title" />
                 }
+                <div class="tag-list">
+                  @for (tag of topTags(product.tags); track tag) {
+                    <span class="tag">{{ tag }}</span>
+                  }
+                </div>
                 <h3>{{ product.title }}</h3>
                 <small>{{ product.vendor }} · {{ product.productType || 'General' }}</small>
                 <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
                 <div class="actions">
-                  <a [routerLink]="['/product', product.handle]">- VER</a>
+                  <a [routerLink]="['/product', product.handle]"><span class="icon">▸</span> VER</a>
                 </div>
               </article>
             } @empty {
@@ -106,10 +112,16 @@ type CollectionProduct = {
     .products { border:1px solid #2f2f2f; background:#111; padding:14px; }
     .result-count { color:#a7a7a7; margin-top:0; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
-    .card { border:1px solid #2f2f2f; background:#151515; padding:10px; }
+    .card { border:1px solid #2f2f2f; background:#151515; padding:10px; display:flex; flex-direction:column; }
     .card img { width:100%; height:180px; object-fit:cover; margin-bottom:8px; }
+    .tag-list { display:flex; flex-wrap:wrap; gap:6px; min-height:24px; margin-bottom:6px; }
+    .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
+    .card h3 { min-height:52px; margin:6px 0; }
     .card small { color:#9d9d9d; }
+    .card p { margin:8px 0 10px; }
+    .actions { margin-top:auto; }
     .actions a { display:inline-block; text-decoration:none; color:#fff; font-weight:700; border:1px solid #3a3a3a; padding:8px 10px; background:#101010; }
+    .icon { margin-right:4px; color:#bcbcbc; }
     .empty { color:#9d9d9d; }
     @media (max-width: 980px) {
       .layout { grid-template-columns:1fr; }
@@ -172,5 +184,9 @@ export class CollectionDetailPageComponent implements OnInit {
     this.collectionTitle.set(response.collection.title);
     this.collectionDescription.set(response.collection.description);
     this.products.set(response.collection.products.nodes);
+  }
+
+  topTags(tags: string[]): string[] {
+    return tags.filter(Boolean).slice(0, 3);
   }
 }
