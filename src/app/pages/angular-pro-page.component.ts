@@ -78,11 +78,11 @@ import { I18nService } from '../services/i18n.service';
             <article class="chart-row">
               <h3>{{ i18n.lang() === 'en' ? row.metricEn : row.metricEs }}</h3>
               <div class="bars">
-                <div class="bar-label">Angular</div>
+                <div class="bar-label">{{ i18n.lang() === 'en' ? 'Angular' : 'Angular' }}</div>
                 <div class="bar-wrap"><span class="bar angular" [style.width.%]="row.angular">{{ row.angular }}/100</span></div>
               </div>
               <div class="bars">
-                <div class="bar-label">Theme</div>
+                <div class="bar-label">{{ i18n.lang() === 'en' ? 'Shopify Theme' : 'Tema Shopify' }}</div>
                 <div class="bar-wrap"><span class="bar theme" [style.width.%]="row.theme">{{ row.theme }}/100</span></div>
               </div>
             </article>

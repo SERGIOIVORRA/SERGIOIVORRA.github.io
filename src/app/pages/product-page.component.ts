@@ -10,6 +10,7 @@ type Product = {
   title: string;
   description: string;
   tags: string[];
+  availableForSale: boolean;
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   variants: { nodes: Array<{ id: string; title: string }> };
@@ -36,7 +37,7 @@ type ExtraField = {
         @if (p.featuredImage) {
           <img [src]="p.featuredImage.url" [alt]="p.featuredImage.altText || p.title" [class]="imageModeClass()" />
         }
-        <div>
+        <div class="product-side">
           <h1>{{ p.title }}</h1>
           <div class="image-mode-switch">
             <button (click)="setImageMode('square')" [class.active]="imageMode() === 'square'">{{ i18n.t('product.image.square') }}</button>
@@ -51,8 +52,44 @@ type ExtraField = {
           <p class="description">{{ p.description }}</p>
           <strong>{{ p.priceRange.minVariantPrice.amount | currency:p.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</strong>
           <div>
-            <button (click)="addToCart(p)">+ {{ i18n.t('product.addToCart') }}</button>
+            <button [disabled]="!p.availableForSale" (click)="addToCart(p)">
+              @if (p.availableForSale) {
+                + {{ i18n.t('product.addToCart') }}
+              } @else {
+                {{ i18n.t('common.outOfStock') }}
+              }
+            </button>
           </div>
+
+          <section class="recommended in-side">
+            <div class="recommended-head">
+              <h2>{{ i18n.t('product.recommended') }}</h2>
+              <a routerLink="/collections">{{ i18n.t('product.viewMore') }}</a>
+            </div>
+            <div class="recommended-grid">
+              @for (item of recommendations(); track item.handle) {
+                <article class="recommended-card">
+                  @if (item.featuredImage) {
+                    <img [src]="item.featuredImage.url" [alt]="item.featuredImage.altText || item.title" (click)="goToProduct(item.handle)" />
+                  }
+                  <h3 (click)="goToProduct(item.handle)">{{ item.title }}</h3>
+                  <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
+                  <div class="recommended-actions">
+                    <button type="button" class="view-btn" (click)="goToProduct(item.handle)"><span class="icon">?</span> {{ i18n.t('common.view') }}</button>
+                    <button [disabled]="!item.availableForSale" (click)="onAddToCart($event, item)">
+                      @if (item.availableForSale) {
+                        + {{ i18n.t('common.add') }}
+                      } @else {
+                        {{ i18n.t('common.outOfStock') }}
+                      }
+                    </button>
+                  </div>
+                </article>
+              } @empty {
+                <p>{{ i18n.t('product.noRecommendations') }}</p>
+              }
+            </div>
+          </section>
         </div>
       </article>
 
@@ -75,29 +112,6 @@ type ExtraField = {
         </section>
       }
 
-      <section class="recommended">
-        <div class="recommended-head">
-          <h2>{{ i18n.t('product.recommended') }}</h2>
-          <a routerLink="/collections">{{ i18n.t('product.viewMore') }}</a>
-        </div>
-        <div class="recommended-grid">
-          @for (item of recommendations(); track item.handle) {
-            <article class="recommended-card">
-              @if (item.featuredImage) {
-                <img [src]="item.featuredImage.url" [alt]="item.featuredImage.altText || item.title" (click)="goToProduct(item.handle)" />
-              }
-              <h3 (click)="goToProduct(item.handle)">{{ item.title }}</h3>
-              <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
-              <div class="recommended-actions">
-                <button type="button" class="view-btn" (click)="goToProduct(item.handle)"><span class="icon">?</span> {{ i18n.t('common.view') }}</button>
-                <button (click)="onAddToCart($event, item)">+ {{ i18n.t('common.add') }}</button>
-              </div>
-            </article>
-          } @empty {
-            <p>{{ i18n.t('product.noRecommendations') }}</p>
-          }
-        </div>
-      </section>
     }
   `,
   styles: [`
@@ -110,6 +124,7 @@ type ExtraField = {
       border:1px solid #2f2f2f;
       position: relative;
     }
+    .product-side { display:grid; gap:14px; align-content:start; }
     .product::before {
       content:'';
       position:absolute;
@@ -161,6 +176,7 @@ type ExtraField = {
     .meta-card input { margin-top:4px; border:1px solid #3a3a3a; background:#111; color:#ddd; padding:6px; width:100%; }
     .meta-image { margin-top:8px; width:100%; height:140px; object-fit:cover; border:1px solid #2f2f2f; }
     .recommended { margin-top:28px; }
+    .recommended.in-side { margin-top:8px; border-top:1px solid #2f2f2f; padding-top:12px; }
     .recommended-head { display:flex; justify-content:space-between; align-items:center; }
     .recommended-head a { color:#fff; text-decoration:none; font-weight:700; }
     .recommended-grid { margin-top:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
@@ -181,6 +197,10 @@ type ExtraField = {
     }
     .icon { margin-right:4px; color:#bcbcbc; }
     .recommended-actions button { margin-top:0; }
+    button:disabled { opacity:.6; cursor:not-allowed; border-color:#4a2323; color:#c7a8a8; }
+    @media (max-width: 980px) {
+      .product { grid-template-columns:1fr; }
+    }
   `]
 })
 export class ProductPageComponent implements OnInit {
@@ -240,6 +260,7 @@ export class ProductPageComponent implements OnInit {
   }
 
   addToCart(product: Product): void {
+    if (!product.availableForSale) return;
     const firstVariant = product.variants.nodes[0];
     if (!firstVariant) return;
 

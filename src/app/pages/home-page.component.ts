@@ -10,6 +10,7 @@ type Product = {
   title: string;
   description: string;
   tags: string[];
+  availableForSale: boolean;
   metafields: Array<{ namespace: string; key: string; value: string } | null>;
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
@@ -22,12 +23,28 @@ type Product = {
   imports: [RouterLink, CurrencyPipe],
   template: `
     <section class="hero">
-      <h1>{{ i18n.t('home.heroTitle') }}</h1>
-      <p>{{ i18n.t('home.heroText') }}</p>
-      <div class="hero-badges">
-        <span>{{ i18n.t('home.badge1') }}</span>
-        <span>{{ i18n.t('home.badge2') }}</span>
-        <span>{{ i18n.t('home.badge3') }}</span>
+      <div class="hero-main">
+        <div>
+          <h1>{{ i18n.t('home.heroTitle') }}</h1>
+          <p>{{ i18n.t('home.heroText') }}</p>
+          <div class="hero-badges">
+            <span>{{ i18n.t('home.badge1') }}</span>
+            <span>{{ i18n.t('home.badge2') }}</span>
+            <span>{{ i18n.t('home.badge3') }}</span>
+          </div>
+        </div>
+        <aside class="speed-demo" aria-label="Angular vs Shopify speed demo">
+          <h3>* {{ i18n.lang() === 'en' ? 'Navigation speed demo' : 'Demo de velocidad de navegacion' }}</h3>
+          <div class="demo-track before">
+            <small>{{ i18n.lang() === 'en' ? 'Classic theme reload' : 'Theme clasico con recarga' }}</small>
+            <div class="pulse"><span></span></div>
+          </div>
+          <div class="demo-track after">
+            <small>{{ i18n.lang() === 'en' ? 'Angular SPA transition' : 'Transicion SPA en Angular' }}</small>
+            <div class="pulse"><span></span></div>
+          </div>
+          <p>{{ i18n.lang() === 'en' ? 'Before: full page refresh. Now: route change inside the app.' : 'Antes: recarga completa. Ahora: cambio de ruta dentro de la app.' }}</p>
+        </aside>
       </div>
       <p class="hero-detail">{{ i18n.t('home.heroDetail') }}</p>
       <div class="hero-actions">
@@ -91,18 +108,24 @@ type Product = {
               }
             </div>
             <h3>{{ product.title }}</h3>
-            <details class="meta-collapse">
+            <details class="meta-collapse" (click)="stopCardNavigation($event)">
               <summary>? {{ i18n.t('common.metafields') }}</summary>
               <div class="meta-list">
                 @for (field of filledMetafields(product.metafields); track field.label) {
-                  <label class="meta-input">{{ field.label }}<input [value]="field.value" readonly /></label>
+                  <label class="meta-input">{{ field.label }}<input [value]="field.value" readonly (click)="stopCardNavigation($event)" /></label>
                 }
               </div>
             </details>
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
               <a [routerLink]="['/product', product.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
-              <button (click)="onAddToCart($event, product)">+ {{ i18n.t('common.add') }}</button>
+              <button [disabled]="!product.availableForSale" (click)="onAddToCart($event, product)">
+                @if (product.availableForSale) {
+                  + {{ i18n.t('common.add') }}
+                } @else {
+                  {{ i18n.t('common.outOfStock') }}
+                }
+              </button>
             </div>
           </article>
         }
@@ -123,9 +146,19 @@ type Product = {
     }
     h1, h2, h3 { text-transform: uppercase; letter-spacing: .9px; }
     .hero p { color:#d0d0d0; }
+    .hero-main { display:grid; grid-template-columns:1fr 320px; gap:14px; align-items:start; }
     .hero-badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
     .hero-badges span { border:1px solid #3a3a3a; padding:5px 10px; font-size:12px; font-weight:600; background:#171717; color:#f1f1f1; }
     .hero-badges span::before { content:'* '; color:#9f9f9f; }
+    .speed-demo { border:1px solid #2f2f2f; background:#141414; padding:10px; }
+    .speed-demo h3 { margin:0 0 8px; font-size:12px; color:#e0e0e0; }
+    .speed-demo p { margin:8px 0 0; font-size:11px; color:#bcbcbc; line-height:1.4; }
+    .demo-track { margin-bottom:8px; }
+    .demo-track small { display:block; margin-bottom:4px; color:#a5a5a5; font-size:10px; text-transform:uppercase; }
+    .pulse { border:1px solid #2f2f2f; background:#0f0f0f; height:12px; overflow:hidden; }
+    .pulse span { display:block; height:100%; width:32%; }
+    .demo-track.before .pulse span { background:#7b4040; animation: slowReload 2.6s ease-in-out infinite; }
+    .demo-track.after .pulse span { background:#d6d6d6; animation: fastSpa .9s linear infinite; }
     .hero-detail { margin-top:10px; color:#bbb; line-height:1.55; max-width:900px; }
     .inspiration, .value { background:#111; border:1px solid #2f2f2f; padding:20px; margin-bottom:24px; }
     .inspiration a { color:#fff; font-weight:700; }
@@ -153,7 +186,20 @@ type Product = {
     .actions { display:flex; gap:8px; margin-top:auto; }
     .actions a, .actions button { background:#171717; color:#fff; border:1px solid #373737; padding:8px 10px; text-decoration:none; font-weight:700; }
     .actions button { cursor:pointer; }
+    .actions button:disabled { opacity:.6; cursor:not-allowed; border-color:#4a2323; color:#c7a8a8; }
     .icon { margin-right:4px; color:#bcbcbc; }
+    @keyframes slowReload {
+      0% { transform:translateX(-115%); opacity:.2; }
+      40% { transform:translateX(30%); opacity:1; }
+      100% { transform:translateX(230%); opacity:.2; }
+    }
+    @keyframes fastSpa {
+      0% { transform:translateX(-120%); }
+      100% { transform:translateX(240%); }
+    }
+    @media (max-width: 980px) {
+      .hero-main { grid-template-columns:1fr; }
+    }
   `]
 })
 export class HomePageComponent implements OnInit {
@@ -171,6 +217,7 @@ export class HomePageComponent implements OnInit {
   }
 
   addToCart(product: Product): void {
+    if (!product.availableForSale) return;
     const firstVariant = product.variants.nodes[0];
     if (!firstVariant) return;
 
@@ -186,6 +233,10 @@ export class HomePageComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
     this.addToCart(product);
+  }
+
+  stopCardNavigation(event: Event): void {
+    event.stopPropagation();
   }
 
   topTags(tags: string[]): string[] {

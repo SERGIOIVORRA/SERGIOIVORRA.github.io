@@ -89,11 +89,11 @@ type CollectionProduct = {
                 </div>
                 <h3>{{ product.title }}</h3>
                 <small>{{ product.vendor }} · {{ product.productType || 'General' }}</small>
-                <details class="meta-collapse">
+                <details class="meta-collapse" (click)="stopCardNavigation($event)">
                   <summary>? {{ i18n.t('common.metafields') }}</summary>
                   <div class="meta-list">
                     @for (field of filledMetafields(product.metafields); track field.label) {
-                      <label class="meta-input">{{ field.label }}<input [value]="field.value" readonly /></label>
+                      <label class="meta-input">{{ field.label }}<input [value]="field.value" readonly (click)="stopCardNavigation($event)" /></label>
                     }
                   </div>
                 </details>
@@ -215,5 +215,9 @@ export class CollectionDetailPageComponent implements OnInit {
     return metafields
       .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
       .map((field) => ({ label: `${field.namespace}.${field.key}`, value: field.value }));
+  }
+
+  stopCardNavigation(event: Event): void {
+    event.stopPropagation();
   }
 }

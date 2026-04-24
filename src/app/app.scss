@@ -3,8 +3,12 @@
   min-height: 100vh;
   background: #0b0b0b;
   color: #f4f4f4;
-  font-family: 'Arial', sans-serif;
+  font-family: 'Space Mono', 'Courier New', monospace;
   letter-spacing: 0.2px;
+}
+
+:host * {
+  font-family: inherit;
 }
 
 .topbar {
@@ -53,6 +57,23 @@
 .page {
   padding: 24px;
   position: relative;
+}
+
+.site-footer {
+  border-top: 1px solid #2f2f2f;
+  padding: 28px 24px 36px;
+  text-align: center;
+  background: #0b0b0b;
+}
+
+.site-footer p {
+  margin: 0;
+  font-size: clamp(40px, 12vw, 120px);
+  line-height: 1;
+  letter-spacing: 10px;
+  font-weight: 800;
+  color: #f2f2f2;
+  text-transform: uppercase;
 }
 
 .page::before,

@@ -135,6 +135,7 @@ export class ShopifyService {
           title: string;
           description: string;
           tags: string[];
+          availableForSale: boolean;
           metafields: Array<{ namespace: string; key: string; value: string } | null>;
           featuredImage: { url: string; altText: string | null } | null;
           priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
@@ -145,7 +146,7 @@ export class ShopifyService {
       query GetProducts {
         products(first: 16) {
           nodes {
-            id handle title description tags
+            id handle title description tags availableForSale
             metafields(identifiers: [
               { namespace: "custom", key: "material" },
               { namespace: "custom", key: "dimensions" },
@@ -185,6 +186,7 @@ export class ShopifyService {
         title: string;
         description: string;
         tags: string[];
+        availableForSale: boolean;
         featuredImage: { url: string; altText: string | null } | null;
         priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
         variants: { nodes: Array<{ id: string; title: string }> };
@@ -194,7 +196,7 @@ export class ShopifyService {
       `
       query GetProductByHandle($handle: String!) {
         product(handle: $handle) {
-          id handle title description tags
+          id handle title description tags availableForSale
           featuredImage { url altText }
           priceRange { minVariantPrice { amount currencyCode } }
           variants(first: 10) { nodes { id title } }
