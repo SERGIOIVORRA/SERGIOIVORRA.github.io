@@ -22,64 +22,57 @@ type Product = {
   imports: [RouterLink, CurrencyPipe],
   template: `
     <section class="hero">
-      <h1>Storefront Shopify en Angular</h1>
-      <p>
-        Experiencia ultra rapida tipo SPA: navegacion sin recargas, transiciones fluidas y UX premium
-        para ecommerce de marcas grandes.
-      </p>
+      <h1>{{ i18n.t('home.heroTitle') }}</h1>
+      <p>{{ i18n.t('home.heroText') }}</p>
       <div class="hero-badges">
-        <span>Sin recargas completas</span>
-        <span>Arquitectura escalable por componentes</span>
-        <span>Preparado para equipos y features enterprise</span>
+        <span>{{ i18n.t('home.badge1') }}</span>
+        <span>{{ i18n.t('home.badge2') }}</span>
+        <span>{{ i18n.t('home.badge3') }}</span>
       </div>
-      <p class="hero-detail">
-        Angular permite separar dominios (catalogo, carrito, checkout, cuenta), reutilizar logica y escalar
-        con testing, tipado estricto y mantenimiento profesional a largo plazo. Frente a un theme tradicional,
-        tienes mas control de producto, rendimiento y evolucion tecnica.
-      </p>
+      <p class="hero-detail">{{ i18n.t('home.heroDetail') }}</p>
       <div class="hero-actions">
-        <a class="cta" routerLink="/collections">- VER COLECCIONES</a>
-        <a class="cta ghost" href="https://artcuadros.myshopify.com/account" target="_blank" rel="noreferrer">+ LOGIN ACCOUNT</a>
+        <a class="cta" routerLink="/collections">- {{ i18n.t('home.goCollections') }}</a>
+        <a class="cta ghost" href="https://artcuadros.myshopify.com/account" target="_blank" rel="noreferrer">+ {{ i18n.t('home.loginAccount') }}</a>
       </div>
     </section>
 
     <section class="inspiration">
-      <h2>Inspirado en Yeezy</h2>
+      <h2>{{ i18n.t('home.inspiredTitle') }}</h2>
       <p>
-        Esta propuesta visual y de experiencia esta inspirada en la direccion creativa de
+        {{ i18n.t('home.inspiredText') }}
         <a href="https://yeezy.com/" target="_blank" rel="noreferrer">yeezy.com</a>:
-        minimalismo, foco absoluto en producto y navegacion limpia orientada a conversion.
+        {{ i18n.t('home.inspiredTail') }}
       </p>
       <div class="yeezy-gains">
         <article>
-          <h3>* Que gana una marca estilo Yeezy</h3>
-          <p>Percepcion premium, menos ruido visual y foco total en la accion de compra.</p>
+          <h3>* {{ i18n.t('home.gainTitle') }}</h3>
+          <p>{{ i18n.t('home.gainText') }}</p>
         </article>
         <article>
-          <h3>+ Impacto de negocio</h3>
-          <p>Mejor conversion en mobile, experiencia mas rapida y narrativa visual mas reconocible.</p>
+          <h3>+ {{ i18n.t('home.impactTitle') }}</h3>
+          <p>{{ i18n.t('home.impactText') }}</p>
         </article>
       </div>
     </section>
 
     <section class="value">
-      <h2>Que ganan las marcas con esta arquitectura</h2>
+      <h2>{{ i18n.t('home.archTitle') }}</h2>
       <div class="value-grid">
         <article>
-          <h3>Mas conversion</h3>
-          <p>Menos friccion en navegacion y compra, tiempos de interaccion mas rapidos y UX consistente.</p>
+          <h3>{{ i18n.t('home.card1Title') }}</h3>
+          <p>{{ i18n.t('home.card1Text') }}</p>
         </article>
         <article>
-          <h3>Mas escalabilidad</h3>
-          <p>Arquitectura por componentes para crecer por modulos sin romper el resto del proyecto.</p>
+          <h3>{{ i18n.t('home.card2Title') }}</h3>
+          <p>{{ i18n.t('home.card2Text') }}</p>
         </article>
         <article>
-          <h3>Mas velocidad de equipo</h3>
-          <p>Codigo tipado, reusable y mantenible para iterar campañas, landings y features enterprise.</p>
+          <h3>{{ i18n.t('home.card3Title') }}</h3>
+          <p>{{ i18n.t('home.card3Text') }}</p>
         </article>
         <article>
-          <h3>Mas control tecnico</h3>
-          <p>Capacidad de personalizacion avanzada frente a themes clasicos, ideal para marcas grandes.</p>
+          <h3>{{ i18n.t('home.card4Title') }}</h3>
+          <p>{{ i18n.t('home.card4Text') }}</p>
         </article>
       </div>
     </section>
@@ -98,11 +91,14 @@ type Product = {
               }
             </div>
             <h3>{{ product.title }}</h3>
-            <div class="meta-list">
-              @for (field of filledMetafields(product.metafields); track field.label) {
-                <small>{{ field.label }}: {{ field.value }}</small>
-              }
-            </div>
+            <details class="meta-collapse">
+              <summary>? {{ i18n.t('common.metafields') }}</summary>
+              <div class="meta-list">
+                @for (field of filledMetafields(product.metafields); track field.label) {
+                  <label class="meta-input">{{ field.label }}<input [value]="field.value" readonly /></label>
+                }
+              </div>
+            </details>
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
               <a [routerLink]="['/product', product.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
@@ -148,8 +144,11 @@ type Product = {
     .tag-list { display:flex; flex-wrap:wrap; gap:6px; min-height:24px; margin-bottom:6px; }
     .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
     .card h3 { margin:6px 0 8px; min-height:56px; }
-    .meta-list { display:grid; gap:4px; min-height:42px; margin-bottom:8px; }
-    .meta-list small { color:#a5a5a5; font-size:10px; line-height:1.2; }
+    .meta-collapse { margin-bottom:8px; border:1px solid #2f2f2f; background:#141414; }
+    .meta-collapse summary { cursor:pointer; padding:6px 8px; font-size:11px; color:#d0d0d0; list-style:none; }
+    .meta-list { display:grid; gap:6px; padding:8px; }
+    .meta-input { display:grid; gap:4px; font-size:10px; color:#a5a5a5; }
+    .meta-input input { border:1px solid #3a3a3a; background:#111; color:#ddd; padding:4px 6px; font-size:10px; }
     .card p { margin:0 0 10px; }
     .actions { display:flex; gap:8px; margin-top:auto; }
     .actions a, .actions button { background:#171717; color:#fff; border:1px solid #373737; padding:8px 10px; text-decoration:none; font-weight:700; }

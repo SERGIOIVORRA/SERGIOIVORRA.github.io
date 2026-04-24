@@ -256,4 +256,35 @@ export class ShopifyService {
       { cartId, merchandiseId },
     );
   }
+
+  async getMediaImageUrls(ids: string[]): Promise<Record<string, string>> {
+    const cleanIds = [...new Set(ids.filter((id) => id.startsWith('gid://shopify/MediaImage/')))];
+    if (!cleanIds.length) return {};
+
+    const data = await this.request<{
+      nodes: Array<{ id: string; image: { url: string | null } | null } | null>;
+    }>(
+      `
+      query GetMediaImageUrls($ids: [ID!]!) {
+        nodes(ids: $ids) {
+          ... on MediaImage {
+            id
+            image {
+              url
+            }
+          }
+        }
+      }
+      `,
+      { ids: cleanIds },
+    );
+
+    const map: Record<string, string> = {};
+    for (const node of data.nodes) {
+      if (node?.id && node.image?.url) {
+        map[node.id] = node.image.url;
+      }
+    }
+    return map;
+  }
 }

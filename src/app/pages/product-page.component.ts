@@ -1,6 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CartService } from '../services/cart.service';
 import { I18nService } from '../services/i18n.service';
 import { ShopifyService } from '../services/shopify.service';
@@ -14,6 +14,12 @@ type Product = {
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   variants: { nodes: Array<{ id: string; title: string }> };
   metafields?: Array<{ namespace: string; key: string; value: string } | null>;
+};
+
+type ExtraField = {
+  label: string;
+  value: string;
+  imageUrl?: string;
 };
 
 @Component({
@@ -52,15 +58,20 @@ type Product = {
 
       @if (extraInfo().length > 0) {
         <section class="meta-section">
-          <h2>* {{ i18n.t('common.extraInfo') }}</h2>
-          <div class="meta-grid">
-            @for (field of extraInfo(); track field.label) {
-              <article class="meta-card">
-                <small>{{ field.label }}</small>
-                <p>{{ field.value }}</p>
-              </article>
-            }
-          </div>
+          <details class="meta-collapse">
+            <summary>? {{ i18n.t('common.metafields') }}</summary>
+            <div class="meta-grid">
+              @for (field of extraInfo(); track field.label) {
+                <article class="meta-card">
+                  <small>{{ field.label }}</small>
+                  <input [value]="field.value" readonly />
+                  @if (field.imageUrl) {
+                    <img class="meta-image" [src]="field.imageUrl" [alt]="field.label" />
+                  }
+                </article>
+              }
+            </div>
+          </details>
         </section>
       }
 
@@ -71,14 +82,14 @@ type Product = {
         </div>
         <div class="recommended-grid">
           @for (item of recommendations(); track item.handle) {
-            <article class="recommended-card" [routerLink]="['/product', item.handle]">
+            <article class="recommended-card">
               @if (item.featuredImage) {
-                <img [src]="item.featuredImage.url" [alt]="item.featuredImage.altText || item.title" />
+                <img [src]="item.featuredImage.url" [alt]="item.featuredImage.altText || item.title" (click)="goToProduct(item.handle)" />
               }
-              <h3>{{ item.title }}</h3>
+              <h3 (click)="goToProduct(item.handle)">{{ item.title }}</h3>
               <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
               <div class="recommended-actions">
-                <a [routerLink]="['/product', item.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
+                <button type="button" class="view-btn" (click)="goToProduct(item.handle)"><span class="icon">?</span> {{ i18n.t('common.view') }}</button>
                 <button (click)="onAddToCart($event, item)">+ {{ i18n.t('common.add') }}</button>
               </div>
             </article>
@@ -142,26 +153,31 @@ type Product = {
       font-weight:700;
     }
     .meta-section { margin-top:18px; border:1px solid #2f2f2f; background:#111; padding:14px; }
-    .meta-grid { margin-top:10px; display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; }
+    .meta-collapse { border:1px solid #2f2f2f; background:#141414; }
+    .meta-collapse summary { cursor:pointer; padding:8px 10px; font-size:12px; color:#d0d0d0; list-style:none; }
+    .meta-grid { margin-top:10px; display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; padding:0 10px 10px; }
     .meta-card { border:1px solid #2f2f2f; background:#141414; padding:10px; }
     .meta-card small { color:#9c9c9c; text-transform:uppercase; letter-spacing:.7px; }
-    .meta-card p { margin:4px 0 0; }
+    .meta-card input { margin-top:4px; border:1px solid #3a3a3a; background:#111; color:#ddd; padding:6px; width:100%; }
+    .meta-image { margin-top:8px; width:100%; height:140px; object-fit:cover; border:1px solid #2f2f2f; }
     .recommended { margin-top:28px; }
     .recommended-head { display:flex; justify-content:space-between; align-items:center; }
     .recommended-head a { color:#fff; text-decoration:none; font-weight:700; }
     .recommended-grid { margin-top:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
     .recommended-card { background:#111; border:1px solid #2f2f2f; padding:12px; display:flex; flex-direction:column; cursor:pointer; }
     .recommended-card img { width:100%; height:180px; object-fit:cover; margin-bottom:10px; }
+    .recommended-card img, .recommended-card h3 { cursor:pointer; }
     .recommended-card h3 { min-height:52px; margin:6px 0; }
     .recommended-card p { margin:8px 0 10px; }
     .recommended-actions { display:flex; gap:8px; align-items:center; margin-top:auto; }
-    .recommended-actions a {
+    .recommended-actions .view-btn {
       text-decoration:none;
       color:#fff;
       font-weight:700;
       background:#151515;
       border:1px solid #3a3a3a;
       padding:8px 10px;
+      margin-top:0;
     }
     .icon { margin-right:4px; color:#bcbcbc; }
     .recommended-actions button { margin-top:0; }
@@ -170,13 +186,14 @@ type Product = {
 export class ProductPageComponent implements OnInit {
   readonly product = signal<Product | null>(null);
   readonly recommendations = signal<Array<Product & { handle: string }>>([]);
-  readonly extraInfo = signal<Array<{ label: string; value: string }>>([]);
+  readonly extraInfo = signal<ExtraField[]>([]);
   readonly imageMode = signal<'square' | 'tall' | 'wide'>('square');
   readonly isLoading = signal(true);
   readonly loadError = signal('');
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private shopifyService: ShopifyService,
     private cartService: CartService,
     public i18n: I18nService,
@@ -186,7 +203,7 @@ export class ProductPageComponent implements OnInit {
     const handle = this.route.snapshot.paramMap.get('handle');
     if (!handle) {
       this.isLoading.set(false);
-      this.loadError.set('No se encontro el handle del producto.');
+      this.loadError.set(this.i18n.t('product.notFound'));
       return;
     }
 
@@ -205,7 +222,7 @@ export class ProductPageComponent implements OnInit {
       }
 
       this.product.set(productData.product);
-      this.extraInfo.set(this.mapMetafields(productData.product.metafields ?? []));
+      this.extraInfo.set(await this.mapMetafields(productData.product.metafields ?? []));
 
       const recommended = productsData.products.nodes
         .filter((item) => item.handle !== handle)
@@ -238,15 +255,25 @@ export class ProductPageComponent implements OnInit {
     return tags.filter(Boolean).slice(0, 4);
   }
 
-  private mapMetafields(
+  private async mapMetafields(
     metafields: Array<{ namespace: string; key: string; value: string } | null>,
-  ): Array<{ label: string; value: string }> {
-    return metafields
+  ): Promise<ExtraField[]> {
+    const filled = metafields
       .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
       .map((field) => ({
         label: `${field.namespace}.${field.key}`,
         value: field.value,
       }));
+
+    const mediaIds = filled
+      .map((field) => field.value.trim())
+      .filter((value) => value.startsWith('gid://shopify/MediaImage/'));
+    const mediaMap = await this.shopifyService.getMediaImageUrls(mediaIds);
+
+    return filled.map((field) => ({
+      ...field,
+      imageUrl: mediaMap[field.value.trim()],
+    }));
   }
 
   onAddToCart(event: Event, product: Product): void {
@@ -257,6 +284,11 @@ export class ProductPageComponent implements OnInit {
 
   setImageMode(mode: 'square' | 'tall' | 'wide'): void {
     this.imageMode.set(mode);
+  }
+
+  goToProduct(handle: string | undefined): void {
+    if (!handle) return;
+    this.router.navigate(['/product', handle]);
   }
 
   imageModeClass(): string {

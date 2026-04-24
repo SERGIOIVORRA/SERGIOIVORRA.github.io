@@ -25,8 +25,8 @@ type CollectionProduct = {
     <section class="collection-page">
       <div class="collection-head">
         <a class="back" routerLink="/collections">- {{ i18n.t('common.backCollections') }}</a>
-        <h1>* {{ collectionTitle() || 'Coleccion' }}</h1>
-        <p>{{ collectionDescription() || 'Filtrado en tiempo real estilo Shopify para navegar rapido.' }}</p>
+        <h1>* {{ collectionTitle() || i18n.t('nav.collections') }}</h1>
+        <p>{{ collectionDescription() || i18n.t('collection.heroText') }}</p>
       </div>
 
       <div class="layout">
@@ -39,7 +39,7 @@ type CollectionProduct = {
               type="search"
               [value]="searchTerm()"
               (input)="searchTerm.set($any($event.target).value)"
-              placeholder="nombre producto"
+              [placeholder]="i18n.t('collection.namePlaceholder')"
             />
           </label>
 
@@ -89,11 +89,14 @@ type CollectionProduct = {
                 </div>
                 <h3>{{ product.title }}</h3>
                 <small>{{ product.vendor }} · {{ product.productType || 'General' }}</small>
-                <div class="meta-list">
-                  @for (field of filledMetafields(product.metafields); track field.label) {
-                    <small>{{ field.label }}: {{ field.value }}</small>
-                  }
-                </div>
+                <details class="meta-collapse">
+                  <summary>? {{ i18n.t('common.metafields') }}</summary>
+                  <div class="meta-list">
+                    @for (field of filledMetafields(product.metafields); track field.label) {
+                      <label class="meta-input">{{ field.label }}<input [value]="field.value" readonly /></label>
+                    }
+                  </div>
+                </details>
                 <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
                 <div class="actions">
                   <a [routerLink]="['/product', product.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
@@ -125,8 +128,11 @@ type CollectionProduct = {
     .tag { font-size:10px; letter-spacing:.7px; border:1px solid #3d3d3d; padding:3px 6px; color:#cfcfcf; }
     .card h3 { min-height:52px; margin:6px 0; }
     .card small { color:#9d9d9d; }
-    .meta-list { display:grid; gap:4px; min-height:42px; margin-bottom:8px; }
-    .meta-list small { color:#9d9d9d; font-size:10px; line-height:1.2; }
+    .meta-collapse { margin-bottom:8px; border:1px solid #2f2f2f; background:#141414; }
+    .meta-collapse summary { cursor:pointer; padding:6px 8px; font-size:11px; color:#d0d0d0; list-style:none; }
+    .meta-list { display:grid; gap:6px; padding:8px; }
+    .meta-input { display:grid; gap:4px; font-size:10px; color:#a5a5a5; }
+    .meta-input input { border:1px solid #3a3a3a; background:#111; color:#ddd; padding:4px 6px; font-size:10px; }
     .card p { margin:8px 0 10px; }
     .actions { margin-top:auto; }
     .actions a { display:inline-block; text-decoration:none; color:#fff; font-weight:700; border:1px solid #3a3a3a; padding:8px 10px; background:#101010; }

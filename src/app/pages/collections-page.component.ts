@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { I18nService } from '../services/i18n.service';
 import { ShopifyService } from '../services/shopify.service';
 import { environment } from '../../environments/environment';
 
@@ -20,10 +21,10 @@ type Collection = {
       <div class="collections-hero">
         <div>
           <p class="eyebrow">* SHOPIFY COLLECTIONS</p>
-          <h1>Colecciones con estilo pro</h1>
-          <p>Explora, filtra y entra a colecciones reales en un layout premium.</p>
+          <h1>{{ i18n.t('collection.heroTitle') }}</h1>
+          <p>{{ i18n.t('collection.heroText') }}</p>
         </div>
-        <a [href]="'https://' + storeDomain + '/account'" target="_blank" rel="noreferrer">+ IR A TU CUENTA</a>
+        <a [href]="'https://' + storeDomain + '/account'" target="_blank" rel="noreferrer">+ {{ i18n.t('collection.goAccount') }}</a>
       </div>
       <div class="grid">
         @for (collection of collections(); track collection.id) {
@@ -40,10 +41,10 @@ type Collection = {
             </div>
             <div class="card-content">
               <h3>{{ collection.title }}</h3>
-              <p>{{ collection.description || 'Coleccion destacada con seleccion curada de productos.' }}</p>
+              <p>{{ collection.description || i18n.t('collection.curated') }}</p>
               <div class="actions">
-                <a [routerLink]="['/collections', collection.handle]">- VER PRODUCTOS</a>
-                <a [href]="collectionUrl(collection.handle)" target="_blank" rel="noreferrer">+ OPEN COLLECTION</a>
+                <a [routerLink]="['/collections', collection.handle]">- {{ i18n.t('collection.viewProducts') }}</a>
+                <a [href]="collectionUrl(collection.handle)" target="_blank" rel="noreferrer">+ {{ i18n.t('collection.openCollection') }}</a>
               </div>
             </div>
           </article>
@@ -116,7 +117,7 @@ type Collection = {
 export class CollectionsPageComponent implements OnInit {
   readonly collections = signal<Collection[]>([]);
   readonly storeDomain = environment.shopifyStoreDomain;
-  constructor(private shopifyService: ShopifyService) {}
+  constructor(private shopifyService: ShopifyService, public i18n: I18nService) {}
 
   async ngOnInit(): Promise<void> {
     const data = await this.shopifyService.getCollections();
