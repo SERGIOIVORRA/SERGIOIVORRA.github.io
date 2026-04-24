@@ -152,8 +152,22 @@ type CollectionProduct = {
     .meta-input { display:grid; gap:4px; font-size:10px; color:#a5a5a5; }
     .meta-input input { border:1px solid #3a3a3a; background:#111; color:#ddd; padding:4px 6px; font-size:10px; }
     .card p { margin:8px 0 10px; }
-    .actions { margin-top:auto; }
-    .actions a { display:inline-block; text-decoration:none; color:#fff; font-weight:700; border:1px solid #3a3a3a; padding:8px 10px; background:#101010; }
+    .actions { margin-top:auto; display:flex; align-items:stretch; }
+    .actions a {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+      white-space:nowrap;
+      min-height:40px;
+      box-sizing:border-box;
+      text-decoration:none;
+      color:#fff;
+      font-weight:700;
+      border:1px solid #3a3a3a;
+      padding:8px 10px;
+      background:#101010;
+    }
     .icon { margin-right:4px; color:#bcbcbc; }
     .empty { color:#9d9d9d; }
     @media (max-width: 980px) {

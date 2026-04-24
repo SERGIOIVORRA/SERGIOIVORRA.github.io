@@ -44,9 +44,18 @@ type CollectionProduct = {
           <button type="button" (click)="moveSection('hero', 1)">↓</button>
         </div>
       }
+      @if (heroImageUrl().trim()) {
+        <figure class="hero-portada-wrap">
+          <img class="hero-portada-img" [src]="heroImageUrl()" alt="" loading="eager" decoding="async" (error)="clearHeroImage()" />
+          <figcaption class="hero-portada-caption">{{ i18n.t('home.heroPortadaPreview') }} · <code>{{ i18n.t('home.metafieldPortadaKey') }}</code></figcaption>
+        </figure>
+      }
       <div class="hero-main">
         <div>
           <h1>{{ i18n.t('home.heroTitle') }}</h1>
+          @if (heroTagline().trim()) {
+            <p class="hero-meta-subline">{{ heroTagline() }}</p>
+          }
           <p>{{ i18n.t('home.heroText') }}</p>
           <div class="hero-badges">
             <span>{{ i18n.t('home.badge1') }}</span>
@@ -136,18 +145,66 @@ type CollectionProduct = {
             {{ i18n.lang() === 'en' ? 'Accent color' : 'Color acento' }}
             <input type="color" [value]="accentColor()" (input)="setAccentColor($any($event.target).value)" />
           </label>
-          <label>
-            {{ i18n.lang() === 'en' ? 'Crystal fx' : 'Efecto cristal' }}: {{ crystalFx() }}%
-            <input type="range" min="0" max="100" step="1" [value]="crystalFx()" (input)="setCrystalFx(+$any($event.target).value)" />
-          </label>
-          <label>
-            {{ i18n.lang() === 'en' ? 'Orb visibility' : 'Visibilidad orbe' }}: {{ orbFx() }}%
-            <input type="range" min="0" max="100" step="1" [value]="orbFx()" (input)="setOrbFx(+$any($event.target).value)" />
-          </label>
           <button type="button" (click)="blockEditMode.set(!blockEditMode())">
             {{ blockEditMode() ? (i18n.lang() === 'en' ? 'Finish block move' : 'Terminar mover bloques') : (i18n.lang() === 'en' ? 'Move blocks mode' : 'Modo mover bloques') }}
           </button>
           <button type="button" (click)="resetVisuals()">{{ i18n.lang() === 'en' ? 'Revert visuals' : 'Revertir visual' }}</button>
+        </div>
+        <div class="metafield-editor">
+          <h4 class="metafield-editor-title">{{ i18n.t('home.metafieldsEditorTitle') }}</h4>
+          <datalist id="meta-image-suggestions">
+            @for (u of imagePresetUrls; track u) {
+              <option [value]="u"></option>
+            }
+          </datalist>
+          <div class="metafield-row">
+            <div class="metafield-label-col">
+              <span class="metafield-pill">{{ i18n.lang() === 'en' ? 'File' : 'Archivo' }}</span>
+              <div class="metafield-label-text">
+                <strong>{{ i18n.t('home.metafieldPortadaLabel') }}</strong>
+                <div class="meta-key"><code>{{ i18n.t('home.metafieldPortadaKey') }}</code></div>
+              </div>
+            </div>
+            <div class="metafield-input-col">
+              <div class="metafield-input-wrap">
+                <input type="text" class="meta-grow" [value]="heroImageUrl()" [attr.placeholder]="i18n.t('home.metafieldImageHint')" list="meta-image-suggestions" (input)="setHeroImageUrl($any($event.target).value)" />
+                <button type="button" class="dynamic-source-btn" [attr.aria-label]="i18n.t('home.dynamicSource')" [title]="i18n.t('home.dynamicSource')" (click)="cycleHeroImagePreset()">⎔</button>
+              </div>
+              @if (heroImageUrl().trim()) {
+                <div class="meta-thumb"><img [src]="heroImageUrl()" alt="" (error)="clearHeroImage()" /></div>
+              }
+            </div>
+          </div>
+          <div class="metafield-row">
+            <div class="metafield-label-col">
+              <span class="metafield-pill">{{ i18n.lang() === 'en' ? 'Single line' : 'Una linea' }}</span>
+              <div class="metafield-label-text">
+                <strong>{{ i18n.t('home.metafieldSublineLabel') }}</strong>
+                <div class="meta-key"><code>{{ i18n.t('home.metafieldSublineKey') }}</code></div>
+              </div>
+            </div>
+            <div class="metafield-input-col">
+              <div class="metafield-input-wrap">
+                <input type="text" class="meta-grow" [value]="heroTagline()" [attr.placeholder]="i18n.lang() === 'en' ? 'Banner subtitle…' : 'Subtitulo del banner…'" (input)="setHeroTagline($any($event.target).value)" />
+                <button type="button" class="dynamic-source-btn" [attr.aria-label]="i18n.t('home.dynamicSource')" [title]="i18n.t('home.dynamicSource')" (click)="fillSampleTagline()">⎔</button>
+              </div>
+            </div>
+          </div>
+          <div class="metafield-row">
+            <div class="metafield-label-col">
+              <span class="metafield-pill">{{ i18n.lang() === 'en' ? 'Color' : 'Color' }}</span>
+              <div class="metafield-label-text">
+                <strong>{{ i18n.lang() === 'en' ? 'Accent (theme)' : 'Acento (theme)' }}</strong>
+                <div class="meta-key"><code>{{ i18n.t('home.metafieldAccentKey') }}</code></div>
+              </div>
+            </div>
+            <div class="metafield-input-col">
+              <div class="metafield-input-wrap">
+                <input type="color" [value]="accentColor()" (input)="setAccentColor($any($event.target).value)" />
+                <button type="button" class="dynamic-source-btn" [attr.aria-label]="i18n.t('home.dynamicSource')" [title]="i18n.t('home.dynamicSource')" (click)="cycleAccentPreset()">⎔</button>
+              </div>
+            </div>
+          </div>
         </div>
       </details>
     </section>
@@ -182,6 +239,27 @@ type CollectionProduct = {
         } @empty {
           <p class="live-empty">{{ i18n.t('home.livePriceEmpty') }}</p>
         }
+      </div>
+    </section>
+
+    <section class="console-lab" [style.order]="sectionOrder('console')">
+      @if (blockEditMode()) {
+        <div class="block-tools">
+          <button type="button" (click)="moveSection('console', -1)">↑</button>
+          <button type="button" (click)="moveSection('console', 1)">↓</button>
+        </div>
+      }
+      <h2>* {{ i18n.lang() === 'en' ? 'Browser console: theme vs Angular' : 'Consola del navegador: theme vs Angular' }}</h2>
+      <p class="console-intro">{{ i18n.lang() === 'en' ? 'Illustrative only — not your real console.' : 'Solo ilustrativo — no es tu consola real.' }}</p>
+      <div class="console-pair">
+        <div class="fake-console bad">
+          <header>{{ i18n.lang() === 'en' ? 'Shopify theme (typical)' : 'Theme Shopify (tipico)' }}</header>
+          <pre>{{ consoleBadText() }}</pre>
+        </div>
+        <div class="fake-console good">
+          <header>{{ i18n.lang() === 'en' ? 'Angular storefront' : 'Storefront Angular' }}</header>
+          <pre>{{ consoleGoodText() }}</pre>
+        </div>
       </div>
     </section>
 
@@ -324,10 +402,39 @@ type CollectionProduct = {
     .demo-track.after .pulse span { background:#d6d6d6; animation: fastSpa .45s linear infinite; }
     .hero-detail { margin-top:10px; color:#bbb; line-height:1.55; max-width:900px; }
     .live-price-lab { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; position:relative; }
+    .console-lab { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; position:relative; }
+    .console-lab h2 { margin:0 0 6px; }
+    .console-intro { margin:0 0 14px; font-size:12px; color:#9a9a9a; }
+    .console-pair { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .fake-console { border:1px solid #2f2f2f; background:#0a0a0a; overflow:hidden; display:flex; flex-direction:column; min-height:180px; }
+    .fake-console.bad header { background:#2a1a1a; color:#ffb4b4; border-bottom:1px solid #4a2a2a; }
+    .fake-console.good header { background:#142a1a; color:#b8f5c8; border-bottom:1px solid #2a4a2a; }
+    .fake-console header { padding:8px 10px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+    .fake-console pre { margin:0; padding:10px; font-size:10px; line-height:1.45; color:#c8c8c8; white-space:pre-wrap; word-break:break-word; flex:1; overflow:auto; max-height:220px; font-family:'Consolas','Monaco','Courier New',monospace; }
     .visual-controls { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; position:relative; }
     .editor-panel { border:1px solid #2f2f2f; background:#0f0f0f; }
     .editor-panel summary { cursor:pointer; list-style:none; padding:12px; text-transform:uppercase; font-weight:700; border-bottom:1px solid #252525; background:#151515; }
     .editor-panel > .controls-grid { padding:12px; }
+    .editor-panel > .metafield-editor { padding:0 12px 12px; border-top:1px solid #252525; margin-top:4px; }
+    .metafield-editor-title { margin:10px 0 8px; font-size:11px; letter-spacing:.8px; text-transform:uppercase; color:#bdbdbd; }
+    .metafield-row { display:grid; grid-template-columns:minmax(120px,200px) 1fr; gap:10px; align-items:start; margin-bottom:10px; padding:10px; background:#141414; border:1px solid #2f2f2f; }
+    .metafield-label-col { display:grid; gap:6px; }
+    .metafield-pill { display:inline-block; font-size:9px; letter-spacing:.5px; text-transform:uppercase; padding:2px 6px; border:1px solid #3a3a3a; color:#9a9a9a; width:fit-content; }
+    .metafield-label-text strong { font-size:11px; color:#e8e8e8; }
+    .meta-key { margin-top:2px; }
+    .meta-key code { font-size:10px; color:#a8cfff; }
+    .metafield-input-col { display:grid; gap:8px; }
+    .metafield-input-wrap { display:flex; gap:6px; align-items:center; }
+    .meta-grow { flex:1; min-width:0; }
+    .dynamic-source-btn { flex-shrink:0; width:34px; height:34px; border:1px solid #3a3a3a; background:#101010; color:#cfcfcf; cursor:pointer; font-size:15px; line-height:1; display:grid; place-items:center; }
+    .dynamic-source-btn:hover { border-color:#5a5a5a; color:#fff; }
+    .meta-thumb { max-width:120px; border:1px solid #2f2f2f; background:#0c0c0c; padding:2px; }
+    .meta-thumb img { width:100%; height:72px; object-fit:cover; margin:0; display:block; }
+    .hero-portada-wrap { margin:0 0 14px; border:1px solid #2f2f2f; background:#101010; overflow:hidden; }
+    .hero-portada-img { display:block; width:100%; max-height:240px; object-fit:cover; margin:0; height:auto; filter:none; }
+    .hero-portada-caption { margin:0; padding:6px 10px; font-size:10px; color:#9a9a9a; border-top:1px solid #2a2a2a; background:#141414; }
+    .hero-portada-caption code { color:#a8cfff; font-size:10px; }
+    .hero-meta-subline { margin:-4px 0 10px; font-size:13px; color:color-mix(in srgb, var(--ui-accent-color, #d6d6d6) 85%, #fff 15%); letter-spacing:.4px; text-transform:none; font-weight:600; }
     .block-tools { position:absolute; right:10px; top:10px; display:flex; gap:6px; z-index:4; }
     .block-tools button { border:1px solid #3a3a3a; background:#0f0f0f; color:#f5f5f5; width:28px; height:28px; font-weight:700; cursor:pointer; }
     .controls-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; align-items:end; }
@@ -390,10 +497,31 @@ type CollectionProduct = {
     .meta-input { display:grid; gap:4px; font-size:10px; color:#a5a5a5; }
     .meta-input input { border:1px solid #3a3a3a; background:#111; color:#ddd; padding:4px 6px; font-size:10px; }
     .card p { margin:0 0 10px; }
-    .actions { display:flex; gap:8px; margin-top:auto; }
-    .actions a, .actions button { background:#171717; color:#fff; border:1px solid #373737; padding:8px 10px; text-decoration:none; font-weight:700; }
-    .actions .tool-btn { width:36px; padding:8px 0; }
-    .actions button { cursor:pointer; }
+    .actions {
+      display:flex;
+      gap:8px;
+      margin-top:auto;
+      align-items:stretch;
+      flex-wrap:nowrap;
+    }
+    .actions a, .actions button {
+      background:#171717;
+      color:#fff;
+      border:1px solid #373737;
+      padding:8px 10px;
+      text-decoration:none;
+      font-weight:700;
+      box-sizing:border-box;
+      min-height:40px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      white-space:nowrap;
+    }
+    .actions a { flex:1 1 auto; min-width:0; gap:4px; }
+    .actions .tool-btn { flex:0 0 40px; width:40px; min-width:40px; padding:0; }
+    .actions button { cursor:pointer; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+    .actions .icon { margin-right:0; flex-shrink:0; }
     .actions button:disabled { opacity:.6; cursor:not-allowed; border-color:#4a2323; color:#c7a8a8; }
     .icon { margin-right:4px; color:#bcbcbc; }
     @keyframes slowReload {
@@ -407,10 +535,20 @@ type CollectionProduct = {
     }
     @media (max-width: 980px) {
       .hero-main { grid-template-columns:1fr; }
+      .console-pair { grid-template-columns:1fr; }
     }
   `]
 })
 export class HomePageComponent implements OnInit {
+  readonly imagePresetUrls = [
+    'collections/collection-01.jpg',
+    'collections/collection-02.jpg',
+    'collections/collection-03.jpg',
+  ];
+  private imagePresetCycle = 0;
+  private accentPresetCycle = 0;
+  readonly accentPresets = ['#d6d6d6', '#4ec5ff', '#7a5f46', '#e8e4dc', '#ff5a7a'];
+
   readonly products = signal<Product[]>([]);
   readonly featuredProducts = signal<Product[]>([]);
   readonly collectionProducts = signal<CollectionProduct[]>([]);
@@ -423,13 +561,14 @@ export class HomePageComponent implements OnInit {
   readonly backgroundColor = signal('#0b0b0b');
   readonly textColor = signal('#f4f4f4');
   readonly accentColor = signal('#d6d6d6');
-  readonly crystalFx = signal(100);
-  readonly orbFx = signal(26);
+  readonly heroImageUrl = signal('');
+  readonly heroTagline = signal('');
   readonly blockEditMode = signal(false);
   readonly capacitySplitOpen = signal(false);
-  readonly sectionOrderMap = signal<Record<string, number>>({
-    hero: 0, controls: 1, price: 2, inspiration: 3, value: 4, products: 5,
-  });
+  private readonly defaultSectionOrder: Record<string, number> = {
+    hero: 0, controls: 1, price: 2, console: 3, inspiration: 4, value: 5, products: 6,
+  };
+  readonly sectionOrderMap = signal<Record<string, number>>({ ...this.defaultSectionOrder });
   readonly filteredByLivePrice = computed(() =>
     this.collectionProducts()
       .filter((product) => Number(product.priceRange.minVariantPrice.amount || 0) <= this.livePriceMax())
@@ -497,14 +636,71 @@ export class HomePageComponent implements OnInit {
     this.applyVisualVars();
   }
 
-  setCrystalFx(value: number): void {
-    this.crystalFx.set(value);
+  setHeroImageUrl(value: string): void {
+    this.heroImageUrl.set(value.trim());
     this.applyVisualVars();
   }
 
-  setOrbFx(value: number): void {
-    this.orbFx.set(value);
+  setHeroTagline(value: string): void {
+    this.heroTagline.set(value);
     this.applyVisualVars();
+  }
+
+  clearHeroImage(): void {
+    this.heroImageUrl.set('');
+    this.applyVisualVars();
+  }
+
+  cycleHeroImagePreset(): void {
+    const list = this.imagePresetUrls;
+    const next = list[this.imagePresetCycle % list.length] ?? '';
+    this.imagePresetCycle += 1;
+    this.heroImageUrl.set(next);
+    this.applyVisualVars();
+  }
+
+  cycleAccentPreset(): void {
+    const list = this.accentPresets;
+    const next = list[this.accentPresetCycle % list.length] ?? '#d6d6d6';
+    this.accentPresetCycle += 1;
+    this.accentColor.set(next);
+    this.applyVisualVars();
+  }
+
+  fillSampleTagline(): void {
+    const line = this.i18n.lang() === 'en'
+      ? 'Headless storefront · instant navigation'
+      : 'Storefront headless · navegacion instantanea';
+    this.heroTagline.set(line);
+    this.applyVisualVars();
+  }
+
+  consoleBadText(): string {
+    return this.i18n.lang() === 'en'
+      ? `▲ Refused to execute inline script because unsafe-inline is not allowed
+▲ Failed to load resource: net::ERR_BLOCKED_BY_CLIENT (analytics.js)
+▲ Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+▲ [HotReload] Section render blocked — waiting for Shopify CDN
+▲ Deprecated: liquid variable access without null check`
+      : `▲ Error al ejecutar script inline: Content Security Policy
+▲ Failed to load resource: net::ERR_BLOCKED_BY_CLIENT (tracking.js)
+▲ Uncaught TypeError: no se puede leer 'map' de undefined
+▲ [HotReload] Seccion bloqueada — esperando a CDN de Shopify
+▲ Deprecado: acceso Liquid sin comprobacion de nulo`;
+  }
+
+  consoleGoodText(): string {
+    return this.i18n.lang() === 'en'
+      ? `✓ Angular is running in production mode.
+✓ Router navigation completed in 12ms
+✓ No full page reload — state preserved
+✓ HttpClient: 200 OK (Storefront GraphQL)
+✓ Change detection stable`
+      : `✓ Angular en modo produccion.
+✓ Navegacion del router completada en 12ms
+✓ Sin recarga completa — estado conservado
+✓ HttpClient: 200 OK (GraphQL Storefront)
+✓ Deteccion de cambios estable`;
   }
 
   resetVisuals(): void {
@@ -516,8 +712,8 @@ export class HomePageComponent implements OnInit {
     this.backgroundColor.set('#0b0b0b');
     this.textColor.set('#f4f4f4');
     this.accentColor.set('#d6d6d6');
-    this.crystalFx.set(100);
-    this.orbFx.set(26);
+    this.heroImageUrl.set('');
+    this.heroTagline.set('');
     this.applyVisualVars();
   }
 
@@ -609,8 +805,6 @@ export class HomePageComponent implements OnInit {
     this.document.documentElement.style.setProperty('--ui-bg-color', this.backgroundColor());
     this.document.documentElement.style.setProperty('--ui-text-color', this.textColor());
     this.document.documentElement.style.setProperty('--ui-accent-color', this.accentColor());
-    this.document.documentElement.style.setProperty('--ui-crystal-opacity', `${this.crystalFx() / 100}`);
-    this.document.documentElement.style.setProperty('--ui-orb-opacity', `${this.orbFx() / 100}`);
     this.document.defaultView?.localStorage.setItem('home.visualPrefs', JSON.stringify({
       brightness: this.brightness(),
       darkness: this.darkness(),
@@ -620,8 +814,8 @@ export class HomePageComponent implements OnInit {
       backgroundColor: this.backgroundColor(),
       textColor: this.textColor(),
       accentColor: this.accentColor(),
-      crystalFx: this.crystalFx(),
-      orbFx: this.orbFx(),
+      heroImageUrl: this.heroImageUrl(),
+      heroTagline: this.heroTagline(),
     }));
   }
 
@@ -629,7 +823,7 @@ export class HomePageComponent implements OnInit {
     const raw = this.document.defaultView?.localStorage.getItem('home.visualPrefs');
     if (!raw) return;
     try {
-      const prefs = JSON.parse(raw) as Partial<Record<'brightness' | 'darkness' | 'contrast' | 'saturation' | 'crystalFx' | 'orbFx', number> & Record<'fontFamily' | 'backgroundColor' | 'textColor' | 'accentColor', string>>;
+      const prefs = JSON.parse(raw) as Partial<Record<'brightness' | 'darkness' | 'contrast' | 'saturation', number> & Record<'fontFamily' | 'backgroundColor' | 'textColor' | 'accentColor' | 'heroImageUrl' | 'heroTagline', string>>;
       if (typeof prefs.brightness === 'number') this.brightness.set(prefs.brightness);
       if (typeof prefs.darkness === 'number') this.darkness.set(prefs.darkness);
       if (typeof prefs.contrast === 'number') this.contrast.set(prefs.contrast);
@@ -638,8 +832,8 @@ export class HomePageComponent implements OnInit {
       if (typeof prefs.backgroundColor === 'string') this.backgroundColor.set(prefs.backgroundColor);
       if (typeof prefs.textColor === 'string') this.textColor.set(prefs.textColor);
       if (typeof prefs.accentColor === 'string') this.accentColor.set(prefs.accentColor);
-      if (typeof prefs.crystalFx === 'number') this.crystalFx.set(prefs.crystalFx);
-      if (typeof prefs.orbFx === 'number') this.orbFx.set(prefs.orbFx);
+      if (typeof prefs.heroImageUrl === 'string') this.heroImageUrl.set(prefs.heroImageUrl);
+      if (typeof prefs.heroTagline === 'string') this.heroTagline.set(prefs.heroTagline);
     } catch {
       // ignore invalid persisted data
     }
@@ -647,14 +841,17 @@ export class HomePageComponent implements OnInit {
 
   private restoreSectionOrder(): void {
     const raw = this.document.defaultView?.localStorage.getItem('home.sectionOrder');
-    if (!raw) return;
-    try {
-      const parsed = JSON.parse(raw) as Record<string, number>;
-      const keys = Object.keys(this.sectionOrderMap());
-      const complete = keys.every((key) => typeof parsed[key] === 'number');
-      if (complete) this.sectionOrderMap.set(parsed);
-    } catch {
-      // ignore invalid persisted data
+    const merged: Record<string, number> = { ...this.defaultSectionOrder };
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as Record<string, number>;
+        for (const key of Object.keys(this.defaultSectionOrder)) {
+          if (typeof parsed[key] === 'number') merged[key] = parsed[key];
+        }
+      } catch {
+        // ignore invalid persisted data
+      }
     }
+    this.sectionOrderMap.set(merged);
   }
 }

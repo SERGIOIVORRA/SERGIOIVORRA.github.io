@@ -1,16 +1,14 @@
-/* Global crystal glass treatment */
+/* Flat panels — sin cristal / sin backdrop-filter (mejor rendimiento) */
 
 body {
-  background:
-    radial-gradient(circle at 15% -10%, rgba(180, 220, 255, 0.14), transparent 42%),
-    radial-gradient(circle at 88% 8%, rgba(255, 255, 255, 0.1), transparent 40%),
-    #090b10;
+  background: #090b10;
 }
 
 .hero,
 .inspiration,
 .value,
 .live-price-lab,
+.console-lab,
 .collections-hero,
 .collection-head,
 .filters,
@@ -26,27 +24,9 @@ body {
 .grid .card,
 .cart-drawer,
 .site-footer {
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)) !important;
-  backdrop-filter: blur(12px) saturate(130%);
-  -webkit-backdrop-filter: blur(12px) saturate(130%);
-  border-color: rgba(220, 240, 255, 0.24) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.33),
-    0 10px 30px rgba(130, 170, 220, 0.12);
+  background: #111 !important;
+  border: 1px solid #2f2f2f !important;
+  box-shadow: none;
   position: relative;
   overflow: hidden;
-}
-
-.hero::before,
-.inspiration::before,
-.value::before,
-.live-price-lab::before,
-.product::after,
-.recommended-card::before,
-.grid .card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 35%);
-  pointer-events: none;
 }

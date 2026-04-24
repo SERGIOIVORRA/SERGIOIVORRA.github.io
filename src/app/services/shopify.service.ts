@@ -354,6 +354,7 @@ export class ShopifyService {
         tags: string[];
         availableForSale: boolean;
         featuredImage: { url: string; altText: string | null } | null;
+        images: { nodes: Array<{ url: string; altText: string | null }> };
         priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
         variants: { nodes: Array<{ id: string; title: string }> };
         metafields: Array<{ namespace: string; key: string; value: string } | null>;
@@ -364,6 +365,7 @@ export class ShopifyService {
         product(handle: $handle) {
           id handle title description tags availableForSale
           featuredImage { url altText }
+          images(first: 20) { nodes { url altText } }
           priceRange { minVariantPrice { amount currencyCode } }
           variants(first: 10) { nodes { id title } }
           metafields(identifiers: [

@@ -45,10 +45,19 @@ import { I18nService } from '../services/i18n.service';
       </section>
 
       <section class="notes">
-        <h2>* {{ i18n.lang() === 'en' ? 'Theme editor benchmark context' : 'Contexto benchmark editor de theme' }}</h2>
-        <a href="https://admin.shopify.com/store/pepagreen/themes/187256701301/editor?previewPath=%2Fpages%2Favada-faqs%3Fview%3D8&section=template--26973621518709__benefits_product_8cTCBf" target="_blank" rel="noreferrer">
-          {{ i18n.lang() === 'en' ? 'Open reference editor URL' : 'Abrir URL de referencia del editor' }}
-        </a>
+        <h2>* {{ i18n.lang() === 'en' ? 'Theme editor (demo — not connected)' : 'Editor de theme (demo — no conecta)' }}</h2>
+        <p class="notes-hint">{{ i18n.lang() === 'en' ? 'Placeholder only: nothing is sent or stored.' : 'Solo maqueta: no se envia ni guarda nada.' }}</p>
+        <form class="fake-editor-login" (submit)="$event.preventDefault()">
+          <label>
+            <span>{{ i18n.lang() === 'en' ? 'User' : 'Usuario' }}</span>
+            <input type="text" name="fake-user" autocomplete="off" />
+          </label>
+          <label>
+            <span>{{ i18n.lang() === 'en' ? 'Password' : 'Contraseña' }}</span>
+            <input type="password" name="fake-pass" autocomplete="off" />
+          </label>
+          <button type="button" class="fake-submit">{{ i18n.lang() === 'en' ? 'Sign in' : 'Entrar' }}</button>
+        </form>
       </section>
     </section>
   `,
@@ -68,7 +77,11 @@ import { I18nService } from '../services/i18n.service';
     .bar.t { background:linear-gradient(90deg,#6a6a6a,#3e3e3e); }
     .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; margin-top:10px; }
     .grid article { border:1px solid #2f2f2f; background:#151515; padding:10px; }
-    .notes a { color:#cfe2ff; text-decoration:none; border:1px solid #3a3a3a; padding:8px 10px; display:inline-block; }
+    .notes-hint { margin:6px 0 12px; font-size:11px; color:#9a9a9a; line-height:1.4; }
+    .fake-editor-login { display:grid; gap:10px; max-width:320px; margin-top:4px; }
+    .fake-editor-login label { display:grid; gap:4px; font-size:11px; color:#c4c4c4; }
+    .fake-editor-login input { border:1px solid #3a3a3a; background:#131313; color:#fff; padding:8px 10px; font:inherit; }
+    .fake-submit { justify-self:start; border:1px solid #3a3a3a; background:#1a1a1a; color:#fff; padding:8px 16px; font-weight:700; cursor:default; text-transform:uppercase; font-size:11px; }
   `]
 })
 export class PerformanceLabPageComponent {

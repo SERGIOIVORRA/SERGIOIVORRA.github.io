@@ -1,5 +1,6 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CartService } from '../services/cart.service';
 import { I18nService } from '../services/i18n.service';
@@ -12,6 +13,7 @@ type Product = {
   tags: string[];
   availableForSale: boolean;
   featuredImage: { url: string; altText: string | null } | null;
+  images?: { nodes: Array<{ url: string; altText: string | null }> };
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   variants: { nodes: Array<{ id: string; title: string }> };
   metafields?: Array<{ namespace: string; key: string; value: string } | null>;
@@ -35,15 +37,37 @@ type ExtraField = {
       <p>{{ loadError() }}</p>
     } @else if (product(); as p) {
       <article class="product">
-        @if (p.featuredImage) {
-          <img [src]="p.featuredImage.url" [alt]="p.featuredImage.altText || p.title" [class]="imageModeClass()" />
-        }
+        <div class="product-gallery">
+          @if (mainDisplayImage(); as mainImg) {
+            <img
+              class="product-main-img"
+              [src]="mainImg.url"
+              [alt]="mainImg.altText || p.title"
+              [class]="imageModeClass()"
+            />
+          }
+          @if (galleryImages().length > 1) {
+            <div class="gallery-thumbs" role="tablist" [attr.aria-label]="i18n.t('product.galleryLabel')">
+              @for (img of galleryImages(); track img.url; let idx = $index) {
+                <button
+                  type="button"
+                  class="thumb"
+                  [class.active]="selectedImageIndex() === idx"
+                  [attr.aria-selected]="selectedImageIndex() === idx"
+                  (click)="selectGallery(idx)"
+                >
+                  <img [src]="img.url" alt="" />
+                </button>
+              }
+            </div>
+          }
+        </div>
         <div class="product-side">
           <h1>{{ p.title }}</h1>
           <div class="image-mode-switch">
-            <button (click)="setImageMode('square')" [class.active]="imageMode() === 'square'">{{ i18n.t('product.image.square') }}</button>
-            <button (click)="setImageMode('tall')" [class.active]="imageMode() === 'tall'">{{ i18n.t('product.image.tall') }}</button>
-            <button (click)="setImageMode('wide')" [class.active]="imageMode() === 'wide'">{{ i18n.t('product.image.wide') }}</button>
+            <button type="button" (click)="setImageMode('square')" [class.active]="imageMode() === 'square'">{{ i18n.t('product.image.square') }}</button>
+            <button type="button" (click)="setImageMode('tall')" [class.active]="imageMode() === 'tall'">{{ i18n.t('product.image.tall') }}</button>
+            <button type="button" (click)="setImageMode('wide')" [class.active]="imageMode() === 'wide'">{{ i18n.t('product.image.wide') }}</button>
           </div>
           <div class="tag-list">
             @for (tag of topTags(p.tags); track tag) {
@@ -53,7 +77,7 @@ type ExtraField = {
           <p class="description">{{ p.description }}</p>
           <strong>{{ p.priceRange.minVariantPrice.amount | currency:p.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</strong>
           <div>
-            <button [disabled]="!p.availableForSale" (click)="addToCart(p)">
+            <button type="button" [disabled]="!p.availableForSale" (click)="addToCart(p)">
               @if (p.availableForSale) {
                 + {{ i18n.t('product.addToCart') }}
               } @else {
@@ -79,7 +103,7 @@ type ExtraField = {
                   <h3 (click)="goToProduct(item.handle)">{{ item.title }}</h3>
                   <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
                   <div class="recommended-actions">
-                    <button [disabled]="!item.availableForSale || isInCart(item)" (click)="onAddToCart($event, item)">
+                    <button type="button" [disabled]="!item.availableForSale || isInCart(item)" (click)="onAddToCart($event, item)">
                       @if (!item.availableForSale) {
                         {{ i18n.t('common.outOfStock') }}
                       } @else if (isInCart(item)) {
@@ -131,20 +155,21 @@ type ExtraField = {
       position: relative;
     }
     .product-side { display:grid; gap:14px; align-content:start; }
-    .product::before {
-      content:'';
-      position:absolute;
-      left:0;
-      top:0;
-      width:0;
-      height:0;
-      border-top:26px solid #f5f5f5;
-      border-right:26px solid transparent;
-    }
-    img { width:100%; object-fit:cover; border:1px solid #2f2f2f; background:#0f0f0f; }
+    .product-gallery { display:grid; gap:10px; align-content:start; }
+    .product-gallery .product-main-img { width:100%; object-fit:cover; border:1px solid #2f2f2f; background:#0f0f0f; }
     .img-square { aspect-ratio:1/1; }
     .img-tall { aspect-ratio:4/5; }
     .img-wide { aspect-ratio:16/9; }
+    .gallery-thumbs { display:flex; flex-wrap:wrap; gap:8px; }
+    .thumb {
+      padding:0;
+      border:2px solid #2f2f2f;
+      background:#0f0f0f;
+      cursor:pointer;
+      line-height:0;
+    }
+    .thumb.active { border-color:#c9a227; }
+    .thumb img { width:76px; height:76px; object-fit:cover; margin:0; display:block; border:0; }
     .image-mode-switch { display:flex; gap:8px; margin:8px 0 10px; }
     .image-mode-switch button {
       margin-top:0;
@@ -216,13 +241,36 @@ type ExtraField = {
     }
   `]
 })
-export class ProductPageComponent implements OnInit {
+export class ProductPageComponent {
   readonly product = signal<Product | null>(null);
   readonly recommendations = signal<Array<Product & { handle: string }>>([]);
   readonly extraInfo = signal<ExtraField[]>([]);
   readonly imageMode = signal<'square' | 'tall' | 'wide'>('square');
+  readonly selectedImageIndex = signal(0);
   readonly isLoading = signal(true);
   readonly loadError = signal('');
+
+  readonly galleryImages = computed(() => {
+    const p = this.product();
+    if (!p) return [];
+    const raw = p.images?.nodes?.filter((n) => Boolean(n?.url)) ?? [];
+    if (raw.length) {
+      const seen = new Set<string>();
+      return raw.filter((n) => {
+        if (seen.has(n.url)) return false;
+        seen.add(n.url);
+        return true;
+      });
+    }
+    return p.featuredImage?.url ? [p.featuredImage] : [];
+  });
+
+  readonly mainDisplayImage = computed(() => {
+    const list = this.galleryImages();
+    if (!list.length) return null;
+    const i = Math.max(0, Math.min(this.selectedImageIndex(), list.length - 1));
+    return list[i] ?? list[0];
+  });
 
   constructor(
     private route: ActivatedRoute,
@@ -230,18 +278,27 @@ export class ProductPageComponent implements OnInit {
     private shopifyService: ShopifyService,
     private cartService: CartService,
     public i18n: I18nService,
-  ) {}
+  ) {
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      void this.loadProduct(params.get('handle'));
+    });
+  }
 
-  async ngOnInit(): Promise<void> {
-    const handle = this.route.snapshot.paramMap.get('handle');
+  selectGallery(index: number): void {
+    this.selectedImageIndex.set(index);
+  }
+
+  private async loadProduct(handle: string | null): Promise<void> {
     if (!handle) {
       this.isLoading.set(false);
       this.loadError.set(this.i18n.t('product.notFound'));
+      this.product.set(null);
       return;
     }
 
     this.isLoading.set(true);
     this.loadError.set('');
+    this.selectedImageIndex.set(0);
     try {
       const [productData, productsData] = await Promise.all([
         this.shopifyService.getProductByHandle(handle),
@@ -333,7 +390,7 @@ export class ProductPageComponent implements OnInit {
 
   goToProduct(handle: string | undefined): void {
     if (!handle) return;
-    this.router.navigate(['/product', handle]);
+    void this.router.navigate(['/product', handle]);
   }
 
   imageModeClass(): string {
