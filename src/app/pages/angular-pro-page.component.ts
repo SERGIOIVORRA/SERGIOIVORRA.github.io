@@ -122,6 +122,19 @@ import { I18nService } from '../services/i18n.service';
           }
         </div>
       </section>
+
+      <section class="systems">
+        <h2>* {{ i18n.lang() === 'en' ? 'What Angular enables that themes struggle with' : 'Lo que Angular permite y un theme sufre' }}</h2>
+        <p>{{ i18n.lang() === 'en' ? 'Real patterns already used by major brands and platforms in production.' : 'Patrones reales ya usados por marcas y plataformas grandes en produccion.' }}</p>
+        <div class="systems-grid">
+          @for (item of angularExclusive; track item.titleEs) {
+            <article>
+              <h3>+ {{ i18n.lang() === 'en' ? item.titleEn : item.titleEs }}</h3>
+              <p>{{ i18n.lang() === 'en' ? item.textEn : item.textEs }}</p>
+            </article>
+          }
+        </div>
+      </section>
     </section>
   `,
   styles: [`
@@ -244,6 +257,45 @@ export class AngularProPageComponent {
       textEs: 'Workflows complejos de marketplace B2B/B2C con estado, filtros y paneles operativos de gran escala.',
       titleEn: 'Upwork (platform modules)',
       textEn: 'Complex B2B/B2C marketplace workflows with state, filters and large-scale operational dashboards.',
+    },
+  ];
+
+  readonly angularExclusive = [
+    {
+      titleEs: 'Configuradores avanzados en tiempo real',
+      textEs: 'Ejemplo real: Tesla (configurador de vehiculo web). Flujos complejos, reglas dependientes y UX instantanea tipo app.',
+      titleEn: 'Advanced real-time configurators',
+      textEn: 'Real example: Tesla (web vehicle configurator). Complex rule dependencies and app-like instant UX.',
+    },
+    {
+      titleEs: 'Paneles operativos integrados en ecommerce',
+      textEs: 'Ejemplo real: Google Cloud Console (Angular). Patron de dashboards enterprise reutilizable para portales B2B de clientes.',
+      titleEn: 'Operational dashboards integrated with ecommerce',
+      textEn: 'Real example: Google Cloud Console (Angular). Enterprise dashboard pattern reusable for B2B customer portals.',
+    },
+    {
+      titleEs: 'Marketplace UX con estado complejo',
+      textEs: 'Ejemplo real: Upwork (modulos Angular). Filtros, jobs, bids y estados en vivo dificil de mantener en theme clasico.',
+      titleEn: 'Marketplace UX with complex state',
+      textEn: 'Real example: Upwork (Angular modules). Live filters, jobs, bids and state-heavy flows hard to maintain in classic themes.',
+    },
+    {
+      titleEs: 'Microfrontends / equipos grandes',
+      textEs: 'Ejemplo real: Entornos enterprise de Microsoft y Google con frontend modular. Escalado por equipos sin colisiones de entrega.',
+      titleEn: 'Microfrontends / large teams',
+      textEn: 'Real example: Microsoft and Google enterprise environments with modular frontend architecture for parallel team delivery.',
+    },
+    {
+      titleEs: 'Experiencias ricas de producto digital',
+      textEs: 'Ejemplo real: Forbes (areas de producto digital). Composicion de bloques reutilizables con control de rendimiento y despliegue continuo.',
+      titleEn: 'Rich digital product experiences',
+      textEn: 'Real example: Forbes (digital product areas). Reusable block composition with performance control and continuous deployment.',
+    },
+    {
+      titleEs: 'Operaciones headless de alto volumen en Shopify',
+      textEs: 'Ejemplos reales: Lady Gaga + Mattel + Haus Labs sobre Shopify headless/composable. Flujos que superan el limite natural de un theme.',
+      titleEn: 'High-volume headless Shopify operations',
+      textEn: 'Real examples: Lady Gaga + Mattel + Haus Labs on Shopify headless/composable stacks. Workflows beyond typical theme limits.',
     },
   ];
 }

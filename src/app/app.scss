@@ -5,7 +5,7 @@
   color: #f4f4f4;
   font-family: 'Space Mono', 'Courier New', monospace;
   letter-spacing: 0.2px;
-  filter: brightness(var(--ui-brightness, 1));
+  filter: brightness(var(--ui-brightness, 1)) contrast(var(--ui-contrast, 1)) saturate(var(--ui-saturation, 1));
   transition: filter .25s ease;
 }
 
@@ -66,6 +66,7 @@
   inset: 0;
   pointer-events: none;
   z-index: 999;
+  opacity: var(--ui-crystal-opacity, 1);
 }
 
 .crystal {
@@ -109,7 +110,7 @@
 @keyframes crystalFade {
   0% { opacity: 0; filter: blur(1px); }
   20% { opacity: 1; filter: blur(0); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(.45); }
+  100% { opacity: 0; }
 }
 
 .distant-orb {
@@ -120,7 +121,7 @@
   height: 96px;
   pointer-events: none;
   z-index: 3;
-  opacity: .26;
+  opacity: var(--ui-orb-opacity, .26);
   filter: blur(.2px);
 }
 

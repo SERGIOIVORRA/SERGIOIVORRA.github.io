@@ -23,7 +23,11 @@ export class CartService {
   }
 
   toggleDrawer() {
-    this.isDrawerOpen.set(!this.isDrawerOpen());
+    const nextOpen = !this.isDrawerOpen();
+    this.isDrawerOpen.set(nextOpen);
+    if (nextOpen) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   totalItems() {
@@ -45,12 +49,14 @@ export class CartService {
   async addItem(item: CartItem): Promise<void> {
     if (this.hasOrPendingItem(item.merchandiseId)) {
       this.isDrawerOpen.set(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     this.pendingMerchandiseIds.update((ids) => [...ids, item.merchandiseId]);
     this.items.set([...this.items(), item]);
     this.isDrawerOpen.set(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     this.persistState();
 
     try {

@@ -34,6 +34,10 @@ export class ShopifyService {
     data: unknown | null;
     promise: Promise<unknown> | null;
   }>();
+  private productsCache: {
+    data: unknown | null;
+    promise: Promise<unknown> | null;
+  } = { data: null, promise: null };
 
   constructor(private http: HttpClient) {}
 
@@ -232,7 +236,7 @@ export class ShopifyService {
   }
 
   prefetchCollectionDetails(handles: string[]): void {
-    for (const handle of [...new Set(handles)].slice(0, 3)) {
+    for (const handle of [...new Set(handles)]) {
       if (handle) {
         void this.getCollectionByHandle(handle);
       }
@@ -240,7 +244,43 @@ export class ShopifyService {
   }
 
   getProducts() {
-    return this.request<{
+    if (this.productsCache.data) {
+      return Promise.resolve(this.productsCache.data as {
+        products: {
+          nodes: Array<{
+            id: string;
+            handle: string;
+            title: string;
+            description: string;
+            tags: string[];
+            availableForSale: boolean;
+            metafields: Array<{ namespace: string; key: string; value: string } | null>;
+            featuredImage: { url: string; altText: string | null } | null;
+            priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+            variants: { nodes: Array<{ id: string; title: string }> };
+          }>;
+        };
+      });
+    }
+    if (this.productsCache.promise) {
+      return this.productsCache.promise as Promise<{
+        products: {
+          nodes: Array<{
+            id: string;
+            handle: string;
+            title: string;
+            description: string;
+            tags: string[];
+            availableForSale: boolean;
+            metafields: Array<{ namespace: string; key: string; value: string } | null>;
+            featuredImage: { url: string; altText: string | null } | null;
+            priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+            variants: { nodes: Array<{ id: string; title: string }> };
+          }>;
+        };
+      }>;
+    }
+    const requestPromise = this.request<{
       products: {
         nodes: Array<{
           id: string;
@@ -288,7 +328,20 @@ export class ShopifyService {
           }
         }
       }
-    `);
+    `).then((data) => {
+      this.productsCache.data = data;
+      this.productsCache.promise = null;
+      return data;
+    }).catch((error) => {
+      this.productsCache.promise = null;
+      throw error;
+    });
+    this.productsCache.promise = requestPromise;
+    return requestPromise;
+  }
+
+  prefetchProducts(): void {
+    void this.getProducts();
   }
 
   getProductByHandle(handle: string) {
