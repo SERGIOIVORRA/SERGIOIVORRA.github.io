@@ -535,7 +535,7 @@ type CollectionProduct = {
     .cta.ghost { background:transparent; color:#fff; border:1px solid #3d3d3d; }
     .products { position:relative; }
     .real-cases-title { color:#bcbcbc; font-size:12px; margin:2px 0 14px; line-height:1.5; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
     .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; display:flex; flex-direction:column; cursor:pointer; position:relative; overflow:hidden; }
     .card:hover { transform: translateY(-3px); }
     .corner-badge {
@@ -574,20 +574,29 @@ type CollectionProduct = {
       background:#171717;
       color:#fff;
       border:1px solid #373737;
-      padding:8px 10px;
+      padding:0 8px;
       text-decoration:none;
       font-weight:700;
       box-sizing:border-box;
+      height:40px;
       min-height:40px;
+      max-height:40px;
+      font-size:10px;
+      line-height:1.1;
+      letter-spacing:-0.02em;
       display:inline-flex;
+      flex-direction:row;
+      flex-wrap:nowrap;
       align-items:center;
       justify-content:center;
       white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .actions a { flex:1 1 auto; min-width:0; gap:4px; }
-    .actions .tool-btn { flex:0 0 40px; width:40px; min-width:40px; padding:0; }
-    .actions button { cursor:pointer; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; }
-    .actions .icon { margin-right:0; flex-shrink:0; }
+    .actions a { flex:1 1 0; min-width:0; gap:4px; }
+    .actions .tool-btn { flex:0 0 40px; width:40px; min-width:40px; max-width:40px; padding:0; font-size:14px; letter-spacing:0; }
+    .actions button:not(.tool-btn) { cursor:pointer; flex:1 1 0; min-width:0; }
+    .actions .icon { margin-right:0; flex-shrink:0; line-height:1; }
     .actions button:disabled { opacity:.6; cursor:not-allowed; border-color:#4a2323; color:#c7a8a8; }
     .icon { margin-right:4px; color:#bcbcbc; }
     @keyframes slowReload {

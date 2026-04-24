@@ -232,9 +232,25 @@ type ExtraField = {
     .recommended-card img, .recommended-card h3 { cursor:pointer; }
     .recommended-card h3 { min-height:52px; margin:6px 0; }
     .recommended-card p { margin:8px 0 10px; }
-    .recommended-actions { display:flex; gap:8px; align-items:center; margin-top:auto; }
+    .recommended-actions { display:flex; gap:8px; align-items:stretch; margin-top:auto; }
     .icon { margin-right:4px; color:#bcbcbc; }
-    .recommended-actions button { margin-top:0; }
+    .recommended-actions button {
+      margin-top:0;
+      flex:1;
+      min-width:0;
+      height:40px;
+      min-height:40px;
+      max-height:40px;
+      box-sizing:border-box;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-size:10px;
+      padding:0 10px;
+    }
     button:disabled { opacity:.6; cursor:not-allowed; border-color:#4a2323; color:#c7a8a8; }
     @media (max-width: 980px) {
       .product { grid-template-columns:1fr; }

@@ -166,7 +166,7 @@ export class I18nService {
       'collection.openCollection': 'OPEN COLLECTION',
       'collection.namePlaceholder': 'product name',
       'common.metafields': 'VIEW PRODUCT METAFIELDS',
-      'common.outOfStock': 'OUT OF STOCK',
+      'common.outOfStock': 'NO STOCK',
       'common.inCart': 'ALREADY IN CART',
       'common.added': 'ADDED',
       'home.heroTitle': 'Shopify Storefront in Angular: the theme that supports everything.',
