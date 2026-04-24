@@ -70,9 +70,7 @@ export class ShopifyService {
             availableForSale: boolean;
             productType: string;
             vendor: string;
-            metafields: {
-              nodes: Array<{ namespace: string; key: string; value: string }>;
-            };
+            metafields: Array<{ namespace: string; key: string; value: string } | null>;
             featuredImage: { url: string; altText: string | null } | null;
             priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
           }>;
@@ -95,7 +93,28 @@ export class ShopifyService {
               availableForSale
               productType
               vendor
-              metafields(first: 25) { nodes { namespace key value } }
+              metafields(identifiers: [
+                { namespace: "custom", key: "material" },
+                { namespace: "custom", key: "dimensions" },
+                { namespace: "custom", key: "artist" },
+                { namespace: "custom", key: "technique" },
+                { namespace: "custom", key: "year" },
+                { namespace: "custom", key: "vendido_sergio" },
+                { namespace: "custom", key: "tipo" },
+                { namespace: "custom", key: "descripcion" },
+                { namespace: "custom", key: "tallas-sergio" },
+                { namespace: "custom", key: "nuevo_sergio" },
+                { namespace: "custom", key: "descuento-sergio" },
+                { namespace: "custom", key: "especial" },
+                { namespace: "custom", key: "detallesc" },
+                { namespace: "custom", key: "detallesb" },
+                { namespace: "custom", key: "detalles" },
+                { namespace: "custom", key: "obciones-cuadro-personal" },
+                { namespace: "details", key: "material" },
+                { namespace: "details", key: "dimensions" },
+                { namespace: "details", key: "artist" },
+                { namespace: "details", key: "origin" }
+              ]) { namespace key value }
               featuredImage { url altText }
               priceRange { minVariantPrice { amount currencyCode } }
             }
@@ -116,9 +135,7 @@ export class ShopifyService {
           title: string;
           description: string;
           tags: string[];
-          metafields: {
-            nodes: Array<{ namespace: string; key: string; value: string }>;
-          };
+          metafields: Array<{ namespace: string; key: string; value: string } | null>;
           featuredImage: { url: string; altText: string | null } | null;
           priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
           variants: { nodes: Array<{ id: string; title: string }> };
@@ -129,7 +146,28 @@ export class ShopifyService {
         products(first: 16) {
           nodes {
             id handle title description tags
-            metafields(first: 25) { nodes { namespace key value } }
+            metafields(identifiers: [
+              { namespace: "custom", key: "material" },
+              { namespace: "custom", key: "dimensions" },
+              { namespace: "custom", key: "artist" },
+              { namespace: "custom", key: "technique" },
+              { namespace: "custom", key: "year" },
+              { namespace: "custom", key: "vendido_sergio" },
+              { namespace: "custom", key: "tipo" },
+              { namespace: "custom", key: "descripcion" },
+              { namespace: "custom", key: "tallas-sergio" },
+              { namespace: "custom", key: "nuevo_sergio" },
+              { namespace: "custom", key: "descuento-sergio" },
+              { namespace: "custom", key: "especial" },
+              { namespace: "custom", key: "detallesc" },
+              { namespace: "custom", key: "detallesb" },
+              { namespace: "custom", key: "detalles" },
+              { namespace: "custom", key: "obciones-cuadro-personal" },
+              { namespace: "details", key: "material" },
+              { namespace: "details", key: "dimensions" },
+              { namespace: "details", key: "artist" },
+              { namespace: "details", key: "origin" }
+            ]) { namespace key value }
             featuredImage { url altText }
             priceRange { minVariantPrice { amount currencyCode } }
             variants(first: 1) { nodes { id title } }
@@ -150,9 +188,7 @@ export class ShopifyService {
         featuredImage: { url: string; altText: string | null } | null;
         priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
         variants: { nodes: Array<{ id: string; title: string }> };
-        metafields: {
-          nodes: Array<{ namespace: string; key: string; value: string }>;
-        };
+        metafields: Array<{ namespace: string; key: string; value: string } | null>;
       } | null;
     }>(
       `
@@ -162,7 +198,28 @@ export class ShopifyService {
           featuredImage { url altText }
           priceRange { minVariantPrice { amount currencyCode } }
           variants(first: 10) { nodes { id title } }
-          metafields(first: 50) { nodes { namespace key value } }
+          metafields(identifiers: [
+            { namespace: "custom", key: "material" },
+            { namespace: "custom", key: "dimensions" },
+            { namespace: "custom", key: "artist" },
+            { namespace: "custom", key: "technique" },
+            { namespace: "custom", key: "year" },
+            { namespace: "custom", key: "vendido_sergio" },
+            { namespace: "custom", key: "tipo" },
+            { namespace: "custom", key: "descripcion" },
+            { namespace: "custom", key: "tallas-sergio" },
+            { namespace: "custom", key: "nuevo_sergio" },
+            { namespace: "custom", key: "descuento-sergio" },
+            { namespace: "custom", key: "especial" },
+            { namespace: "custom", key: "detallesc" },
+            { namespace: "custom", key: "detallesb" },
+            { namespace: "custom", key: "detalles" },
+            { namespace: "custom", key: "obciones-cuadro-personal" },
+            { namespace: "details", key: "material" },
+            { namespace: "details", key: "dimensions" },
+            { namespace: "details", key: "artist" },
+            { namespace: "details", key: "origin" }
+          ]) { namespace key value }
         }
       }
     `,

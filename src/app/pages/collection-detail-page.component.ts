@@ -12,7 +12,7 @@ type CollectionProduct = {
   availableForSale: boolean;
   productType: string;
   vendor: string;
-  metafields: { nodes: Array<{ namespace: string; key: string; value: string }> };
+  metafields: Array<{ namespace: string; key: string; value: string } | null>;
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
 };
@@ -90,7 +90,7 @@ type CollectionProduct = {
                 <h3>{{ product.title }}</h3>
                 <small>{{ product.vendor }} · {{ product.productType || 'General' }}</small>
                 <div class="meta-list">
-                  @for (field of filledMetafields(product.metafields.nodes); track field.label) {
+                  @for (field of filledMetafields(product.metafields); track field.label) {
                     <small>{{ field.label }}: {{ field.value }}</small>
                   }
                 </div>
@@ -204,10 +204,10 @@ export class CollectionDetailPageComponent implements OnInit {
   }
 
   filledMetafields(
-    metafields: Array<{ namespace: string; key: string; value: string }>,
+    metafields: Array<{ namespace: string; key: string; value: string } | null>,
   ): Array<{ label: string; value: string }> {
     return metafields
-      .filter((field) => Boolean(field?.value?.trim()))
+      .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
       .map((field) => ({ label: `${field.namespace}.${field.key}`, value: field.value }));
   }
 }

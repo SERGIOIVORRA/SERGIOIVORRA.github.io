@@ -13,7 +13,7 @@ type Product = {
   featuredImage: { url: string; altText: string | null } | null;
   priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
   variants: { nodes: Array<{ id: string; title: string }> };
-  metafields?: { nodes: Array<{ namespace: string; key: string; value: string }> };
+  metafields?: Array<{ namespace: string; key: string; value: string } | null>;
 };
 
 @Component({
@@ -205,7 +205,7 @@ export class ProductPageComponent implements OnInit {
       }
 
       this.product.set(productData.product);
-      this.extraInfo.set(this.mapMetafields(productData.product.metafields?.nodes ?? []));
+      this.extraInfo.set(this.mapMetafields(productData.product.metafields ?? []));
 
       const recommended = productsData.products.nodes
         .filter((item) => item.handle !== handle)
@@ -239,10 +239,10 @@ export class ProductPageComponent implements OnInit {
   }
 
   private mapMetafields(
-    metafields: Array<{ namespace: string; key: string; value: string }>,
+    metafields: Array<{ namespace: string; key: string; value: string } | null>,
   ): Array<{ label: string; value: string }> {
     return metafields
-      .filter((field) => Boolean(field?.value?.trim()))
+      .filter((field): field is { namespace: string; key: string; value: string } => Boolean(field?.value?.trim()))
       .map((field) => ({
         label: `${field.namespace}.${field.key}`,
         value: field.value,
