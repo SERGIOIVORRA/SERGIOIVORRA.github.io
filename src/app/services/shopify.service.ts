@@ -30,6 +30,10 @@ export class ShopifyService {
       };
     }> | null;
   } = { data: null, promise: null };
+  private collectionByHandleCache = new Map<string, {
+    data: unknown | null;
+    promise: Promise<unknown> | null;
+  }>();
 
   constructor(private http: HttpClient) {}
 
@@ -97,7 +101,57 @@ export class ShopifyService {
   }
 
   getCollectionByHandle(handle: string) {
-    return this.request<{
+    const cached = this.collectionByHandleCache.get(handle);
+    if (cached?.data) {
+      return Promise.resolve(cached.data as {
+        collection: {
+          id: string;
+          handle: string;
+          title: string;
+          description: string;
+          products: {
+            nodes: Array<{
+              id: string;
+              handle: string;
+              title: string;
+              tags: string[];
+              availableForSale: boolean;
+              productType: string;
+              vendor: string;
+              metafields: Array<{ namespace: string; key: string; value: string } | null>;
+              featuredImage: { url: string; altText: string | null } | null;
+              priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+            }>;
+          };
+        } | null;
+      });
+    }
+    if (cached?.promise) {
+      return cached.promise as Promise<{
+        collection: {
+          id: string;
+          handle: string;
+          title: string;
+          description: string;
+          products: {
+            nodes: Array<{
+              id: string;
+              handle: string;
+              title: string;
+              tags: string[];
+              availableForSale: boolean;
+              productType: string;
+              vendor: string;
+              metafields: Array<{ namespace: string; key: string; value: string } | null>;
+              featuredImage: { url: string; altText: string | null } | null;
+              priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+            }>;
+          };
+        } | null;
+      }>;
+    }
+
+    const requestPromise = this.request<{
       collection: {
         id: string;
         handle: string;
@@ -165,7 +219,24 @@ export class ShopifyService {
       }
       `,
       { handle },
-    );
+    ).then((data) => {
+      this.collectionByHandleCache.set(handle, { data, promise: null });
+      return data;
+    }).catch((error) => {
+      this.collectionByHandleCache.delete(handle);
+      throw error;
+    });
+
+    this.collectionByHandleCache.set(handle, { data: null, promise: requestPromise });
+    return requestPromise;
+  }
+
+  prefetchCollectionDetails(handles: string[]): void {
+    for (const handle of [...new Set(handles)].slice(0, 3)) {
+      if (handle) {
+        void this.getCollectionByHandle(handle);
+      }
+    }
   }
 
   getProducts() {

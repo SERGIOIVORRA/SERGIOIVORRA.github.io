@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../services/cart.service';
 import { I18nService } from '../services/i18n.service';
@@ -50,6 +50,32 @@ type Product = {
       <div class="hero-actions">
         <a class="cta" routerLink="/collections">- {{ i18n.t('home.goCollections') }}</a>
         <a class="cta ghost" href="https://artcuadros.myshopify.com/account" target="_blank" rel="noreferrer">+ {{ i18n.t('home.loginAccount') }}</a>
+      </div>
+    </section>
+
+    <section class="live-price-lab">
+      <div class="live-head">
+        <h2>* {{ i18n.t('home.livePriceTitle') }}</h2>
+        <p>{{ i18n.t('home.livePriceDesc') }}</p>
+      </div>
+      <label class="live-field">
+        {{ i18n.t('home.livePriceLabel') }}: {{ livePriceMax() }}€
+        <select [value]="livePriceMax()" (change)="livePriceMax.set(+$any($event.target).value)">
+          @for (option of livePriceOptions; track option) {
+            <option [value]="option">{{ option }}€</option>
+          }
+        </select>
+      </label>
+      <p class="live-result">{{ filteredByLivePrice().length }} {{ i18n.t('home.livePriceResults') }}</p>
+      <div class="live-grid">
+        @for (product of filteredByLivePrice(); track product.handle) {
+          <article class="live-card">
+            <strong>{{ product.title }}</strong>
+            <span>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</span>
+          </article>
+        } @empty {
+          <p class="live-empty">{{ i18n.t('home.livePriceEmpty') }}</p>
+        }
       </div>
     </section>
 
@@ -160,6 +186,16 @@ type Product = {
     .demo-track.before .pulse span { background:#7b4040; animation: slowReload 2.6s ease-in-out infinite; }
     .demo-track.after .pulse span { background:#d6d6d6; animation: fastSpa .45s linear infinite; }
     .hero-detail { margin-top:10px; color:#bbb; line-height:1.55; max-width:900px; }
+    .live-price-lab { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; }
+    .live-head p { color:#bdbdbd; margin:6px 0 10px; }
+    .live-field { display:grid; gap:6px; max-width:260px; font-size:12px; margin-bottom:8px; }
+    .live-field select { border:1px solid #3a3a3a; background:#131313; color:#fff; padding:8px; }
+    .live-result { color:#a8a8a8; font-size:12px; margin:8px 0; }
+    .live-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:8px; }
+    .live-card { border:1px solid #2f2f2f; background:#151515; padding:8px 10px; display:flex; justify-content:space-between; gap:8px; }
+    .live-card strong { font-size:11px; }
+    .live-card span { font-size:11px; color:#cfcfcf; }
+    .live-empty { color:#9a9a9a; font-size:12px; }
     .inspiration, .value { background:#111; border:1px solid #2f2f2f; padding:20px; margin-bottom:24px; }
     .inspiration a { color:#fff; font-weight:700; }
     .yeezy-gains { margin-top:10px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
@@ -204,6 +240,14 @@ type Product = {
 })
 export class HomePageComponent implements OnInit {
   readonly products = signal<Product[]>([]);
+  readonly livePriceMax = signal(0);
+  readonly livePriceOptions = [0, 50, 100, 200, 300, 500, 800, 1000];
+  readonly filteredByLivePrice = computed(() =>
+    this.products()
+      .filter((product) => Number(product.priceRange.minVariantPrice.amount || 0) <= this.livePriceMax())
+      .sort((a, b) => Number(a.priceRange.minVariantPrice.amount) - Number(b.priceRange.minVariantPrice.amount))
+      .slice(0, 12),
+  );
 
   constructor(
     private shopifyService: ShopifyService,

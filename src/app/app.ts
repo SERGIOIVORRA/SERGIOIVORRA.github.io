@@ -31,6 +31,13 @@ export class App {
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.shopifyService.prefetchCollections();
+    void this.shopifyService.getCollections().then((data) => {
+      this.shopifyService.prefetchCollectionDetails(
+        data.collections.nodes.map((collection) => collection.handle),
+      );
+    }).catch(() => {
+      // Silent prefetch fail: user navigation still triggers normal loading.
+    });
     this.scheduleFooterReveal();
     this.router.events
       .pipe(filter((event): event is NavigationStart | NavigationEnd => event instanceof NavigationStart || event instanceof NavigationEnd))
