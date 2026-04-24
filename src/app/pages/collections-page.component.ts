@@ -28,11 +28,11 @@ type CollectionProduct = {
     <section>
       <div class="collections-hero">
         <div>
-          <p class="eyebrow">SHOPIFY COLLECTIONS</p>
+          <p class="eyebrow">* SHOPIFY COLLECTIONS</p>
           <h1>Colecciones con estilo pro</h1>
           <p>Explora, filtra y entra a colecciones reales en un layout premium.</p>
         </div>
-        <a [href]="'https://' + storeDomain + '/account'" target="_blank" rel="noreferrer">Ir a tu cuenta</a>
+        <a [href]="'https://' + storeDomain + '/account'" target="_blank" rel="noreferrer">+ IR A TU CUENTA</a>
       </div>
       <div class="grid">
         @for (collection of collections(); track collection.id) {
@@ -51,8 +51,8 @@ type CollectionProduct = {
               <h3>{{ collection.title }}</h3>
               <p>{{ collection.description || 'Coleccion destacada con seleccion curada de productos.' }}</p>
               <div class="actions">
-                <a [routerLink]="['/collections', collection.handle]">Ver productos</a>
-                <a [href]="collectionUrl(collection.handle)" target="_blank" rel="noreferrer">Ir a la coleccion</a>
+                <a [routerLink]="['/collections', collection.handle]">- VER PRODUCTOS</a>
+                <a [href]="collectionUrl(collection.handle)" target="_blank" rel="noreferrer">+ OPEN COLLECTION</a>
               </div>
             </div>
           </article>
@@ -94,7 +94,7 @@ type CollectionProduct = {
                 }
                 <h3>{{ product.title }}</h3>
                 <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
-                <a [routerLink]="['/product', product.handle]">Ver producto</a>
+                <a [routerLink]="['/product', product.handle]">- VER PRODUCTO</a>
               </article>
             } @empty {
               <p class="empty">No hay productos que coincidan con estos filtros.</p>
@@ -106,9 +106,9 @@ type CollectionProduct = {
   `,
   styles: [`
     .collections-hero {
-      background: linear-gradient(120deg, #111, #2c2c2c);
+      background: linear-gradient(140deg, #111, #1a1a1a 60%, #0d0d0d);
       color: #fff;
-      border-radius: 14px;
+      border: 1px solid #2f2f2f;
       padding: 20px;
       margin-bottom: 22px;
       display: flex;
@@ -117,18 +117,18 @@ type CollectionProduct = {
       align-items: center;
     }
     .collections-hero a {
-      color: #111;
-      background: #fff;
+      color: #fff;
+      background: #131313;
+      border: 1px solid #3a3a3a;
       text-decoration: none;
       padding: 10px 14px;
-      border-radius: 999px;
       font-weight: 700;
       white-space: nowrap;
     }
     .eyebrow { margin: 0 0 8px; font-size: 12px; letter-spacing: 1.1px; opacity: .8; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
-    .card { background:#fff; border:1px solid #ececec; border-radius:14px; overflow:hidden; transition:transform .2s ease, box-shadow .2s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 14px 24px rgba(0,0,0,.12); }
+    .card { background:#111; border:1px solid #2f2f2f; overflow:hidden; transition:transform .2s ease, box-shadow .2s ease; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 14px 24px rgba(0,0,0,.35); }
     .media-wrap { position:relative; }
     img { width:100%; height:210px; object-fit:cover; display:block; }
     .fallback {
@@ -146,18 +146,25 @@ type CollectionProduct = {
       bottom:10px;
       background:rgba(0,0,0,.65);
       color:#fff;
-      border-radius:999px;
       padding:4px 10px;
       font-size:12px;
     }
     .card-content { padding:14px; }
     .actions { display:flex; gap:12px; }
-    .actions a, .product-card a { text-decoration:none; color:#111; font-weight:600; }
+    .actions a, .product-card a {
+      text-decoration:none;
+      color:#fff;
+      font-weight:700;
+      background:#151515;
+      border:1px solid #3a3a3a;
+      padding:8px 10px;
+      display:inline-block;
+    }
     .products { margin-top:32px; }
     .filters { display:grid; grid-template-columns:2fr 1fr 2fr; gap:12px; margin:16px 0 20px; }
-    .filters input, .filters select { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; }
+    .filters input, .filters select { width:100%; padding:8px; border:1px solid #3a3a3a; background:#111; color:#fff; }
     .products-grid { grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
-    .empty { color:#666; }
+    .empty { color:#9f9f9f; }
     @media (max-width: 768px) {
       .collections-hero { flex-direction: column; align-items: flex-start; }
     }

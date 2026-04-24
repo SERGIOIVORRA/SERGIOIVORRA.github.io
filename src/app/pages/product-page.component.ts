@@ -28,7 +28,7 @@ type Product = {
           <p class="description">{{ p.description }}</p>
           <strong>{{ p.priceRange.minVariantPrice.amount | currency:p.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</strong>
           <div>
-            <button (click)="addToCart(p)">Agregar al carrito</button>
+            <button (click)="addToCart(p)">+ ANADIR AL CARRITO</button>
           </div>
         </div>
       </article>
@@ -47,8 +47,8 @@ type Product = {
               <h3>{{ item.title }}</h3>
               <p>{{ item.priceRange.minVariantPrice.amount | currency:item.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
               <div class="recommended-actions">
-                <a [routerLink]="['/product', item.handle]">Ver</a>
-                <button (click)="addToCart(item)">Agregar</button>
+                <a [routerLink]="['/product', item.handle]">- VER</a>
+                <button (click)="addToCart(item)">+ ANADIR</button>
               </div>
             </article>
           } @empty {
@@ -61,18 +61,51 @@ type Product = {
     }
   `,
   styles: [`
-    .product { display:grid; grid-template-columns: 1fr 1fr; gap:24px; background:#fff; padding:20px; border-radius:12px; }
-    img { width:100%; max-height:420px; object-fit:cover; border-radius:10px; }
-    .description { color:#333; line-height:1.6; }
-    button { margin-top:12px; padding:10px 14px; background:#111; color:#fff; border:0; cursor:pointer; border-radius:6px; }
+    .product {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:24px;
+      background:#111;
+      padding:20px;
+      border:1px solid #2f2f2f;
+      position: relative;
+    }
+    .product::before {
+      content:'';
+      position:absolute;
+      left:0;
+      top:0;
+      width:0;
+      height:0;
+      border-top:26px solid #f5f5f5;
+      border-right:26px solid transparent;
+    }
+    img { width:100%; max-height:420px; object-fit:cover; }
+    .description { color:#bdbdbd; line-height:1.6; }
+    button {
+      margin-top:12px;
+      padding:10px 14px;
+      background:#f2f2f2;
+      color:#111;
+      border:1px solid #f2f2f2;
+      cursor:pointer;
+      font-weight:700;
+    }
     .recommended { margin-top:28px; }
     .recommended-head { display:flex; justify-content:space-between; align-items:center; }
-    .recommended-head a { color:#111; text-decoration:none; font-weight:600; }
+    .recommended-head a { color:#fff; text-decoration:none; font-weight:700; }
     .recommended-grid { margin-top:14px; display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
-    .recommended-card { background:#fff; border:1px solid #ececec; border-radius:10px; padding:12px; }
+    .recommended-card { background:#111; border:1px solid #2f2f2f; padding:12px; }
     .recommended-card img { width:100%; height:180px; object-fit:cover; margin-bottom:10px; }
     .recommended-actions { display:flex; gap:8px; align-items:center; }
-    .recommended-actions a { text-decoration:none; color:#111; font-weight:600; }
+    .recommended-actions a {
+      text-decoration:none;
+      color:#fff;
+      font-weight:700;
+      background:#151515;
+      border:1px solid #3a3a3a;
+      padding:8px 10px;
+    }
     .recommended-actions button { margin-top:0; }
   `]
 })
