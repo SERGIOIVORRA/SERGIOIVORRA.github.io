@@ -47,6 +47,16 @@ type Product = {
         <a href="https://yeezy.com/" target="_blank" rel="noreferrer">yeezy.com</a>:
         minimalismo, foco absoluto en producto y navegacion limpia orientada a conversion.
       </p>
+      <div class="yeezy-gains">
+        <article>
+          <h3>* Que gana una marca estilo Yeezy</h3>
+          <p>Percepcion premium, menos ruido visual y foco total en la accion de compra.</p>
+        </article>
+        <article>
+          <h3>+ Impacto de negocio</h3>
+          <p>Mejor conversion en mobile, experiencia mas rapida y narrativa visual mas reconocible.</p>
+        </article>
+      </div>
     </section>
 
     <section class="value">
@@ -110,11 +120,13 @@ type Product = {
     .hero-detail { margin-top:10px; color:#bbb; line-height:1.55; max-width:900px; }
     .inspiration, .value { background:#111; border:1px solid #2f2f2f; padding:20px; margin-bottom:24px; }
     .inspiration a { color:#fff; font-weight:700; }
+    .yeezy-gains { margin-top:10px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
+    .yeezy-gains article { border:1px solid #2b2b2b; background:#161616; padding:12px; }
     .value-grid { margin-top:12px; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
     .value-grid article { border:1px solid #2b2b2b; padding:12px; background:#161616; }
     .value-grid article h3::before { content:'+ '; color:#9f9f9f; }
     .hero-actions { display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
-    .cta { display:inline-block; background:#f3f3f3; color:#111; padding:10px 14px; text-decoration:none; border:1px solid #f3f3f3; font-weight:700; }
+    .cta { display:inline-block; background:#d6d6d6; color:#111; padding:10px 14px; text-decoration:none; border:1px solid #bdbdbd; font-weight:700; }
     .cta.ghost { background:transparent; color:#fff; border:1px solid #3d3d3d; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
     .card { background:#111; padding:12px; border:1px solid #2f2f2f; transition: transform .25s ease; }

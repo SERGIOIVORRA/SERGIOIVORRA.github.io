@@ -27,7 +27,7 @@ type Collection = {
       </div>
       <div class="grid">
         @for (collection of collections(); track collection.id) {
-          <article class="card">
+          <article class="card" [routerLink]="['/collections', collection.handle]">
             <div class="media-wrap">
               @if (collection.image) {
                 <img [src]="collection.image.url" [alt]="collection.image.altText || collection.title" />
@@ -75,7 +75,7 @@ type Collection = {
     }
     .eyebrow { margin: 0 0 8px; font-size: 12px; letter-spacing: 1.1px; opacity: .8; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; }
-    .card { background:#111; border:1px solid #2f2f2f; overflow:hidden; transition:transform .2s ease, box-shadow .2s ease; }
+    .card { background:#111; border:1px solid #2f2f2f; overflow:hidden; transition:transform .2s ease, box-shadow .2s ease; cursor:pointer; }
     .card:hover { transform: translateY(-4px); box-shadow: 0 14px 24px rgba(0,0,0,.35); }
     .media-wrap { position:relative; }
     img { width:100%; height:210px; object-fit:cover; display:block; }
