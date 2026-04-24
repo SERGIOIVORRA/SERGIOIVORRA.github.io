@@ -13,10 +13,10 @@ jobs:
       SHOPIFY_SHOP_DOMAIN: ${{ secrets.SHOPIFY_SHOP_DOMAIN }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check secrets loaded
         run: |
-          [ -n "$SHOPIFY_ADMIN_ACCESS_TOKEN" ] && echo "ADMIN OK"
-          [ -n "$SHOPIFY_STOREFRONT_ACCESS_TOKEN" ] && echo "STOREFRONT OK"
-          [ -n "$SHOPIFY_SHOP_DOMAIN" ] && echo "DOMAIN OK"
+          if [ -n "${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}" ]; then echo "ADMIN OK"; else echo "FALTA SHOPIFY_ADMIN_ACCESS_TOKEN"; fi
+          if [ -n "${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN }}" ]; then echo "STOREFRONT OK"; else echo "FALTA SHOPIFY_STOREFRONT_ACCESS_TOKEN"; fi
+          if [ -n "${{ secrets.SHOPIFY_SHOP_DOMAIN }}" ]; then echo "DOMAIN OK"; else echo "FALTA SHOPIFY_SHOP_DOMAIN"; fi
