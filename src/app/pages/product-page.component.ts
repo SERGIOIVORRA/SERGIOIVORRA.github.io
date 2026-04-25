@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, effect, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CartService } from '../services/cart.service';
@@ -336,6 +336,7 @@ export class ProductPageComponent {
   });
 
   readonly secondaryGalleryImages = computed(() => this.galleryImages().slice(1));
+  private readonly preloadedImageUrls = new Set<string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -344,6 +345,18 @@ export class ProductPageComponent {
     private cartService: CartService,
     public i18n: I18nService,
   ) {
+    effect(() => {
+      for (const img of this.secondaryGalleryImages()) {
+        if (!img?.url || this.preloadedImageUrls.has(img.url)) continue;
+        this.preloadedImageUrls.add(img.url);
+        if (typeof Image !== 'undefined') {
+          const preloader = new Image();
+          preloader.decoding = 'async';
+          preloader.src = img.url;
+        }
+      }
+    });
+
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       void this.loadProduct(params.get('handle'));
     });
