@@ -1,5 +1,5 @@
 import { CurrencyPipe } from '@angular/common';
-import { Component, computed, effect, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CartService } from '../services/cart.service';
@@ -32,7 +32,7 @@ type ExtraField = {
   imports: [CurrencyPipe, RouterLink],
   template: `
     @if (isLoading()) {
-      <p>{{ i18n.t('product.loading') }}</p>
+      <div class="loading-placeholder" aria-hidden="true"></div>
     } @else if (loadError()) {
       <p>{{ loadError() }}</p>
     } @else if (product(); as p) {
@@ -63,7 +63,7 @@ type ExtraField = {
                     [attr.aria-selected]="selectedImageIndex() === (idx + 1)"
                     (click)="selectGallery(idx + 1)"
                   >
-                    <img [src]="img.url" alt="" loading="lazy" decoding="async" />
+                    <img [src]="img.url" alt="" loading="eager" decoding="async" />
                   </button>
                 }
               </div>
@@ -153,6 +153,7 @@ type ExtraField = {
     }
   `,
   styles: [`
+    .loading-placeholder { display:none; }
     .product {
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -337,6 +338,7 @@ export class ProductPageComponent {
 
   readonly secondaryGalleryImages = computed(() => this.galleryImages().slice(1));
   private readonly preloadedImageUrls = new Set<string>();
+  private readonly preloadingImageUrls = new Set<string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -345,18 +347,6 @@ export class ProductPageComponent {
     private cartService: CartService,
     public i18n: I18nService,
   ) {
-    effect(() => {
-      for (const img of this.secondaryGalleryImages()) {
-        if (!img?.url || this.preloadedImageUrls.has(img.url)) continue;
-        this.preloadedImageUrls.add(img.url);
-        if (typeof Image !== 'undefined') {
-          const preloader = new Image();
-          preloader.decoding = 'async';
-          preloader.src = img.url;
-        }
-      }
-    });
-
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       void this.loadProduct(params.get('handle'));
     });
@@ -390,6 +380,7 @@ export class ProductPageComponent {
       }
 
       this.product.set(productData.product);
+      this.preloadSecondaryImages(this.galleryImages().slice(1));
       this.extraInfo.set(await this.mapMetafields(productData.product.metafields ?? []));
 
       const recommended = productsData.products.nodes
@@ -404,6 +395,33 @@ export class ProductPageComponent {
       console.error(error);
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  private preloadSecondaryImages(images: Array<{ url: string; altText: string | null }>): void {
+    if (typeof Image === 'undefined') return;
+    for (const img of images) {
+      const url = img?.url;
+      if (!url || this.preloadedImageUrls.has(url) || this.preloadingImageUrls.has(url)) continue;
+      this.preloadingImageUrls.add(url);
+      const preloader = new Image();
+      preloader.decoding = 'async';
+      (preloader as HTMLImageElement & { fetchPriority?: string }).fetchPriority = 'high';
+      let completed = false;
+      const complete = (ok: boolean) => {
+        if (completed) return;
+        completed = true;
+        this.preloadingImageUrls.delete(url);
+        if (ok) this.preloadedImageUrls.add(url);
+      };
+      preloader.onload = () => complete(true);
+      preloader.onerror = () => complete(false);
+      preloader.src = url;
+      if (typeof preloader.decode === 'function') {
+        preloader.decode().then(() => complete(true)).catch(() => {
+          // onload/onerror will finalize if decode fails early.
+        });
+      }
     }
   }
 
