@@ -312,7 +312,7 @@ type CollectionProduct = {
       <h2>* {{ i18n.t('home.featuredProducts') }}</h2>
       <p class="real-cases-title">{{ i18n.lang() === 'en' ? 'Real ecommerce references in this showcase:' : 'Referencias ecommerce reales en este showcase:' }} Lady Gaga, Mattel, Ruggable, SKIMS, Allbirds, Staples, Gymshark, Brooklinen, JB Hi-Fi, Inkbox.</p>
       <div class="grid">
-        @for (product of featuredProducts(); track product.handle) {
+        @for (product of visibleFeaturedProducts(); track product.handle) {
           <article class="card" [routerLink]="['/product', product.handle]">
             @if (nuevoTag(product.metafields); as badge) {
               <span class="corner-badge">{{ badge }}</span>
@@ -622,6 +622,9 @@ export class HomePageComponent implements OnInit {
       .filter((product) => Number(product.priceRange.minVariantPrice.amount || 0) <= this.livePriceMax())
       .sort((a, b) => Number(a.priceRange.minVariantPrice.amount) - Number(b.priceRange.minVariantPrice.amount))
       .slice(0, 12),
+  );
+  readonly visibleFeaturedProducts = computed(() =>
+    this.featuredProducts().filter((product) => product.availableForSale),
   );
 
   constructor(
