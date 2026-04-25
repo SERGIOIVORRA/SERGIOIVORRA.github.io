@@ -312,7 +312,7 @@ type CollectionProduct = {
       <h2>* {{ i18n.t('home.featuredProducts') }}</h2>
       <p class="real-cases-title">{{ i18n.lang() === 'en' ? 'Real ecommerce references in this showcase:' : 'Referencias ecommerce reales en este showcase:' }} Lady Gaga, Mattel, Ruggable, SKIMS, Allbirds, Staples, Gymshark, Brooklinen, JB Hi-Fi, Inkbox.</p>
       <div class="grid">
-        @for (product of featuredProducts(); track product.handle; let idx = $index) {
+        @for (product of featuredProducts(); track product.handle) {
           <article class="card" [routerLink]="['/product', product.handle]">
             @if (nuevoTag(product.metafields); as badge) {
               <span class="corner-badge">{{ badge }}</span>
@@ -337,7 +337,6 @@ type CollectionProduct = {
             <p>{{ product.priceRange.minVariantPrice.amount | currency:product.priceRange.minVariantPrice.currencyCode:'symbol':'1.2-2' }}</p>
             <div class="actions">
               <a [routerLink]="['/product', product.handle]"><span class="icon">?</span> {{ i18n.t('common.view') }}</a>
-              <button class="tool-btn" (click)="moveCardRight($event, idx)">↔</button>
               <button [disabled]="!product.availableForSale || isInCart(product)" (click)="onAddToCart($event, product)">
                 @if (!product.availableForSale) {
                   {{ i18n.t('common.outOfStock') }}
@@ -562,8 +561,7 @@ type CollectionProduct = {
       text-overflow:ellipsis;
     }
     .actions a { flex:1 1 0; min-width:0; gap:4px; }
-    .actions .tool-btn { flex:0 0 40px; width:40px; min-width:40px; max-width:40px; padding:0; font-size:14px; letter-spacing:0; }
-    .actions button:not(.tool-btn) { cursor:pointer; flex:1 1 0; min-width:0; }
+    .actions button { cursor:pointer; flex:1 1 0; min-width:0; }
     .actions .icon { margin-right:0; flex-shrink:0; line-height:1; }
     .actions button:disabled { opacity:.6; cursor:not-allowed; border-color:#4a2323; color:#c7a8a8; }
     .icon { margin-right:4px; color:#bcbcbc; }
@@ -869,18 +867,6 @@ export class HomePageComponent implements OnInit {
 
   stopCardNavigation(event: Event): void {
     event.stopPropagation();
-  }
-
-  moveCardRight(event: Event, index: number): void {
-    event.stopPropagation();
-    event.preventDefault();
-    this.featuredProducts.update((items) => {
-      if (!items.length) return items;
-      const next = [...items];
-      const swapIndex = index === next.length - 1 ? 0 : index + 1;
-      [next[index], next[swapIndex]] = [next[swapIndex], next[index]];
-      return next;
-    });
   }
 
   topTags(tags: string[]): string[] {
