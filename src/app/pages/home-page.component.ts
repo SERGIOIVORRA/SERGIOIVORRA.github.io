@@ -75,6 +75,7 @@ type CollectionProduct = {
         </aside>
       </div>
       <p class="hero-detail">{{ i18n.t('home.heroDetail') }}</p>
+      <p class="hero-note">{{ i18n.t('home.apiExampleNote') }}</p>
       <div class="hero-actions">
         <div class="capacity-split">
           @if (!capacitySplitOpen()) {
@@ -88,6 +89,7 @@ type CollectionProduct = {
             </div>
           }
         </div>
+        <a class="cta ghost" routerLink="/project-structure">* {{ i18n.t('home.backToProject') }}</a>
         <a class="cta ghost" href="https://artcuadros.myshopify.com/account" target="_blank" rel="noreferrer">+ {{ i18n.t('home.loginAccount') }}</a>
       </div>
     </section>
@@ -385,6 +387,16 @@ type CollectionProduct = {
     .demo-track.before .pulse span { background:#7b4040; animation: slowReload 2.6s ease-in-out infinite; }
     .demo-track.after .pulse span { background:#d6d6d6; animation: fastSpa .45s linear infinite; }
     .hero-detail { margin-top:10px; color:#bbb; line-height:1.55; max-width:900px; }
+    .hero-note {
+      margin:8px 0 0;
+      max-width:950px;
+      padding:10px 12px;
+      border:1px solid #2f2f2f;
+      background:#151515;
+      color:#d8d8d8;
+      font-size:12px;
+      line-height:1.45;
+    }
     .live-price-lab { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; position:relative; }
     .console-lab { background:#111; border:1px solid #2f2f2f; padding:16px; margin:0 0 24px; position:relative; }
     .console-lab h2 { margin:0 0 6px; }
