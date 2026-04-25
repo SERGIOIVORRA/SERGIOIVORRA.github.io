@@ -207,6 +207,33 @@
   border-left: 1px solid #2f2f2f;
   padding: 16px;
   z-index: 999;
+  transform: translateX(105%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .22s ease, opacity .22s ease;
+}
+
+.cart-drawer.open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cart-backdrop {
+  position: fixed;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: rgba(0, 0, 0, .45);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 998;
+  transition: opacity .2s ease;
+}
+
+.cart-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .cart-head {
