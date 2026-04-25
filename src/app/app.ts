@@ -22,8 +22,6 @@ export class App {
   protected readonly registerUrl = `https://${environment.shopifyStoreDomain}/account/register`;
   readonly footerVisible = signal(false);
   private footerTimer: ReturnType<typeof setTimeout> | null = null;
-  private pageScrollBeforeDrawer = 0;
-  private drawerLockedBody = false;
 
   constructor(
     public cartService: CartService,
@@ -66,36 +64,6 @@ export class App {
       });
     });
 
-    effect(() => {
-      const body = this.document.body;
-      const win = this.document.defaultView;
-      if (!body || !win) return;
-
-      if (this.cartService.isDrawerOpen()) {
-        if (!this.drawerLockedBody) {
-          this.pageScrollBeforeDrawer = win.scrollY || this.document.documentElement.scrollTop || 0;
-          body.style.position = 'fixed';
-          body.style.top = `-${this.pageScrollBeforeDrawer}px`;
-          body.style.left = '0';
-          body.style.right = '0';
-          body.style.width = '100%';
-          body.style.overflow = 'hidden';
-          this.drawerLockedBody = true;
-        }
-        return;
-      }
-
-      if (this.drawerLockedBody) {
-        body.style.position = '';
-        body.style.top = '';
-        body.style.left = '';
-        body.style.right = '';
-        body.style.width = '';
-        body.style.overflow = '';
-        win.scrollTo(0, this.pageScrollBeforeDrawer);
-        this.drawerLockedBody = false;
-      }
-    });
   }
 
   handleBrandClick(event: Event): void {
