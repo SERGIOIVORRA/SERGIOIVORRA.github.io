@@ -30,7 +30,7 @@
 }
 
 @if (cartService.isDrawerOpen()) {
-  <aside class="cart-drawer">
+  <aside class="cart-drawer" (scroll)="cartService.setDrawerScrollTop($any($event.target).scrollTop)">
     <div class="cart-head">
       <h3>{{ i18n.t('cart.title') }}</h3>
       <button (click)="cartService.toggleDrawer()">X</button>

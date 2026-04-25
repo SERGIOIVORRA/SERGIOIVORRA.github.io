@@ -14,6 +14,7 @@ export class CartService {
   readonly isDrawerOpen = signal(false);
   readonly checkoutUrl = signal('https://www.shopify.com');
   readonly pendingMerchandiseIds = signal<string[]>([]);
+  readonly drawerScrollTop = signal(0);
   private cartId: string | null = null;
   private readonly storageKey = 'shopify_cv_cart_state';
   private readonly cookieKey = 'shopify_cv_cart_items';
@@ -77,11 +78,19 @@ export class CartService {
     this.persistState();
   }
 
+  setDrawerScrollTop(value: number): void {
+    const next = Math.max(0, Math.floor(value || 0));
+    if (next === this.drawerScrollTop()) return;
+    this.drawerScrollTop.set(next);
+    this.persistState();
+  }
+
   private persistState(): void {
     const state = {
       cartId: this.cartId,
       checkoutUrl: this.checkoutUrl(),
       items: this.items(),
+      drawerScrollTop: this.drawerScrollTop(),
     };
     localStorage.setItem(this.storageKey, JSON.stringify(state));
     document.cookie = `${this.cookieKey}=${encodeURIComponent(String(this.items().length))}; path=/; max-age=2592000; SameSite=Lax`;
@@ -95,6 +104,7 @@ export class CartService {
         cartId?: string | null;
         checkoutUrl?: string;
         items?: CartItem[];
+        drawerScrollTop?: number;
       };
       this.cartId = parsed.cartId ?? null;
       if (parsed.checkoutUrl) {
@@ -102,6 +112,9 @@ export class CartService {
       }
       if (Array.isArray(parsed.items)) {
         this.items.set(parsed.items);
+      }
+      if (typeof parsed.drawerScrollTop === 'number') {
+        this.drawerScrollTop.set(Math.max(0, Math.floor(parsed.drawerScrollTop)));
       }
     } catch {
       localStorage.removeItem(this.storageKey);

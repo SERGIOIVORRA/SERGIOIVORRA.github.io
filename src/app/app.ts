@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, signal } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CartService } from './services/cart.service';
@@ -52,6 +52,17 @@ export class App {
         }
         this.scheduleFooterReveal();
       });
+
+    effect(() => {
+      if (!this.cartService.isDrawerOpen()) return;
+      const savedTop = this.cartService.drawerScrollTop();
+      this.document.defaultView?.requestAnimationFrame(() => {
+        const drawer = this.document.querySelector('.cart-drawer') as HTMLElement | null;
+        if (drawer) {
+          drawer.scrollTop = savedTop;
+        }
+      });
+    });
   }
 
   handleBrandClick(event: Event): void {
