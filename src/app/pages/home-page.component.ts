@@ -307,12 +307,6 @@ type CollectionProduct = {
     </section>
 
     <section class="products" id="products-section" [style.order]="sectionOrder('products')">
-      @if (blockEditMode()) {
-        <div class="block-tools">
-          <button type="button" (click)="moveSection('products', -1)">↑</button>
-          <button type="button" (click)="moveSection('products', 1)">↓</button>
-        </div>
-      }
       <h2>* {{ i18n.t('home.featuredProducts') }}</h2>
       <p class="real-cases-title">{{ i18n.lang() === 'en' ? 'Real ecommerce references in this showcase:' : 'Referencias ecommerce reales en este showcase:' }} Lady Gaga, Mattel, Ruggable, SKIMS, Allbirds, Staples, Gymshark, Brooklinen, JB Hi-Fi, Inkbox.</p>
       <div class="grid">
