@@ -24,6 +24,7 @@ export class CartService {
   }
 
   toggleDrawer() {
+    this.preserveViewportScroll();
     const nextOpen = !this.isDrawerOpen();
     this.isDrawerOpen.set(nextOpen);
   }
@@ -46,12 +47,14 @@ export class CartService {
 
   async addItem(item: CartItem): Promise<void> {
     if (this.hasOrPendingItem(item.merchandiseId)) {
+      this.preserveViewportScroll();
       this.isDrawerOpen.set(true);
       return;
     }
 
     this.pendingMerchandiseIds.update((ids) => [...ids, item.merchandiseId]);
     this.items.set([...this.items(), item]);
+    this.preserveViewportScroll();
     this.isDrawerOpen.set(true);
     this.persistState();
 
@@ -119,5 +122,15 @@ export class CartService {
     } catch {
       localStorage.removeItem(this.storageKey);
     }
+  }
+
+  /**
+   * Evita saltos al top en algunos navegadores moviles al abrir overlays.
+   * Reaplica el scroll actual en el siguiente frame.
+   */
+  private preserveViewportScroll(): void {
+    if (typeof window === 'undefined') return;
+    const y = window.scrollY || document.documentElement.scrollTop || 0;
+    window.requestAnimationFrame(() => window.scrollTo({ top: y, left: 0, behavior: 'auto' }));
   }
 }
