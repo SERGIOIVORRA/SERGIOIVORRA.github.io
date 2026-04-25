@@ -2,7 +2,7 @@
   <a class="brand" routerLink="/" (click)="handleBrandClick($event)">{{ title }}</a>
   <nav class="nav">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">{{ i18n.t('nav.home') }}</a>
-    <a routerLink="/collections" routerLinkActive="active">{{ i18n.t('nav.collections') }}</a>
+    <a class="nav-collections" routerLink="/collections" routerLinkActive="active">{{ i18n.t('nav.collections') }}</a>
     <a routerLink="/angular-pro" routerLinkActive="active">Angular PRO</a>
     <a routerLink="/performance-lab" routerLinkActive="active">{{ i18n.t('nav.performance') }}</a>
     <a routerLink="/project-structure" routerLinkActive="active">{{ i18n.t('nav.project') }}</a>

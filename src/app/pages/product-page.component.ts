@@ -46,20 +46,28 @@ type ExtraField = {
               [class]="imageModeClass()"
             />
           }
-          @if (galleryImages().length > 1) {
-            <div class="gallery-thumbs" role="tablist" [attr.aria-label]="i18n.t('product.galleryLabel')">
-              @for (img of galleryImages(); track img.url; let idx = $index) {
-                <button
-                  type="button"
-                  class="thumb"
-                  [class.active]="selectedImageIndex() === idx"
-                  [attr.aria-selected]="selectedImageIndex() === idx"
-                  (click)="selectGallery(idx)"
-                >
-                  <img [src]="img.url" alt="" />
-                </button>
+          @if (secondaryGalleryImages().length > 0) {
+            <div class="gallery-preload" aria-hidden="true">
+              @for (img of secondaryGalleryImages(); track img.url) {
+                <img [src]="img.url" alt="" loading="eager" decoding="async" />
               }
             </div>
+            <details class="gallery-more">
+              <summary>{{ i18n.t('product.viewMoreImages') }}</summary>
+              <div class="gallery-thumbs" role="tablist" [attr.aria-label]="i18n.t('product.galleryLabel')">
+                @for (img of secondaryGalleryImages(); track img.url; let idx = $index) {
+                  <button
+                    type="button"
+                    class="thumb"
+                    [class.active]="selectedImageIndex() === (idx + 1)"
+                    [attr.aria-selected]="selectedImageIndex() === (idx + 1)"
+                    (click)="selectGallery(idx + 1)"
+                  >
+                    <img [src]="img.url" alt="" loading="lazy" decoding="async" />
+                  </button>
+                }
+              </div>
+            </details>
           }
         </div>
         <div class="product-side">
@@ -160,7 +168,20 @@ type ExtraField = {
     .img-square { aspect-ratio:1/1; }
     .img-tall { aspect-ratio:4/5; }
     .img-wide { aspect-ratio:16/9; }
-    .gallery-thumbs { display:flex; flex-wrap:wrap; gap:8px; }
+    .gallery-preload { position:absolute; width:0; height:0; overflow:hidden; opacity:0; pointer-events:none; }
+    .gallery-preload img { width:1px; height:1px; }
+    .gallery-more { border:1px solid #2f2f2f; background:#131313; }
+    .gallery-more summary {
+      cursor:pointer;
+      list-style:none;
+      padding:8px 10px;
+      font-size:11px;
+      text-transform:uppercase;
+      color:#d6d6d6;
+      letter-spacing:.6px;
+    }
+    .gallery-more[open] summary { border-bottom:1px solid #2f2f2f; }
+    .gallery-thumbs { display:flex; flex-wrap:wrap; gap:8px; padding:10px; }
     .thumb {
       padding:0;
       border:2px solid #2f2f2f;
@@ -277,6 +298,7 @@ type ExtraField = {
         min-height:min(92vw, 500px);
       }
       .gallery-thumbs { justify-content:flex-start; }
+      .gallery-more summary { font-size:10px; }
       .thumb img { width:64px; height:64px; }
       .recommended-grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); }
     }
@@ -312,6 +334,8 @@ export class ProductPageComponent {
     const i = Math.max(0, Math.min(this.selectedImageIndex(), list.length - 1));
     return list[i] ?? list[0];
   });
+
+  readonly secondaryGalleryImages = computed(() => this.galleryImages().slice(1));
 
   constructor(
     private route: ActivatedRoute,

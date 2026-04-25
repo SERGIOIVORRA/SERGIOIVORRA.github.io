@@ -59,6 +59,12 @@
   transition: color .2s ease;
 }
 
+.nav a.nav-collections {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
 .nav .active {
   color: var(--ui-accent-color, #d6d6d6);
   font-weight: 700;
@@ -291,6 +297,10 @@
 
   .nav a {
     font-size: 11px;
+  }
+
+  .nav a.nav-collections {
+    font-size: 12px;
   }
 
   .account-links {
