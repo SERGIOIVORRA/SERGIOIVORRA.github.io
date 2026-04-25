@@ -8,8 +8,6 @@
   color: var(--ui-text-color, #f4f4f4);
   font-family: var(--ui-font-family, 'Space Mono', 'Courier New', monospace);
   letter-spacing: 0.2px;
-  filter: brightness(var(--ui-brightness, 1)) contrast(var(--ui-contrast, 1)) saturate(var(--ui-saturation, 1));
-  transition: filter .25s ease;
 }
 
 :host * {
@@ -29,6 +27,8 @@
   z-index: 20;
   max-width: 100%;
   box-sizing: border-box;
+  filter: brightness(var(--ui-brightness, 1)) contrast(var(--ui-contrast, 1)) saturate(var(--ui-saturation, 1));
+  transition: filter .25s ease;
 }
 
 .brand {
@@ -76,6 +76,8 @@
   max-width: 100%;
   box-sizing: border-box;
   overflow-x: clip;
+  filter: brightness(var(--ui-brightness, 1)) contrast(var(--ui-contrast, 1)) saturate(var(--ui-saturation, 1));
+  transition: filter .25s ease;
 }
 
 
@@ -86,6 +88,8 @@
   background: #0b0b0b;
   opacity: 0;
   transform: translateY(20px);
+  filter: brightness(var(--ui-brightness, 1)) contrast(var(--ui-contrast, 1)) saturate(var(--ui-saturation, 1));
+  transition: filter .25s ease;
 }
 
 .site-footer p {
@@ -211,6 +215,7 @@
   opacity: 0;
   pointer-events: none;
   transition: transform .22s ease, opacity .22s ease;
+  filter: brightness(var(--ui-brightness, 1)) contrast(var(--ui-contrast, 1)) saturate(var(--ui-saturation, 1));
 }
 
 .cart-drawer.open {
